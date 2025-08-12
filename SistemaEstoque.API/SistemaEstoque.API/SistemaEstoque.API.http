@@ -1,0 +1,6 @@
+@Sellius.API._HostAddress = http://localhost:5223
+
+GET {{Sellius.API._HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
