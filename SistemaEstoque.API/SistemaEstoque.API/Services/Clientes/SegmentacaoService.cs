@@ -68,5 +68,10 @@ namespace Sellius.API.Services.segmentacaos
             return await Updatesegmentacao(segmentacao);
 
         }
+        public async Task<Response<List<SegmentacaoDTO>>> CarregarCombo(int idEmpresa)
+        {
+            var segmentacoes = SegmentacaoDTO.FromToList(await _repository.CarregarCombo(idEmpresa));
+            return Response<List<SegmentacaoDTO>>.Ok(segmentacoes);
+        }
     }
 }

@@ -1,7 +1,11 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\SistemaEstoque.API",
+    "\\SistemaEstoque.API\\SistemaEstoque.API",
+    "\\SistemaEstoque.API\\SistemaEstoque.API\\Services",
+    "\\SistemaEstoque.API\\SistemaEstoque.API\\Services\\Clientes"
   ],
-  "SelectedNode": "\\C:\\Users\\Ge\\Source\\Repos\\Sellius-back",
+  "SelectedNode": "\\SistemaEstoque.API\\SistemaEstoque.API\\Services\\Clientes\\GrupoClienteService.cs",
   "PreviewInSolutionExplorer": false
 }

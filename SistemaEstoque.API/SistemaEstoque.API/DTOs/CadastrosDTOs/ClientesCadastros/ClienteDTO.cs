@@ -26,8 +26,8 @@ namespace Sellius.API.DTOs.CadastrosDTOs.ClientesCadastros
 
         [Required(ErrorMessage = "Data Nascimento e obrigatorio")]
         [DataType(DataType.Date)]
-        [Display(Name ="Data Nascimento")]
-        public DateTime dthNascimeto { get; set; }
+        [Display(Name = "Data Nascimento")]
+        public DateTime dthNascimeto { get; set; } =  DateTime.Now;
 
         [Required(ErrorMessage = "Email e obrigatorio")]
         [EmailAddress(ErrorMessage ="E-mail invalido")]
@@ -35,7 +35,6 @@ namespace Sellius.API.DTOs.CadastrosDTOs.ClientesCadastros
 
         [Required(ErrorMessage = "Telefone e obrigatorio")]
         [DisplayFormat(DataFormatString = "{0:(##)#####-####}", ApplyFormatInEditMode = true)]
-        [RegularExpression(@"\d+$")]
         public string Telefone { get; set; }
         public int EmpresaId { get; set; }
         public short fAtivo { get; set; }

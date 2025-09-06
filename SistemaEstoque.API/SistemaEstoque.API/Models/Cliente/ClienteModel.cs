@@ -43,7 +43,9 @@ namespace Sellius.API.Models.Cliente
                 fAtivo = dto.fAtivo,
                 Nome = dto.Nome,
                 Rua = dto.Rua,
-            };
+                idSegmentacao = dto.idSegmentacao,
+                idGrupo = dto.idGrupo
+            }; 
         }
     }
 }

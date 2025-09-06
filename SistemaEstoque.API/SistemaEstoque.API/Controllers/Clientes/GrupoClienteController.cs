@@ -65,8 +65,8 @@ namespace Sellius.API.Controllers.Clientes
         [HttpGet("carregarComboGrupo")]
         public async Task<IActionResult> CarregarCombo()
         {
-            GrupoClienteDTO grupo = new GrupoClienteDTO() { idEmpresa = TokenService.RecuperaIdEmpresa(User)};
-            var ret = await _service.CadastrarGrupo(grupo);
+            int idEmpresa = TokenService.RecuperaIdEmpresa(User);
+            var ret = await _service.CarregarCombo(idEmpresa);
             if (ret.success)
                 return Ok(ret);
             return BadRequest(ret);

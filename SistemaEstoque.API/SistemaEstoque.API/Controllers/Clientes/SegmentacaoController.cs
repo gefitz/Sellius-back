@@ -62,5 +62,18 @@ namespace Sellius.API.Controllers.Clientes
             }
             return BadRequest(response);
         }
+        [HttpGet("carregarComboSegmentacao")]
+        public async Task<IActionResult> carregarCombo()
+        {
+            int idEmpresa = TokenService.RecuperaIdEmpresa(User);
+
+            var response = await _service.CarregarCombo(idEmpresa);
+
+            if (response.success)
+            {
+                return Ok(response);
+            }
+            return BadRequest(response);
+        }
     }
 }

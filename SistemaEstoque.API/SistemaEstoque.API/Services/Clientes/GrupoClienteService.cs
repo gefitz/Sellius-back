@@ -85,5 +85,11 @@ namespace Sellius.API.Services.Clientes
             return Response<GrupoClienteDTO>.Failed("Falha ao inativar o grupo");
 
         }
+        public async Task<Response<List<GrupoClienteDTO>>> CarregarCombo(int idEmpresa)
+        {
+            var grupo = GrupoClienteDTO.FromToList(await _repository.CarregarCombo(idEmpresa));
+
+            return Response<List<GrupoClienteDTO>>.Ok(grupo);
+        }
     }
 }
