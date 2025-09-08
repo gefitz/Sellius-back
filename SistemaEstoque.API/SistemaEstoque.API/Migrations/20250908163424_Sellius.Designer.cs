@@ -2,9 +2,9 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Sellius.API.Context;
 
 #nullable disable
@@ -12,8 +12,8 @@ using Sellius.API.Context;
 namespace Sellius.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250531112302_v5")]
-    partial class v5
+    [Migration("20250908163424_Sellius")]
+    partial class Sellius
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,24 +21,24 @@ namespace Sellius.API.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "9.0.4")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Sellius.API.Models.CidadeModel", b =>
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
                     b.Property<string>("Cidade")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<int>("EstadoId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("id");
 
@@ -47,53 +47,59 @@ namespace Sellius.API.Migrations
                     b.ToTable("Cidades");
                 });
 
-            modelBuilder.Entity("Sellius.API.Models.ClienteModel", b =>
+            modelBuilder.Entity("Sellius.API.Models.Cliente.ClienteModel", b =>
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
                     b.Property<string>("Bairro")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Cep")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<int>("CidadeId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Documento")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<int>("EmpresaId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Nome")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Rua")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Telefone")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("dthNascimeto")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<short>("fAtivo")
                         .HasColumnType("smallint");
+
+                    b.Property<int>("idGrupo")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("idSegmentacao")
+                        .HasColumnType("integer");
 
                     b.HasKey("id");
 
@@ -101,52 +107,122 @@ namespace Sellius.API.Migrations
 
                     b.HasIndex("EmpresaId");
 
+                    b.HasIndex("idGrupo");
+
+                    b.HasIndex("idSegmentacao");
+
                     b.ToTable("Clientes");
+                });
+
+            modelBuilder.Entity("Sellius.API.Models.Cliente.GrupoClienteModel", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
+
+                    b.Property<DateTime>("dthAlteracao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("dthCriacao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<short>("fAtivo")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("idEmpresa")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("nome")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("Grupo");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("idEmpresa");
+
+                    b.ToTable("Cliente_Grupos");
+                });
+
+            modelBuilder.Entity("Sellius.API.Models.Cliente.SegmentacaoModel", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
+
+                    b.Property<string>("Segmento")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("dthAlteracao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("dthCriacao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<short>("fAtivo")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("idEmpresa")
+                        .HasColumnType("integer");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("idEmpresa");
+
+                    b.ToTable("Segmentacaoes");
                 });
 
             modelBuilder.Entity("Sellius.API.Models.EmpresaModel", b =>
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
                     b.Property<string>("CEP")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("CNPJ")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<int>("CidadeId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<int>("LicencaId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Nome")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Rua")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Telefone")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("dthAlteracao")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("dthCadastro")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<short>("fAtivo")
+                        .HasColumnType("smallint");
 
                     b.HasKey("id");
 
@@ -161,17 +237,17 @@ namespace Sellius.API.Migrations
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
                     b.Property<string>("Estado")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Sigla")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.HasKey("id");
 
@@ -182,37 +258,48 @@ namespace Sellius.API.Migrations
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
+
+                    b.Property<string>("CEP")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("CNPJ")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<int>("CidadeId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Complemento")
+                        .HasColumnType("text");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<int>("EmpresaId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Nome")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
+
+                    b.Property<string>("Rua")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Telefone")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("dthAlteracao")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("dthCadastro")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<short>("fAtivo")
                         .HasColumnType("smallint");
@@ -230,33 +317,33 @@ namespace Sellius.API.Migrations
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
                     b.Property<Guid>("Licenca")
-                        .HasColumnType("char(36)");
+                        .HasColumnType("uuid");
 
                     b.Property<int>("TipoLincenca")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("UsuairosIncluirFree")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("UsuariosIncluidos")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<decimal>("ValorMensal")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("numeric");
 
                     b.Property<decimal>("ValorPorUsuario")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("numeric");
 
                     b.Property<DateTime>("dthInicioLincenca")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("dthVencimento")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("id");
 
@@ -267,20 +354,20 @@ namespace Sellius.API.Migrations
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
                     b.Property<string>("InnerExecption")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Messagem")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("dthErro")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("id");
 
@@ -291,40 +378,35 @@ namespace Sellius.API.Migrations
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("id"));
-
-                    b.Property<int?>("ClienteId")
-                        .HasColumnType("int");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<int>("EmpresaId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<byte[]>("Hash")
                         .IsRequired()
-                        .HasColumnType("longblob");
+                        .HasColumnType("bytea");
 
                     b.Property<byte[]>("Salt")
                         .IsRequired()
-                        .HasColumnType("longblob");
+                        .HasColumnType("bytea");
 
                     b.Property<int>("TipoUsuario")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<bool>("fEmailConfirmado")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<int?>("usuarioId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("id");
-
-                    b.HasIndex("ClienteId");
 
                     b.HasIndex("EmpresaId");
 
@@ -337,28 +419,33 @@ namespace Sellius.API.Migrations
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
                     b.Property<int>("ClienteId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
+
+                    b.Property<int>("EmpresaId")
+                        .HasColumnType("integer");
 
                     b.Property<short>("Finalizado")
                         .HasColumnType("smallint");
 
                     b.Property<int>("UsuarioId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("dthPedido")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("qtd")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("id");
 
                     b.HasIndex("ClienteId");
+
+                    b.HasIndex("EmpresaId");
 
                     b.HasIndex("UsuarioId");
 
@@ -369,21 +456,21 @@ namespace Sellius.API.Migrations
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
                     b.Property<float>("ValorVenda")
-                        .HasColumnType("float");
+                        .HasColumnType("real");
 
                     b.Property<int>("idPedido")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("idProduto")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("qtd")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("id");
 
@@ -398,41 +485,41 @@ namespace Sellius.API.Migrations
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
                     b.Property<string>("Descricao")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<int>("EmpresaId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("FornecedorId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Nome")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<int>("TipoProdutoId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("dthAlteracao")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("dthCriacao")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("fAtivo")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("qtd")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    b.Property<float>("valor")
-                        .HasColumnType("float");
+                    b.Property<decimal>("valor")
+                        .HasColumnType("numeric");
 
                     b.HasKey("id");
 
@@ -449,20 +536,20 @@ namespace Sellius.API.Migrations
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
                     b.Property<string>("Descricao")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<int>("Empresaid")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Tipo")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<short>("fAtivo")
                         .HasColumnType("smallint");
@@ -478,41 +565,44 @@ namespace Sellius.API.Migrations
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
                     b.Property<string>("CEP")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<int>("CidadeId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Documento")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<int>("EmpresaId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Nome")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Rua")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<int>("TipoUsuario")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("dthCadastro")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<short>("fAtivo")
+                        .HasColumnType("smallint");
 
                     b.HasKey("id");
 
@@ -534,7 +624,7 @@ namespace Sellius.API.Migrations
                     b.Navigation("Estado");
                 });
 
-            modelBuilder.Entity("Sellius.API.Models.ClienteModel", b =>
+            modelBuilder.Entity("Sellius.API.Models.Cliente.ClienteModel", b =>
                 {
                     b.HasOne("Sellius.API.Models.CidadeModel", "Cidade")
                         .WithMany()
@@ -548,7 +638,45 @@ namespace Sellius.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Sellius.API.Models.Cliente.GrupoClienteModel", "Grupo")
+                        .WithMany()
+                        .HasForeignKey("idGrupo")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Sellius.API.Models.Cliente.SegmentacaoModel", "segmentacao")
+                        .WithMany()
+                        .HasForeignKey("idSegmentacao")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Cidade");
+
+                    b.Navigation("Empresa");
+
+                    b.Navigation("Grupo");
+
+                    b.Navigation("segmentacao");
+                });
+
+            modelBuilder.Entity("Sellius.API.Models.Cliente.GrupoClienteModel", b =>
+                {
+                    b.HasOne("Sellius.API.Models.EmpresaModel", "Empresa")
+                        .WithMany()
+                        .HasForeignKey("idEmpresa")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Empresa");
+                });
+
+            modelBuilder.Entity("Sellius.API.Models.Cliente.SegmentacaoModel", b =>
+                {
+                    b.HasOne("Sellius.API.Models.EmpresaModel", "Empresa")
+                        .WithMany()
+                        .HasForeignKey("idEmpresa")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Empresa");
                 });
@@ -593,11 +721,6 @@ namespace Sellius.API.Migrations
 
             modelBuilder.Entity("Sellius.API.Models.LoginModel", b =>
                 {
-                    b.HasOne("Sellius.API.Models.ClienteModel", "Cliente")
-                        .WithMany()
-                        .HasForeignKey("ClienteId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Sellius.API.Models.EmpresaModel", "Empresa")
                         .WithMany()
                         .HasForeignKey("EmpresaId")
@@ -609,8 +732,6 @@ namespace Sellius.API.Migrations
                         .HasForeignKey("usuarioId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("Cliente");
-
                     b.Navigation("Empresa");
 
                     b.Navigation("Usuario");
@@ -618,9 +739,15 @@ namespace Sellius.API.Migrations
 
             modelBuilder.Entity("Sellius.API.Models.PedidoModel", b =>
                 {
-                    b.HasOne("Sellius.API.Models.ClienteModel", "Cliente")
+                    b.HasOne("Sellius.API.Models.Cliente.ClienteModel", "Cliente")
                         .WithMany("Pedidos")
                         .HasForeignKey("ClienteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Sellius.API.Models.EmpresaModel", "Empresa")
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -631,6 +758,8 @@ namespace Sellius.API.Migrations
                         .IsRequired();
 
                     b.Navigation("Cliente");
+
+                    b.Navigation("Empresa");
 
                     b.Navigation("Usuario");
                 });
@@ -711,7 +840,7 @@ namespace Sellius.API.Migrations
                     b.Navigation("Empresa");
                 });
 
-            modelBuilder.Entity("Sellius.API.Models.ClienteModel", b =>
+            modelBuilder.Entity("Sellius.API.Models.Cliente.ClienteModel", b =>
                 {
                     b.Navigation("Pedidos");
                 });

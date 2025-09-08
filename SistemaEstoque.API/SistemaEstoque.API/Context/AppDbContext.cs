@@ -40,6 +40,7 @@ namespace Sellius.API.Context
             #region Pedido
             modelBuilder.Entity<PedidoModel>().HasOne(c => c.Cliente).WithMany(c => c.Pedidos).HasForeignKey(p => p.ClienteId);
             modelBuilder.Entity<PedidoModel>().HasOne(u => u.Usuario).WithMany(u => u.Pedidos).HasForeignKey(p => p.UsuarioId);
+            modelBuilder.Entity<PedidoModel>().HasOne(e => e.Empresa).WithMany();
             #endregion
 
             #region Usuario

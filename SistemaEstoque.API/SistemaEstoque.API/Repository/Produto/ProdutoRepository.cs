@@ -78,7 +78,7 @@ namespace Sellius.API.Repository.Produto
                     query = query.Where(p => p.Nome.Contains(filtro.Nome));
                 if(filtro.tipoProdutoId != 0)
                     query = query.Where(p => p.TipoProdutoId.Equals(filtro.tipoProdutoId));
-                if (filtro.fAtivo != 0)
+                if (filtro.fAtivo != -1)
                     query = query.Where(p => p.fAtivo.Equals(filtro.fAtivo));
                 if(filtro.FornecedorId != 0)
                     query = query.Where(p => p.FornecedorId.Equals(filtro.FornecedorId));

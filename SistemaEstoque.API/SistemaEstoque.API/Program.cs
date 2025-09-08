@@ -40,7 +40,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 var connection = builder.Configuration.GetConnectionString("ConnectionString");
 
-builder.Services.AddDbContext<AppDbContext>(opt => opt.UseMySql(connection, ServerVersion.AutoDetect(connection)));
+builder.Services.AddDbContext<AppDbContext>(opt => opt.UseNpgsql(connection));
 
 builder.Services.AddCors(opt =>
 {

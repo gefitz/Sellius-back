@@ -19,6 +19,7 @@ namespace Sellius.API.Models
         public DateTime dthPedido { get; set; }
         public int EmpresaId { get; set; }
 
+        public EmpresaModel Empresa { get; set; }
         public static implicit operator PedidoModel(PedidoDTO dto)
         {
             return new PedidoModel
