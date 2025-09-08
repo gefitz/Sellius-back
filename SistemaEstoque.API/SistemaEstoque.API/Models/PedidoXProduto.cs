@@ -18,7 +18,7 @@ namespace Sellius.API.Models
             return new PedidoXProduto
             {
                 idPedido = model.idPedido,
-                idProduto = model.idProduto,
+                idProduto = model.produto.id,
                 qtd = model.qtd,
                 ValorVenda = model.ValorVenda
             };

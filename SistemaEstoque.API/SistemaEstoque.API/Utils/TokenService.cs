@@ -66,5 +66,9 @@ namespace Sellius.API.Utils
         {
             return Int32.Parse(identity.FindFirst("empresa")?.Value);
         }
+        public static int RecuperaIdUsuario(ClaimsPrincipal identity)
+        {
+            return Int32.Parse(identity.FindFirst("id")?.Value);
+        }
     }
 }

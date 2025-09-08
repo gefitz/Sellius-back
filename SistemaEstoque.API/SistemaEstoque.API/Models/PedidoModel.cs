@@ -17,6 +17,7 @@ namespace Sellius.API.Models
         public List<PedidoXProduto> Produto { get; set; }
         public short Finalizado { get; set; }
         public DateTime dthPedido { get; set; }
+        public int EmpresaId { get; set; }
 
         public static implicit operator PedidoModel(PedidoDTO dto)
         {
@@ -27,7 +28,7 @@ namespace Sellius.API.Models
                 ClienteId = dto.ClienteId,
                 UsuarioId = dto.UsuarioId,
                 Finalizado = dto.Finalizado,
-                dthPedido = dto.dthPedido,
+                dthPedido = (DateTime)dto.dthPedido,
             };
         }
 

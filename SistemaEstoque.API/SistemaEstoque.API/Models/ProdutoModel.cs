@@ -1,5 +1,6 @@
 ﻿using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.DTOs.Filtros;
+using Sellius.API.DTOs.TabelasDTOs;
 using System.ComponentModel.DataAnnotations;
 
 namespace Sellius.API.Models
@@ -48,6 +49,13 @@ namespace Sellius.API.Models
                 FornecedorId = produtoDTO.FornecedorId,
                 EmpresaId = produtoDTO.EmpresaId,
                 fAtivo = produtoDTO.fAtivo
+            };
+        }
+        public static implicit operator ProdutoModel(ProdutoTabela model)
+        {
+            return new ProdutoModel
+            {
+                id = model.id
             };
         }
         #endregion

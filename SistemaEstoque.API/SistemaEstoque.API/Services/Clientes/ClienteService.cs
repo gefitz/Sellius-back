@@ -52,6 +52,10 @@ namespace Sellius.API.Services.Clientes
             };
             model = await _repository.Filtrar(model);
             clienteDTO.Dados = ClienteTabelaResult.FromToList(model.Dados);
+            clienteDTO.PaginaAtual = model.PaginaAtual;
+            clienteDTO.TotalPaginas = model.TotalPaginas;
+            clienteDTO.TotalRegistros = model.TotalRegistros;
+            clienteDTO.TamanhoPagina = model.TamanhoPagina;
             return Response<PaginacaoTabelaResult<ClienteTabelaResult, FiltroCliente>>.Ok(clienteDTO);
         }
         public async Task<Response<ClienteDTO>> BuscarId(int id)

@@ -6,7 +6,7 @@ namespace Sellius.API.DTOs.CadastrosDTOs
     public class PedidoXProdutoDTO
     {
         public int idPedido { get; set; }
-        public int idProduto { get; set; }
+        public ProdutoTabela produto { get; set; }
         public int qtd { get; set; }
         public float ValorVenda { get; set; }
         public int id { get; set; }
@@ -16,7 +16,7 @@ namespace Sellius.API.DTOs.CadastrosDTOs
             return new PedidoXProdutoDTO
             {
                 idPedido = model.idPedido,
-                idProduto = model.idProduto,
+                produto = model.Produto,
                 qtd = model.qtd,
                 ValorVenda = model.ValorVenda,
                 id = model.id

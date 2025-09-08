@@ -1,8 +1,9 @@
-﻿using Sellius.API.Context;
-using Sellius.API.Models;
-using Microsoft.EntityFrameworkCore;
-using Sellius.API.Repository.Pedidos.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using Sellius.API.Context;
+using Sellius.API.DTOs.Filtros;
 using Sellius.API.DTOs.TabelasDTOs;
+using Sellius.API.Models;
+using Sellius.API.Repository.Pedidos.Interfaces;
 
 namespace Sellius.API.Repository.Pedidos
 {
@@ -57,7 +58,7 @@ namespace Sellius.API.Repository.Pedidos
             }
         }
 
-        public async Task<PaginacaoTabelaResult<PedidoModel, PedidoModel>> Filtrar(PaginacaoTabelaResult<PedidoModel, PedidoModel> obj)
+        public async Task<PaginacaoTabelaResult<PedidoModel, PedidoFiltro>> Filtrar(PaginacaoTabelaResult<PedidoModel, PedidoFiltro> obj)
         {
             try
             {
@@ -70,8 +71,8 @@ namespace Sellius.API.Repository.Pedidos
                     query = query.Where(p => p.UsuarioId.Equals(obj.Filtro.UsuarioId));
                 if (obj.Filtro.Finalizado != 0)
                     query = query.Where(p => p.ClienteId.Equals(obj.Filtro.Finalizado));
-                
 
+                //query = query.Where(p => p.EmpresaId.Equals(obj.Filtro.EmpresaId));
                 obj.TotalRegistros = query.Count();
                 obj.TotalPaginas = (int)Math.Ceiling((double)obj.TotalRegistros / obj.TamanhoPagina);
 
@@ -84,6 +85,10 @@ namespace Sellius.API.Repository.Pedidos
                     .ThenInclude(ci => ci.Estado)
                     .Include (p => p.Produto)
                     .ThenInclude(pxp => pxp.Produto)
+                    .ThenInclude(tp => tp.tipoProduto)
+                    .Include(p =>  p.Produto)
+                    .ThenInclude(pxp => pxp.Produto)
+                    .ThenInclude(f =>  f.Fornecedor)
                     .Include (p => p.Usuario)
                     .ToListAsync();
 

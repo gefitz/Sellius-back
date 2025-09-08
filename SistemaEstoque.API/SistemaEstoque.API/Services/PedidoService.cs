@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Sellius.API.DTOs;
 using Sellius.API.DTOs.CadastrosDTOs;
+using Sellius.API.DTOs.Filtros;
 using Sellius.API.DTOs.TabelasDTOs;
 using Sellius.API.Models;
 using Sellius.API.Repository;
@@ -11,11 +12,11 @@ using Sellius.API.Repository.Produto.Interface;
 
 namespace Sellius.API.Services
 {
-    public class PedidoServices
+    public class PedidoService
     {
         private readonly IPedidoRepository _repository;
         private readonly IProdutoRepository _produtoRepository;
-        public PedidoServices(IPedidoRepository repository, IProdutoRepository dbMethods)
+        public PedidoService(IPedidoRepository repository, IProdutoRepository dbMethods)
         {
             _repository = repository;
             _produtoRepository = dbMethods;
@@ -44,12 +45,12 @@ namespace Sellius.API.Services
 
 
         }
-        public async Task<Response<PaginacaoTabelaResult<PedidoTabela, PedidoDTO>>> obterTodosPedidos(PaginacaoTabelaResult<PedidoTabela, PedidoDTO> filtro)
+        public async Task<Response<PaginacaoTabelaResult<PedidoTabela, PedidoFiltro>>> obterTodosPedidos(PaginacaoTabelaResult<PedidoTabela, PedidoFiltro> filtro)
         {
             try
             {
 
-                PaginacaoTabelaResult<PedidoModel, PedidoModel> model = new PaginacaoTabelaResult<PedidoModel, PedidoModel>
+                PaginacaoTabelaResult<PedidoModel, PedidoFiltro> model = new PaginacaoTabelaResult<PedidoModel, PedidoFiltro>
                 {
                     PaginaAtual = filtro.PaginaAtual,
                     TamanhoPagina = filtro.PaginaAtual,
@@ -60,7 +61,7 @@ namespace Sellius.API.Services
 
                 model = await _repository.Filtrar(model);
 
-                filtro = new PaginacaoTabelaResult<PedidoTabela, PedidoDTO>
+                filtro = new PaginacaoTabelaResult<PedidoTabela, PedidoFiltro>
                 {
                     PaginaAtual = model.PaginaAtual,
                     TamanhoPagina = model.PaginaAtual,
@@ -68,11 +69,11 @@ namespace Sellius.API.Services
                     TotalRegistros = model.TotalRegistros,
                     Dados = PedidoTabela.FromList(model.Dados)
                 };
-                return Response<PaginacaoTabelaResult<PedidoTabela, PedidoDTO>>.Ok(filtro);
+                return Response<PaginacaoTabelaResult<PedidoTabela, PedidoFiltro>>.Ok(filtro);
             }
             catch (Exception ex)
             {
-                return Response<PaginacaoTabelaResult<PedidoTabela, PedidoDTO>>.Failed(ex.Message);
+                return Response<PaginacaoTabelaResult<PedidoTabela, PedidoFiltro>>.Failed(ex.Message);
             }
         }
 

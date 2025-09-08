@@ -24,6 +24,11 @@ namespace Sellius.API.Controllers.Clientes
         [Authorize(Roles ="Funcionario,Adm,Gerente")]
         public async Task<IActionResult> ObterClientes([FromBody] PaginacaoTabelaResult<ClienteTabelaResult, FiltroCliente> clienteDTO)
         {
+            if(clienteDTO.Filtro == null)
+            {
+                clienteDTO.Filtro = new FiltroCliente();
+                clienteDTO.Filtro.fAtivo = -1;
+            }
             clienteDTO.Filtro.EmpresaId = TokenService.RecuperaIdEmpresa(User);
             var ret = await _service.BuscarClientes(clienteDTO);
             if (!ret.success)

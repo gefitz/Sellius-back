@@ -11,7 +11,8 @@ namespace Sellius.API.DTOs.CadastrosDTOs
         public int UsuarioId { get; set; }
         public short Finalizado { get; set; }
         public List<PedidoXProdutoDTO> Produtos { get; set; }
-        public DateTime dthPedido { get; set; }
+        public DateTime? dthPedido { get; set; } = DateTime.Now;
+        public int EmpresaId { get; set; }
 
         public static implicit operator PedidoDTO(PedidoModel model)
         {
@@ -23,6 +24,7 @@ namespace Sellius.API.DTOs.CadastrosDTOs
                 UsuarioId = model.UsuarioId,
                 Finalizado = model.Finalizado,
                 dthPedido = model.dthPedido,
+                EmpresaId = model.EmpresaId
             };
         }
     }
