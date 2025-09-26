@@ -14,7 +14,7 @@ namespace Sellius.API.DTOs.CadastrosDTOs
         public string CEP { get; set; }
         public string Rua { get; set; }
         [DataType(DataType.Date)]
-        public DateTime dthCadastro { get; set; } = DateTime.Now;
+        public DateTime dthCadastro { get; set; } = DateTime.UtcNow;
         public int EmpresaId { get; set; } = 0;
         public TipoUsuario TipoUsuario { get; set; }
         public short fAtivo { get; set; } = 0;

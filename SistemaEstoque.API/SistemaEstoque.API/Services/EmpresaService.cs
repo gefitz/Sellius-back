@@ -47,8 +47,8 @@ namespace Sellius.API.Services
                         return Response<string>.Failed("Falha ao gerar a licenca da empresa");
 
                     emp.LicencaId = idLicenca;
-                    emp.dthAlteracao = DateTime.Now;
-                    emp.dthCadastro = DateTime.Now;
+                    emp.dthAlteracao = DateTime.UtcNow;
+                    emp.dthCadastro = DateTime.UtcNow;
                     emp.fAtivo = 1;
                     #endregion
                     if (await VereficaExistenciaEmpresa(empresa.Empresa))

@@ -13,8 +13,8 @@ namespace Sellius.API.DTOs.CadastrosDTOs
         public int CidadeId { get; set; }
         public string CEP { get; set; }
         public string Rua { get; set; }
-        public DateTime dthCadastro { get; set; } = DateTime.Now;
-        public DateTime dthAlteracao { get; set; } = DateTime.Now;
+        public DateTime dthCadastro { get; set; } = DateTime.UtcNow;
+        public DateTime dthAlteracao { get; set; } = DateTime.UtcNow;
         public TipoLicenca? TipoLicenca { get; set; }
         public short fAtivo { get; set; } = 0;
 
