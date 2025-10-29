@@ -135,8 +135,7 @@ namespace Sellius.API.Migrations
                         name: "fk_cliente_grupos_empresas_id_empresa",
                         column: x => x.id_empresa,
                         principalTable: "empresas",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -194,8 +193,7 @@ namespace Sellius.API.Migrations
                         name: "fk_segmentacaoes_empresas_id_empresa",
                         column: x => x.id_empresa,
                         principalTable: "empresas",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -266,13 +264,14 @@ namespace Sellius.API.Migrations
                     rua = table.Column<string>(type: "text", nullable: false),
                     bairro = table.Column<string>(type: "text", nullable: false),
                     cep = table.Column<string>(type: "text", nullable: false),
-                    dth_nascimeto = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    id_segmentacao = table.Column<int>(type: "integer", nullable: false),
+                    dth_cadastro = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    dth_alteracao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    id_segmentacao = table.Column<int>(type: "integer", nullable: true),
                     email = table.Column<string>(type: "text", nullable: false),
                     telefone = table.Column<string>(type: "text", nullable: false),
                     empresa_id = table.Column<int>(type: "integer", nullable: false),
                     f_ativo = table.Column<short>(type: "smallint", nullable: false),
-                    id_grupo = table.Column<int>(type: "integer", nullable: false)
+                    id_grupo = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -287,8 +286,7 @@ namespace Sellius.API.Migrations
                         name: "fk_clientes_cliente_grupos_id_grupo",
                         column: x => x.id_grupo,
                         principalTable: "Cliente_Grupos",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "id");
                     table.ForeignKey(
                         name: "fk_clientes_empresas_empresa_id",
                         column: x => x.empresa_id,
@@ -299,8 +297,7 @@ namespace Sellius.API.Migrations
                         name: "fk_clientes_segmentacaoes_id_segmentacao",
                         column: x => x.id_segmentacao,
                         principalTable: "Segmentacaoes",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(

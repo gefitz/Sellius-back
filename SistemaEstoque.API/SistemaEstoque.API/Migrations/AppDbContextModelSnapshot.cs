@@ -101,19 +101,23 @@ namespace Sellius.API.Migrations
                         .HasColumnType("text")
                         .HasColumnName("telefone");
 
-                    b.Property<DateTime>("dthNascimeto")
+                    b.Property<DateTime>("dthAlteracao")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("dth_nascimeto");
+                        .HasColumnName("dth_alteracao");
+
+                    b.Property<DateTime>("dthCadastro")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("dth_cadastro");
 
                     b.Property<short>("fAtivo")
                         .HasColumnType("smallint")
                         .HasColumnName("f_ativo");
 
-                    b.Property<int>("idGrupo")
+                    b.Property<int?>("idGrupo")
                         .HasColumnType("integer")
                         .HasColumnName("id_grupo");
 
-                    b.Property<int>("idSegmentacao")
+                    b.Property<int?>("idSegmentacao")
                         .HasColumnType("integer")
                         .HasColumnName("id_segmentacao");
 
@@ -796,15 +800,11 @@ namespace Sellius.API.Migrations
                     b.HasOne("Sellius.API.Models.Cliente.GrupoClienteModel", "Grupo")
                         .WithMany()
                         .HasForeignKey("idGrupo")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("fk_clientes_cliente_grupos_id_grupo");
 
                     b.HasOne("Sellius.API.Models.Cliente.SegmentacaoModel", "segmentacao")
                         .WithMany()
                         .HasForeignKey("idSegmentacao")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("fk_clientes_segmentacaoes_id_segmentacao");
 
                     b.Navigation("Cidade");
@@ -821,8 +821,6 @@ namespace Sellius.API.Migrations
                     b.HasOne("Sellius.API.Models.EmpresaModel", "Empresa")
                         .WithMany()
                         .HasForeignKey("idEmpresa")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("fk_cliente_grupos_empresas_id_empresa");
 
                     b.Navigation("Empresa");
@@ -833,8 +831,6 @@ namespace Sellius.API.Migrations
                     b.HasOne("Sellius.API.Models.EmpresaModel", "Empresa")
                         .WithMany()
                         .HasForeignKey("idEmpresa")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("fk_segmentacaoes_empresas_id_empresa");
 
                     b.Navigation("Empresa");
