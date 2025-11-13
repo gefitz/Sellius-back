@@ -22,6 +22,7 @@ namespace Sellius.API.Context
         public DbSet<UsuarioModel> Usuarios { get; set; }
         public DbSet<SegmentacaoModel> Segmentacaos { get; set; }
         public DbSet<GrupoClienteModel> GrupoClientes { get; set; }
+        public DbSet<MenuModel> Menus { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
