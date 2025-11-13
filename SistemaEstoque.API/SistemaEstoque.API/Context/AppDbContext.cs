@@ -60,8 +60,8 @@ namespace Sellius.API.Context
             modelBuilder.Entity<ClienteModel>().HasOne(p => p.Empresa).WithMany().HasForeignKey(c => c.EmpresaId);
             modelBuilder.Entity<ClienteModel>().HasOne(g=> g.Grupo).WithMany().HasForeignKey(g => g.idGrupo);
             modelBuilder.Entity<ClienteModel>().HasOne(s => s.segmentacao).WithMany().HasForeignKey(s => s.idSegmentacao);
-            modelBuilder.Entity<GrupoClienteModel>().HasOne(e => e.Empresa).WithMany().HasForeignKey(e => e.idEmpresa);
-            modelBuilder.Entity<SegmentacaoModel>().HasOne(e => e.Empresa).WithMany().HasForeignKey(e => e.idEmpresa);
+            modelBuilder.Entity<GrupoClienteModel>().HasOne(e => e.Empresa).WithMany().HasForeignKey(e => e.idEmpresa).IsRequired(false);
+            modelBuilder.Entity<SegmentacaoModel>().HasOne(e => e.Empresa).WithMany().HasForeignKey(e => e.idEmpresa).IsRequired(false);
             #endregion
 
             #region Login

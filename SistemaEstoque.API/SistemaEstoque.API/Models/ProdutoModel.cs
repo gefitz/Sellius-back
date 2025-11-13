@@ -41,13 +41,13 @@ namespace Sellius.API.Models
                 id = produtoDTO.id,
                 Nome = produtoDTO.Nome,
                 Descricao = produtoDTO.Descricao,
-                TipoProdutoId = produtoDTO.tipoProdutoId,
+                TipoProdutoId = (int)produtoDTO.tipoProdutoId,
                 valor = produtoDTO.valor,
                 qtd = produtoDTO.qtd,
                 dthCriacao = produtoDTO.dthCriacao,
                 dthAlteracao = produtoDTO.dthAlteracao,
-                FornecedorId = produtoDTO.FornecedorId,
-                EmpresaId = produtoDTO.EmpresaId,
+                FornecedorId = (int)produtoDTO.FornecedorId,
+                EmpresaId = (int)produtoDTO.EmpresaId,
                 fAtivo = produtoDTO.fAtivo
             };
         }

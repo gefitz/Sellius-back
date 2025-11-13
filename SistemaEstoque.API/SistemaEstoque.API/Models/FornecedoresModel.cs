@@ -1,4 +1,5 @@
 ﻿using Sellius.API.DTOs.CadastrosDTOs;
+using Sellius.API.DTOs.Filtros;
 
 namespace Sellius.API.Models
 {
@@ -39,6 +40,18 @@ namespace Sellius.API.Models
                 Complemento = model.Complemento,
             };
         }
-
+        public static implicit operator FornecedoresModel (FiltroFornecedor filtro)
+        {
+            return new FornecedoresModel
+            {
+                Nome = filtro.Nome,
+                CNPJ = filtro.CNPJ,
+                CidadeId= filtro.CidadeId,
+                Cidade = new CidadeModel { EstadoId = filtro.EstadoId},
+                EmpresaId = filtro.EmpresaId,
+                fAtivo = filtro.fAtivo,
+               
+            };
+        }
     }
 }

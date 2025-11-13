@@ -48,7 +48,7 @@ namespace Sellius.API.Repository.Cliente
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Falha ao cadastrar o clinete " + obj.Nome + ".\n erro: " + ex.Message);
+                throw new ApplicationException("Falha ao cadastrar o cliente " + obj.Nome + ".\n erro: " + ex.Message);
                 return false;
             }
         }
@@ -116,14 +116,6 @@ namespace Sellius.API.Repository.Cliente
         {
             try
             {
-                var cidadeCliente = obj.Cidade;
-
-                    var cidade = _context.Cidades.Where(c => c.Cidade.Contains(obj.Cidade.Cidade)).FirstOrDefault();
-                    if (cidade == null)
-                    {
-                        _context.Cidades.Add(cidadeCliente);
-                    }
-                   obj.Cidade = cidadeCliente;
                 _context.Entry(obj).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
                 return true;

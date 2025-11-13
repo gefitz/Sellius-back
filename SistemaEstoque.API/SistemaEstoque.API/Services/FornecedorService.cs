@@ -1,5 +1,6 @@
 ﻿using Sellius.API.DTOs;
 using Sellius.API.DTOs.CadastrosDTOs;
+using Sellius.API.DTOs.Filtros;
 using Sellius.API.DTOs.TabelasDTOs;
 using Sellius.API.Models;
 using Sellius.API.Repository.Fornecedor.Interfaces;
@@ -23,7 +24,7 @@ namespace Sellius.API.Services
             return Response<FornecedorDTO>.Failed("Falha ao criar um novo tipo produto");
 
         }
-        public async Task<Response<PaginacaoTabelaResult<FornecedorDTO, FornecedorDTO>>> BuscarFornecedor(PaginacaoTabelaResult<FornecedorDTO, FornecedorDTO> dto)
+        public async Task<Response<PaginacaoTabelaResult<FornecedorTabelaResult, FiltroFornecedor>>> BuscarFornecedor(PaginacaoTabelaResult<FornecedorTabelaResult, FiltroFornecedor> dto)
         {
             try
             {
@@ -38,12 +39,12 @@ namespace Sellius.API.Services
 
                 };
                 var result = await _repository.Filtrar(model);
-                dto.Dados = FornecedorDTO.FromList(result.Dados);
-                return Response<PaginacaoTabelaResult<FornecedorDTO, FornecedorDTO>>.Ok(dto);
+                dto.Dados = FornecedorTabelaResult.FromList(result.Dados);
+                return Response<PaginacaoTabelaResult<FornecedorTabelaResult, FiltroFornecedor>>.Ok(dto);
             }
             catch (Exception ex)
             {
-                return Response<PaginacaoTabelaResult<FornecedorDTO, FornecedorDTO>>.Failed(ex.Message);
+                return Response<PaginacaoTabelaResult<FornecedorTabelaResult, FiltroFornecedor>>.Failed(ex.Message);
             }
         }
         public async Task<Response<FornecedorDTO>> BuscarId(int id)
@@ -67,8 +68,10 @@ namespace Sellius.API.Services
             
 
             FornecedoresModel model = dto;
-            model.dthAlteracao = DateTime.Now;
+            model.dthAlteracao = DateTime.UtcNow;
             model.dthCadastro = (DateTime)fornecedorOriginal.Data.dthCadastro;
+            if(fornecedorOriginal.Data.cidade != null)
+            model.Cidade = fornecedorOriginal.Data.cidade;
 
             if (await _repository.Update(model))
                 return Response<FornecedorDTO>.Ok(model);

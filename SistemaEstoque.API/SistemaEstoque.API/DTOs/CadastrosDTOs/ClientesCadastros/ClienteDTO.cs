@@ -24,10 +24,8 @@ namespace Sellius.API.DTOs.CadastrosDTOs.ClientesCadastros
         [Required(ErrorMessage = "CEP e obrigatorio")]
         public string CEP { get; set; }
 
-        [Required(ErrorMessage = "Data Nascimento e obrigatorio")]
-        [DataType(DataType.Date)]
-        [Display(Name = "Data Nascimento")]
-        public DateTime dthNascimeto { get; set; } =  DateTime.Now;
+        public DateTime dthCadastro { get; set; } =  DateTime.UtcNow;
+        public DateTime dthAlteracao { get; set; } = DateTime.UtcNow;
 
         [Required(ErrorMessage = "Email e obrigatorio")]
         [EmailAddress(ErrorMessage ="E-mail invalido")]
@@ -38,8 +36,9 @@ namespace Sellius.API.DTOs.CadastrosDTOs.ClientesCadastros
         public string Telefone { get; set; }
         public int EmpresaId { get; set; }
         public short fAtivo { get; set; }
-        public int idSegmentacao { get; set; }
-        public int idGrupo { get; set; }
+        public int? idSegmentacao { get; set; }
+        public int? idGrupo { get; set; }
+        public CidadeDTO? Cidade { get; set; }
 
         public static implicit operator  ClienteDTO(ClienteModel dto)
         {
@@ -52,7 +51,7 @@ namespace Sellius.API.DTOs.CadastrosDTOs.ClientesCadastros
                 Email = dto.Email,
                 CidadeId = dto.CidadeId,
                 Documento = dto.Documento,
-                dthNascimeto = dto.dthNascimeto,
+                dthCadastro = dto.dthCadastro,
                 EmpresaId = dto.EmpresaId,
                 fAtivo = dto.fAtivo,
                 Nome = dto.Nome,
@@ -60,6 +59,8 @@ namespace Sellius.API.DTOs.CadastrosDTOs.ClientesCadastros
                 Rua = dto.Rua,
                 idGrupo = dto.idGrupo,
                 idSegmentacao = dto.idSegmentacao,
+                dthAlteracao = dto.dthAlteracao,
+                Cidade = dto.Cidade != null ? dto.Cidade : null
             };
         }
 

@@ -87,6 +87,17 @@ namespace Sellius.API.Controllers.Clientes
             return BadRequest(ret);
 
         }
+        [HttpGet]
+        public async Task<IActionResult> obterCliente(int idCliente)
+        {
+            int idEmpresa = TokenService.RecuperaIdEmpresa(User);
 
+            var ret = await _service.BuscarId(idCliente);
+            if (ret.success)
+            {
+                return Ok(ret);
+            }
+            return BadRequest(ret);
+        }
     }
 }

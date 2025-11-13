@@ -29,8 +29,10 @@ namespace Sellius.API.DTOs.TabelasDTOs
                 Telefone = model.Telefone,
                 fAtivo = model.fAtivo,
                 CidadeEstado = model.Cidade.Cidade + " / " + model.Cidade.Estado.Sigla,
-                Grupo = model.Grupo.nome,
-                Segmentacao = model.segmentacao.Segmento,
+                Grupo = model.Grupo != null ? model.Grupo.nome : "",
+                Segmentacao = model.segmentacao != null ? model.segmentacao.Segmento : "",
+                dthCadastro = model.dthCadastro,
+                dthAlteracao = model.dthAlteracao
             };
         }
         public static List<ClienteTabelaResult> FromToList(List<ClienteModel> list)

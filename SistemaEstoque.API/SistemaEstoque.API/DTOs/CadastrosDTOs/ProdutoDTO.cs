@@ -17,7 +17,7 @@ namespace Sellius.API.DTOs.CadastrosDTOs
 
         [Required(ErrorMessage = "Necessario a Tipo do Produto")]
         [Display(Name = "Tipo do Produto")]
-        public int tipoProdutoId { get; set; }
+        public int? tipoProdutoId { get; set; }
 
         [Required(ErrorMessage = "Necessario a Valor do Produto")]
         [Display(Name = "Valor do Produto")]
@@ -27,11 +27,11 @@ namespace Sellius.API.DTOs.CadastrosDTOs
         [Display(Name = "Quantidade do Produto")]
         public int qtd { get; set; }
 
-        public DateTime dthCriacao { get; set; }
-        public DateTime dthAlteracao { get; set; }
+        public DateTime dthCriacao { get; set; } = DateTime.UtcNow;
+        public DateTime dthAlteracao { get; set; } = DateTime.UtcNow;
         public int fAtivo { get; set; }
-        public int FornecedorId { get; set; }
-        public int EmpresaId { get; set; }
+        public int? FornecedorId { get; set; }
+        public int? EmpresaId { get; set; }
 
 
 

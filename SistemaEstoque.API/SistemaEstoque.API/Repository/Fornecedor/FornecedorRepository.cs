@@ -20,7 +20,7 @@ namespace Sellius.API.Repository.Fornecedor
         {
             try
             {
-                return await _context.Fornecedores.Where(f => f.id.Equals(obj.id)).FirstOrDefaultAsync();
+                return await _context.Fornecedores.Where(f => f.id.Equals(obj.id)).Include(c=>c.Cidade).ThenInclude(e=>e.Estado).AsNoTracking().FirstOrDefaultAsync();
             }
             catch (Exception ex)
             {
@@ -64,19 +64,30 @@ namespace Sellius.API.Repository.Fornecedor
 
                 if (!string.IsNullOrEmpty(obj.Filtro.Nome))
                     query = query.Where(p => p.Nome.Contains(obj.Filtro.Nome));
-                if (!string.IsNullOrEmpty( obj.Filtro.CNPJ))
-                    query = query.Where(p => p.CNPJ.Equals(obj.Filtro.CNPJ));
-                if (obj.Filtro.fAtivo != -1)
-                    query = query.Where(p => p.fAtivo.Equals(obj.Filtro.fAtivo));
-                query.Where(p => p.EmpresaId == obj.Filtro.EmpresaId);
 
-                obj.TotalRegistros = query.Count();
+                if (!string.IsNullOrEmpty(obj.Filtro.CNPJ))
+                    query = query.Where(p => p.CNPJ == obj.Filtro.CNPJ);
+
+                if (obj.Filtro.fAtivo != -1)
+                    query = query.Where(p => p.fAtivo == obj.Filtro.fAtivo);
+
+                if (obj.Filtro.CidadeId != 0)
+                    query = query.Where(p => p.CidadeId == obj.Filtro.CidadeId);
+
+                if (obj.Filtro.Cidade != null && obj.Filtro.Cidade.EstadoId != 0)
+                    query = query.Where(p => p.Cidade != null && p.Cidade.EstadoId == obj.Filtro.Cidade.EstadoId);
+
+                query = query.Where(p => p.EmpresaId == obj.Filtro.EmpresaId);
+
+                obj.TotalRegistros = await query.CountAsync();
                 obj.TotalPaginas = (int)Math.Ceiling((double)obj.TotalRegistros / obj.TamanhoPagina);
 
                 obj.Dados = await query
                     .OrderBy(p => p.id)
                     .Skip((obj.PaginaAtual - 1) * obj.TotalRegistros)
                     .Take(obj.TamanhoPagina)
+                    .Include(c => c.Cidade)
+                        .ThenInclude(c => c.Estado)
                     .ToListAsync();
 
                 return obj;

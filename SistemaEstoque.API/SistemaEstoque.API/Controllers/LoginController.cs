@@ -19,7 +19,6 @@ namespace Sellius.API.Controllers
             _service = service;
         }
         [HttpPost]
-        [AllowAnonymous]
         public async Task<IActionResult> Login(LoginDTO usuario)
         {
             if (!ModelState.IsValid)

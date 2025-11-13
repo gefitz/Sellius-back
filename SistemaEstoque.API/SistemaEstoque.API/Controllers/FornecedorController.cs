@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Sellius.API.DTOs;
 using Sellius.API.DTOs.CadastrosDTOs;
+using Sellius.API.DTOs.Filtros;
 using Sellius.API.DTOs.TabelasDTOs;
 using Sellius.API.Services;
 using Sellius.API.Utils;
@@ -21,7 +22,7 @@ namespace Sellius.API.Controllers
             _service = service;
         }
         [HttpPost("ObterTabelaFornecedor")]
-        public async Task<IActionResult> ObterTpProduto([FromBody]PaginacaoTabelaResult<FornecedorDTO, FornecedorDTO> tipoProdutoDTO)
+        public async Task<IActionResult> ObterTpProduto([FromBody]PaginacaoTabelaResult<FornecedorTabelaResult, FiltroFornecedor> tipoProdutoDTO)
         {
             tipoProdutoDTO.Filtro.EmpresaId = TokenService.RecuperaIdEmpresa(User);
             var ret = await _service.BuscarFornecedor(tipoProdutoDTO);
@@ -37,6 +38,16 @@ namespace Sellius.API.Controllers
             FornecedorDTO fornecedor = new FornecedorDTO() { EmpresaId = TokenService.RecuperaIdEmpresa(User)};
             var response = await _service.CarregarComboFornecedor(fornecedor);
             return  Ok(response);
+        }
+        [HttpGet]
+        public async Task<IActionResult> obterFornecedor(int idFornecedor)
+        {
+            var ret = await _service.BuscarId(idFornecedor);
+            if (ret.success)
+            {
+                return Ok(ret);
+            }
+            return BadRequest(ret);
         }
         [HttpPost("NovoFornecedor")]
         public async Task<IActionResult> CadastrarTpProduto([FromBody] FornecedorDTO tipoProduto)
@@ -62,6 +73,7 @@ namespace Sellius.API.Controllers
                     Response<FornecedorDTO>.Failed("Falta de campos obrigatorio no parametro")
                     );
             }
+            dto.EmpresaId = TokenService.RecuperaIdEmpresa(User);
             var result = await _service.UpdateFornecedor(dto);
             if (result.success) { return Ok(result); }
             return BadRequest(result);

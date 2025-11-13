@@ -15,16 +15,17 @@ namespace Sellius.API.Models.Cliente
         public string Bairro { get; set; }
         public string Cep { get; set; }
         [DataType(DataType.Date)]
-        public DateTime dthNascimeto { get; set; }
+        public DateTime dthCadastro { get; set; }
+        public DateTime dthAlteracao { get; set; }
         public SegmentacaoModel segmentacao { get; set; }
-        public int idSegmentacao { get; set; }
+        public int? idSegmentacao { get; set; }
         public string Email { get; set; }
         public string Telefone { get; set; }
         public List<PedidoModel> Pedidos { get; set; }
         public EmpresaModel Empresa { get; set; }
         public int EmpresaId { get; set; }
         public short fAtivo { get; set; }
-        public int idGrupo { get; set; }
+        public int? idGrupo { get; set; }
         public GrupoClienteModel Grupo { get; set; }
 
         public static implicit operator ClienteModel(ClienteDTO dto)
@@ -38,13 +39,14 @@ namespace Sellius.API.Models.Cliente
                 Email = dto.Email,
                 CidadeId = dto.CidadeId,
                 Documento = dto.Documento,
-                dthNascimeto = dto.dthNascimeto,
+                dthCadastro = dto.dthCadastro,
                 EmpresaId = dto.EmpresaId,
                 fAtivo = dto.fAtivo,
                 Nome = dto.Nome,
                 Rua = dto.Rua,
-                idSegmentacao = dto.idSegmentacao,
-                idGrupo = dto.idGrupo
+                idSegmentacao = dto.idSegmentacao == 0 ? null : dto.idSegmentacao,
+                idGrupo = dto.idGrupo ==  0 ? null : dto.idGrupo,
+                dthAlteracao = dto.dthAlteracao
             }; 
         }
     }
