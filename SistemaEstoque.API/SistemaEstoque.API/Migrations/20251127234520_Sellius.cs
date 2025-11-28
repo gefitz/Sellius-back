@@ -62,6 +62,27 @@ namespace Sellius.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "menus",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    de_menu = table.Column<string>(type: "text", nullable: false),
+                    url_menu = table.Column<string>(type: "text", nullable: false),
+                    icone = table.Column<string>(type: "text", nullable: false),
+                    id_menu_pai = table.Column<int>(type: "integer", nullable: false),
+                    f_menu_exclusivo = table.Column<bool>(type: "boolean", nullable: false),
+                    id_empresa = table.Column<int>(type: "integer", nullable: true),
+                    f_ativo = table.Column<bool>(type: "boolean", nullable: false),
+                    dt_cadastro = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    dt_atualizacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_menus", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "cidades",
                 columns: table => new
                 {
@@ -308,13 +329,13 @@ namespace Sellius.API.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     nome = table.Column<string>(type: "text", nullable: false),
                     descricao = table.Column<string>(type: "text", nullable: false),
-                    tipo_produto_id = table.Column<int>(type: "integer", nullable: false),
+                    tipo_produto_id = table.Column<int>(type: "integer", nullable: true),
                     valor = table.Column<decimal>(type: "numeric", nullable: false),
                     qtd = table.Column<int>(type: "integer", nullable: false),
                     dth_criacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    dth_alteracao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    dth_alteracao = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     f_ativo = table.Column<int>(type: "integer", nullable: false),
-                    fornecedor_id = table.Column<int>(type: "integer", nullable: false),
+                    fornecedor_id = table.Column<int>(type: "integer", nullable: true),
                     empresa_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -330,14 +351,12 @@ namespace Sellius.API.Migrations
                         name: "fk_produtos_fornecedores_fornecedor_id",
                         column: x => x.fornecedor_id,
                         principalTable: "fornecedores",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "id");
                     table.ForeignKey(
                         name: "fk_produtos_tp_produtos_tipo_produto_id",
                         column: x => x.tipo_produto_id,
                         principalTable: "tp_produtos",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -564,6 +583,9 @@ namespace Sellius.API.Migrations
 
             migrationBuilder.DropTable(
                 name: "logs");
+
+            migrationBuilder.DropTable(
+                name: "menus");
 
             migrationBuilder.DropTable(
                 name: "pedido_x_produtos");

@@ -516,6 +516,60 @@ namespace Sellius.API.Migrations
                     b.ToTable("logins", (string)null);
                 });
 
+            modelBuilder.Entity("Sellius.API.Models.MenuModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DeMenu")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("de_menu");
+
+                    b.Property<DateTime>("DtAtualizacao")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("dt_atualizacao");
+
+                    b.Property<DateTime>("DtCadastro")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("dt_cadastro");
+
+                    b.Property<bool>("FAtivo")
+                        .HasColumnType("boolean")
+                        .HasColumnName("f_ativo");
+
+                    b.Property<bool>("FMenuExclusivo")
+                        .HasColumnType("boolean")
+                        .HasColumnName("f_menu_exclusivo");
+
+                    b.Property<string>("Icone")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("icone");
+
+                    b.Property<int?>("IdEmpresa")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_empresa");
+
+                    b.Property<int>("IdMenuPai")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_menu_pai");
+
+                    b.Property<string>("UrlMenu")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("url_menu");
+
+                    b.HasKey("Id")
+                        .HasName("pk_menus");
+
+                    b.ToTable("menus", (string)null);
+                });
+
             modelBuilder.Entity("Sellius.API.Models.PedidoModel", b =>
                 {
                     b.Property<int>("id")
@@ -619,7 +673,7 @@ namespace Sellius.API.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("empresa_id");
 
-                    b.Property<int>("FornecedorId")
+                    b.Property<int?>("FornecedorId")
                         .HasColumnType("integer")
                         .HasColumnName("fornecedor_id");
 
@@ -628,11 +682,11 @@ namespace Sellius.API.Migrations
                         .HasColumnType("text")
                         .HasColumnName("nome");
 
-                    b.Property<int>("TipoProdutoId")
+                    b.Property<int?>("TipoProdutoId")
                         .HasColumnType("integer")
                         .HasColumnName("tipo_produto_id");
 
-                    b.Property<DateTime>("dthAlteracao")
+                    b.Property<DateTime?>("dthAlteracao")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("dth_alteracao");
 
@@ -961,15 +1015,11 @@ namespace Sellius.API.Migrations
                     b.HasOne("Sellius.API.Models.FornecedoresModel", "Fornecedor")
                         .WithMany()
                         .HasForeignKey("FornecedorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("fk_produtos_fornecedores_fornecedor_id");
 
                     b.HasOne("Sellius.API.Models.TipoProdutoModel", "tipoProduto")
                         .WithMany("Produtos")
                         .HasForeignKey("TipoProdutoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("fk_produtos_tp_produtos_tipo_produto_id");
 
                     b.Navigation("Empresa");
