@@ -7,5 +7,6 @@ namespace Sellius.API.Repository.Menu.Interface
         IDbMethods<MenuModel>,
         IPaginacao<MenuModel, MenuModel>
     {
+        Task<List<MenuModel>> recuperaMenus(int idEmpresa);
     }
 }

@@ -53,10 +53,10 @@ namespace Sellius.API.Services
                 LoginModel usuarioAutenticar = await _repository.BuscaDireto(login);
                 if (usuarioAutenticar == null)
                     return Response<string>.Failed("Falha ao encontrar o email cadastrado");
-                if (!await ValidaSenha(usuarioAutenticar, login.Password))
-                {
-                    return Response<string>.Failed("Senha incorreta");
-                }
+                //if (!await ValidaSenha(usuarioAutenticar, login.Password))
+                //{
+                //    return Response<string>.Failed("Senha incorreta");
+                //}
                 return await _tokenService.GerarCookie(usuarioAutenticar);
 
             }

@@ -5,6 +5,7 @@
         public bool success { get; set; }
         public string? errorMessage { get; set; }
         public string? message { get; set; } = "Sucesso na requisição";
+        public int? statusCode { get; set; }
         public T Data { get; set; }
 
         public static Response<T> Ok(T data)
@@ -18,7 +19,7 @@
         }
         public static Response<T> Failed(string errorMesssge)
         {
-            return new Response<T> { success = false, errorMessage = errorMesssge };
+            return new Response<T> { success = false, errorMessage = errorMesssge};
         }
     }
 }

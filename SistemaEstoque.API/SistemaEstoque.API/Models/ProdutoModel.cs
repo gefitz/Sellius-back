@@ -10,15 +10,15 @@ namespace Sellius.API.Models
         public int id { get; set; }
         public string Nome { get; set; }
         public string Descricao { get; set; }
-        public int TipoProdutoId {  get; set; }
+        public int? TipoProdutoId {  get; set; }
         public TipoProdutoModel tipoProduto { get; set; }
         public decimal valor { get; set; }
         public int qtd { get; set; }
         public DateTime dthCriacao { get; set; }
-        public DateTime dthAlteracao { get; set; }
+        public DateTime? dthAlteracao { get; set; }
         public IEnumerable<PedidoXProduto> pedidos { get; set; }
         public int fAtivo { get; set; }
-        public int FornecedorId { get; set; }
+        public int? FornecedorId { get; set; }
         public FornecedoresModel Fornecedor { get; set; }
         public EmpresaModel Empresa { get; set; }
         public int EmpresaId { get; set; }
@@ -46,7 +46,7 @@ namespace Sellius.API.Models
                 qtd = produtoDTO.qtd,
                 dthCriacao = produtoDTO.dthCriacao,
                 dthAlteracao = produtoDTO.dthAlteracao,
-                FornecedorId = (int)produtoDTO.FornecedorId,
+                FornecedorId = produtoDTO.FornecedorId,
                 EmpresaId = (int)produtoDTO.EmpresaId,
                 fAtivo = produtoDTO.fAtivo
             };

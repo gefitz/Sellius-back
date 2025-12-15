@@ -64,7 +64,7 @@ namespace Sellius.API.Repository.Menu
                 if (!string.IsNullOrEmpty(obj.Filtro.DeMenu))
                     query = query.Where(p => p.DeMenu.Contains(obj.Filtro.DeMenu));
 
-                if (obj.Filtro.FAtivo)
+                if (obj.Filtro.FAtivo != -1)
                     query = query.Where(p => p.FAtivo == obj.Filtro.FAtivo);
 
                 obj.TotalRegistros = query.Count();
@@ -72,7 +72,7 @@ namespace Sellius.API.Repository.Menu
 
                 obj.Dados = await query
                     .OrderBy(p => p.Id)
-                    .Skip((obj.PaginaAtual - 1) * obj.TotalRegistros)
+                    .Skip(obj.PaginaAtual * obj.TamanhoPagina)
                     .Take(obj.TamanhoPagina)
                     .ToListAsync();
 
@@ -80,6 +80,19 @@ namespace Sellius.API.Repository.Menu
 
             }
             catch(Exception ex)
+            {
+                _log.Error(ex);
+                throw ex;
+            }
+        }
+
+        public async Task<List<MenuModel>> recuperaMenus(int idEmpresa)
+        {
+            try
+            {
+                return await _context.Menus.Where(m => m.FAtivo == 1 && ( m.IdEmpresa == 0 || m.IdEmpresa == idEmpresa)).ToListAsync();
+
+            }catch(Exception ex)
             {
                 _log.Error(ex);
                 throw ex;

@@ -8,14 +8,16 @@ namespace Sellius.API.DTOs.CadastrosDTOs
     {
         public int Id { get; set; }
         public string DeMenu { get; set; }
-        public string UrlMenu { get; set; }
+        public string? UrlMenu { get; set; }
         public string Icone { get; set; }
-        public int IdMenuPai { get; set; }
-        public bool FMenuExclusivo { get; set; }
+        public int? IdMenuPai { get; set; }
+        public short? FMenuExclusivo { get; set; }
         public int? IdEmpresa { get; set; }
-        public bool FAtivo { get; set; }
-        public DateTime DtCadastro { get; set; }
-        public DateTime DtAtualizacao { get; set; }
+        public short FAtivo { get; set; }
+        public DateTime? DtCadastro { get; set; }
+        public DateTime? DtAtualizacao { get; set; }
+
+        public List<MenuDTO>? menuFilhos { get; set; }
 
         public static implicit operator MenuDTO(MenuModel model)
         {            

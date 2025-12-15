@@ -1,5 +1,6 @@
 ﻿using Sellius.API.DTOs;
 using Sellius.API.DTOs.CadastrosDTOs;
+using Sellius.API.DTOs.Filtros;
 using Sellius.API.DTOs.TabelasDTOs;
 using Sellius.API.Models;
 using Sellius.API.Repository.Menu.Interface;
@@ -22,7 +23,7 @@ namespace Sellius.API.Services
             {
                 MenuModel menu = dto;
                 menu.DtCadastro = DateTime.UtcNow;
-                menu.FAtivo = true;
+                menu.FAtivo = 1;
 
                 if (await _repository.Create(menu))
                 {
@@ -82,7 +83,7 @@ namespace Sellius.API.Services
                 if (!responseBusca.success)
                     return responseBusca;
 
-                responseBusca.Data.FAtivo = false;
+                responseBusca.Data.FAtivo = 0;
                 return await UpdateMenu(responseBusca.Data);
             }
             catch (Exception ex)
@@ -91,7 +92,7 @@ namespace Sellius.API.Services
             }
         }
 
-        public async Task<Response<PaginacaoTabelaResult<MenuDTO, MenuDTO>>> ObterTodosMenus(PaginacaoTabelaResult<MenuDTO, MenuDTO> paginacao)
+        public async Task<Response<PaginacaoTabelaResult<MenuDTO, MenuFiltro>>> ObterTodosMenus(PaginacaoTabelaResult<MenuDTO, MenuFiltro> paginacao)
         {
             try
             {
@@ -104,13 +105,67 @@ namespace Sellius.API.Services
                     TotalRegistros = paginacao.TotalRegistros,
                 };
                 modelPaginacao = await _repository.Filtrar(modelPaginacao);
-                paginacao.Dados = MenuDTO.FromList(modelPaginacao.Dados);
-                return Response<PaginacaoTabelaResult<MenuDTO, MenuDTO>>.Ok(paginacao);
+                //paginacao.Dados = MenuDTO.FromList(modelPaginacao.Dados);
+                paginacao = new PaginacaoTabelaResult<MenuDTO, MenuFiltro>
+                {
+                    PaginaAtual = modelPaginacao.PaginaAtual,
+                    TamanhoPagina = modelPaginacao.TamanhoPagina,
+                    TotalPaginas = modelPaginacao.TotalPaginas,
+                    TotalRegistros = modelPaginacao.TotalRegistros,
+                    Dados = MenuDTO.FromList(modelPaginacao.Dados)
+                };
+                return Response<PaginacaoTabelaResult<MenuDTO, MenuFiltro>>.Ok(paginacao);
             }
             catch (Exception ex)
             {
-                return Response<PaginacaoTabelaResult<MenuDTO, MenuDTO>>.Failed(ex.Message);
+                return Response<PaginacaoTabelaResult<MenuDTO, MenuFiltro>>.Failed(ex.Message);
             }
+        }
+
+        public async Task<Response<List<MenuDTO>>> recuperaMenus(int idEmpresa)
+        {
+            try
+            {
+                var listaMenus = await _repository.recuperaMenus(idEmpresa);
+                List<MenuDTO> dto = MenuDTO.FromList(listaMenus);
+                dto = montaHieraquia(dto);
+
+                return Response<List<MenuDTO>>.Ok(dto);
+            }
+            catch (Exception ex)
+            {
+                return Response<List<MenuDTO>>.Failed(ex.Message);
+            }
+        }
+
+        public async Task<Response<List<MenuDTO>>> carregaComboMenu(int idEmpresa)
+        {
+            try
+            {
+                var listaMenus = await _repository.recuperaMenus(idEmpresa);
+                List<MenuDTO> dto = MenuDTO.FromList(listaMenus);
+                return Response<List<MenuDTO>>.Ok(dto);
+            }
+            catch (Exception ex)
+            {
+                return Response<List<MenuDTO>>.Failed(ex.Message);
+            }
+        }
+        private List<MenuDTO> montaHieraquia(List<MenuDTO> menus)
+        {
+            var lookup = menus.ToDictionary(m => m.Id);
+
+            foreach(var menu in menus)
+            {
+                if(menu.IdMenuPai.HasValue && lookup.TryGetValue(menu.IdMenuPai.Value, out var menuPai)){
+                    menuPai.menuFilhos ??= new List<MenuDTO>();
+                    menuPai.menuFilhos.Add(menu);
+                }
+            }
+            return menus
+         .Where(m => m.IdMenuPai == 0 || !m.IdMenuPai.HasValue)
+         .OrderBy(m => m.DeMenu)
+         .ToList();
         }
     }
 }

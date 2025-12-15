@@ -9,14 +9,14 @@ namespace Sellius.API.DTOs.TabelasDTOs
         public string Nome { get; set; }
         public string Descricao { get; set; }
         public string TipoProduto { get; set; }
-        public int TipoProdutoId { get; set; }
+        public int? TipoProdutoId { get; set; }
         public decimal valor { get; set; }
         public int qtd { get; set; }
         public DateTime dthCriacao { get; set; }
-        public DateTime dthAlteracao { get; set; }
+        public DateTime? dthAlteracao { get; set; }
         public int fAtivo { get; set; }
         public string Fornecedor { get; set; }
-        public int FornecedorId { get; set; }
+        public int? FornecedorId { get; set; }
 
 
         public static implicit operator ProdutoTabela(ProdutoModel model)
@@ -31,7 +31,7 @@ namespace Sellius.API.DTOs.TabelasDTOs
                 dthAlteracao = model.dthAlteracao,
                 fAtivo = model.fAtivo,
                 TipoProduto = model.tipoProduto.Tipo,
-                Fornecedor = model.Fornecedor.Nome,
+                Fornecedor = model.Fornecedor != null && model.Fornecedor.Nome != null ? model.Fornecedor.Nome: "",
                 valor = model.valor,
                 FornecedorId = model.FornecedorId,
                 TipoProdutoId = model.TipoProdutoId
