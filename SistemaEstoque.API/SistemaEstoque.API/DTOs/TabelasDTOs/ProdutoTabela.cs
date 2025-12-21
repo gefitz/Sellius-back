@@ -1,4 +1,5 @@
 ﻿using Sellius.API.DTOs.CadastrosDTOs;
+using Sellius.API.Enums;
 using Sellius.API.Models;
 
 namespace Sellius.API.DTOs.TabelasDTOs
@@ -17,6 +18,7 @@ namespace Sellius.API.DTOs.TabelasDTOs
         public int fAtivo { get; set; }
         public string Fornecedor { get; set; }
         public int? FornecedorId { get; set; }
+        public OrigemTabelaPreco origemTabelaPreco { get; set; }
 
 
         public static implicit operator ProdutoTabela(ProdutoModel model)
@@ -34,7 +36,8 @@ namespace Sellius.API.DTOs.TabelasDTOs
                 Fornecedor = model.Fornecedor != null && model.Fornecedor.Nome != null ? model.Fornecedor.Nome: "",
                 valor = model.valor,
                 FornecedorId = model.FornecedorId,
-                TipoProdutoId = model.TipoProdutoId
+                TipoProdutoId = model.TipoProdutoId,
+                origemTabelaPreco = model.origemTabelaPreco
 
             };
         }

@@ -1,6 +1,7 @@
 ﻿using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.DTOs.Filtros;
 using Sellius.API.DTOs.TabelasDTOs;
+using Sellius.API.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace Sellius.API.Models
@@ -21,6 +22,7 @@ namespace Sellius.API.Models
         public int? FornecedorId { get; set; }
         public FornecedoresModel Fornecedor { get; set; }
         public EmpresaModel Empresa { get; set; }
+        public OrigemTabelaPreco origemTabelaPreco {  get; set; }
         public int EmpresaId { get; set; }
 
 

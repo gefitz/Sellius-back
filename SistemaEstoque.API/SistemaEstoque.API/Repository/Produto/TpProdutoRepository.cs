@@ -97,7 +97,7 @@ namespace Sellius.API.Repository.Produto
 
                 obj.Dados = await query
                     .OrderBy(p => p.id)
-                    .Skip((obj.PaginaAtual - 1) * obj.TotalRegistros)
+                    .Skip(obj.PaginaAtual * obj.TotalRegistros)
                     .Take(obj.TamanhoPagina)
                     .ToListAsync();
 

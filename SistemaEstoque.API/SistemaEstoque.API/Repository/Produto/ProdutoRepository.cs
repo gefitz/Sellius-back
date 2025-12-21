@@ -33,7 +33,7 @@ namespace Sellius.API.Repository.Produto
             }
             catch (Exception ex)
             {
-                return null;
+                throw ex;
             }
         }
 
@@ -49,7 +49,7 @@ namespace Sellius.API.Repository.Produto
             catch (Exception ex)
             {
                 _log.Error(ex);
-                return false;
+                throw ex;
             }
         }
 
@@ -63,7 +63,7 @@ namespace Sellius.API.Repository.Produto
             }
             catch (Exception ex)
             {
-                return false;
+                throw ex;
             }
         }
 
@@ -91,7 +91,7 @@ namespace Sellius.API.Repository.Produto
                     .Include(tp => tp.tipoProduto)
                     .Include(f => f.Fornecedor)
                     .OrderBy(p => p.id)
-                    .Skip((obj.PaginaAtual - 1) * obj.TotalRegistros)
+                    .Skip(obj.PaginaAtual * obj.TotalRegistros)
                     .Take(obj.TamanhoPagina)
                     .ToListAsync();
 
@@ -100,7 +100,7 @@ namespace Sellius.API.Repository.Produto
             catch (Exception ex)
             {
                 _log.Error(ex);
-                return null;
+                throw ex;
             }
         }
 

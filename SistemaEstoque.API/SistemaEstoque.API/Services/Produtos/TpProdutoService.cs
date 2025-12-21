@@ -19,9 +19,16 @@ namespace Sellius.API.Services.Produtos
         public async Task<Response<TipoProdutoDTO>> CadastrarTpProduto(TipoProdutoDTO dto)
         {
             TipoProdutoDTO model = dto;
-            if (await _repository.Create(model))
-                return Response<TipoProdutoDTO>.Ok(model);
-            return Response<TipoProdutoDTO>.Failed("Falha ao criar um novo tipo produto");
+            try
+            {
+
+                if (await _repository.Create(model))
+                    return Response<TipoProdutoDTO>.Ok(model);
+                return Response<TipoProdutoDTO>.Failed("Falha ao criar um novo tipo produto");
+            }catch(Exception ex)
+            {
+                return Response<TipoProdutoDTO>.Failed(ex.Message);
+            }
 
         }
         public async Task<Response<PaginacaoTabelaResult<TipoProdutoDTO, TipoProdutoDTO>>> BuscarTpProudo(PaginacaoTabelaResult<TipoProdutoDTO, TipoProdutoDTO> dto)
@@ -63,19 +70,20 @@ namespace Sellius.API.Services.Produtos
         public async Task<Response<TipoProdutoDTO>> UpdateTpProduto(TipoProdutoDTO dto)
         {
             TipoProdutoModel model = dto;
-            if(await _repository.Update(model))
+            if (await _repository.Update(model))
                 return Response<TipoProdutoDTO>.Ok(model);
             return Response<TipoProdutoDTO>.Failed("Falha ao fazer modificação");
         }
         public async Task<Response<TipoProdutoDTO>> InativarTpProduto(int id)
         {
             var model = await BuscarId(id);
-            if (!model.success) {
+            if (!model.success)
+            {
                 return Response<TipoProdutoDTO>.Failed("O id desse tipo produto não foi encontrado");
             }
             TipoProdutoModel tp = model.Data;
             tp.fAtivo = 0;
-            if(await _repository.Delete(tp))
+            if (await _repository.Delete(tp))
             {
                 return Response<TipoProdutoDTO>.Ok(tp);
             }
