@@ -1,4 +1,4 @@
-﻿using Sellius.API.Models;
+﻿using Sellius.API.Models.Usuario;
 using Sellius.API.Repository.Interfaces;
 
 namespace Sellius.API.Repository.Menu.Interface

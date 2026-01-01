@@ -2,7 +2,8 @@
 using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.DTOs.Filtros;
 using Sellius.API.DTOs.TabelasDTOs;
-using Sellius.API.Models;
+using Sellius.API.Models.Usuario;
+using Sellius.API.Repository.Menu;
 using Sellius.API.Repository.Menu.Interface;
 
 namespace Sellius.API.Services
@@ -10,9 +11,9 @@ namespace Sellius.API.Services
     public class MenuService
     {
 
-        private readonly IMenuRepository _repository;
+        private readonly MenuRepository _repository;
 
-        public MenuService(IMenuRepository repository)
+        public MenuService(MenuRepository repository)
         {
             _repository = repository;
         }
@@ -155,9 +156,10 @@ namespace Sellius.API.Services
         {
             var lookup = menus.ToDictionary(m => m.Id);
 
-            foreach(var menu in menus)
+            foreach (var menu in menus)
             {
-                if(menu.IdMenuPai.HasValue && lookup.TryGetValue(menu.IdMenuPai.Value, out var menuPai)){
+                if (menu.IdMenuPai.HasValue && lookup.TryGetValue(menu.IdMenuPai.Value, out var menuPai))
+                {
                     menuPai.menuFilhos ??= new List<MenuDTO>();
                     menuPai.menuFilhos.Add(menu);
                 }
@@ -166,6 +168,40 @@ namespace Sellius.API.Services
          .Where(m => m.IdMenuPai == 0 || !m.IdMenuPai.HasValue)
          .OrderBy(m => m.DeMenu)
          .ToList();
+        }
+
+        public async Task<Response<List<MenuDTO>>> obterTodosMenus(MenuFiltro menu)
+        {
+            try
+            {
+
+                List<MenuDTO> listMenus = MenuDTO.FromList(await _repository.obterTodosMenus(menu));
+                listMenus = montarPai(listMenus);
+
+                if (listMenus.Count == 0)
+                {
+                    return Response<List<MenuDTO>>.Ok(listMenus, "Nenhum registro encontrado");
+                }
+                return Response<List<MenuDTO>>.Ok(listMenus);
+            }
+            catch (Exception ex)
+            {
+                return Response<List<MenuDTO>>.Failed(ex);
+            }
+        }
+        private List<MenuDTO> montarPai(List<MenuDTO> menus)
+        {
+             var lookup = menus.ToDictionary(m => m.Id);
+
+            foreach (var menu in menus)
+            {
+                if (menu.IdMenuPai.HasValue && lookup.TryGetValue(menu.IdMenuPai.Value, out var menuPai))
+                {
+                    menu.sMenuPai = menuPai.DeMenu;
+                    menu.MenuPai = menuPai;
+                }
+            }
+            return menus; 
         }
     }
 }

@@ -3,7 +3,7 @@ using Sellius.API.DTOs;
 using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.DTOs.Filtros;
 using Sellius.API.DTOs.TabelasDTOs;
-using Sellius.API.Models;
+using Sellius.API.Models.Produto;
 using Sellius.API.Repository.Interfaces;
 using Sellius.API.Repository.Produto;
 using Sellius.API.Repository.Produto.Interface;
@@ -12,10 +12,10 @@ namespace Sellius.API.Services.Produtos
 {
     public class ProdutoService
     {
-        private readonly IProdutoRepository _repository;
+        private readonly ProdutoRepository _repository;
 
 
-        public ProdutoService(IProdutoRepository repository)
+        public ProdutoService(ProdutoRepository repository)
         {
             _repository = repository;
         }

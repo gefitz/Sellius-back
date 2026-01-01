@@ -3,15 +3,16 @@ using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.DTOs.Filtros;
 using Sellius.API.DTOs.TabelasDTOs;
 using Sellius.API.Models;
+using Sellius.API.Repository.Fornecedor;
 using Sellius.API.Repository.Fornecedor.Interfaces;
 
 namespace Sellius.API.Services
 {
     public class FornecedorService
     {
-        private readonly IFornecedorRepository _repository;
+        private readonly FornecedorRepository _repository;
 
-        public FornecedorService(IFornecedorRepository repository)
+        public FornecedorService(FornecedorRepository repository)
         {
             _repository = repository;
         }

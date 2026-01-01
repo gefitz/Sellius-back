@@ -1,5 +1,5 @@
 ﻿using Sellius.API.DTOs.TabelasDTOs;
-using Sellius.API.Models;
+using Sellius.API.Models.Pedido;
 
 namespace Sellius.API.DTOs.CadastrosDTOs
 {

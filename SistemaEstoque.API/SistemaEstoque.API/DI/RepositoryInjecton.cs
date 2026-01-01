@@ -12,11 +12,15 @@ namespace Sellius.API.DI
             foreach (var t in classes)
             {
                 var interfaces = t.GetInterfaces();
-                var expectedInterfaceName = $"I{t.Name}";
+                var expectedInterfaceName = $"{t.Name}";
                 var interfaceAlvo = interfaces.FirstOrDefault(i => i.Name == expectedInterfaceName);
                 if (interfaceAlvo != null && !service.Any(s => s.ServiceType == interfaceAlvo))
                 {
-                    service.AddScoped(interfaceAlvo, t);
+                    service.AddScoped(interfaceAlvo,t);
+                }
+                else
+                {
+                    service.AddScoped(t);
                 }
             }
         }

@@ -1,4 +1,4 @@
-﻿using Sellius.API.Models;
+﻿using Sellius.API.Models.Produto;
 using Sellius.API.Repository.Interfaces;
 
 namespace Sellius.API.Repository.Produto.Interface

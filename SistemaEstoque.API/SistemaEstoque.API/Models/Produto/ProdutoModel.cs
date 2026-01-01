@@ -2,9 +2,11 @@
 using Sellius.API.DTOs.Filtros;
 using Sellius.API.DTOs.TabelasDTOs;
 using Sellius.API.Enums;
+using Sellius.API.Models.Empresa;
+using Sellius.API.Models.Pedido;
 using System.ComponentModel.DataAnnotations;
 
-namespace Sellius.API.Models
+namespace Sellius.API.Models.Produto
 {
     public class ProdutoModel
     {

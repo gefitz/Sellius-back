@@ -77,6 +77,17 @@ namespace Sellius.API.Controllers
             }
             return BadRequest(ret);
         }
+        [HttpPost("obterTodosMenus")]
+        public async Task<IActionResult> obterTodosMenus(MenuFiltro menu)
+        {
 
+            menu.idEmpresa = TokenService.RecuperaIdEmpresa(User);
+            var ret = await _service.obterTodosMenus(menu);
+
+            if(ret.success) {
+                return Ok(ret);
+            }
+            return BadRequest(ret);
+        }
     }
 }

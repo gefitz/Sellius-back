@@ -1,5 +1,4 @@
-﻿using Sellius.API.Models;
-using Sellius.API.Repository;
+﻿using Sellius.API.Repository;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
@@ -15,16 +14,18 @@ using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.Utils;
 using Sellius.API.Repository.Login.Interfaces;
 using Sellius.API.Services.Clientes;
+using Sellius.API.Models.Usuario;
+using Sellius.API.Repository.Login;
 
 namespace Sellius.API.Services
 {
     public class LoginService
     {
         private readonly IConfiguration _configuration;
-        private readonly ILoginRepository _repository;
+        private readonly LoginRepository _repository;
         private readonly TokenService _tokenService;
         private readonly ClienteService _clienteService;
-        public LoginService(IConfiguration configuration, ILoginRepository repository,TokenService tokenService, ClienteService cliente)
+        public LoginService(IConfiguration configuration, LoginRepository repository,TokenService tokenService, ClienteService cliente)
         {
             _configuration = configuration;
             _repository = repository;
@@ -36,7 +37,7 @@ namespace Sellius.API.Services
             LoginModel model = login;
             model.usuarioId = usuario.id;
             model.EmpresaId = (int)usuario.EmpresaId;
-            model.TipoUsuario = usuario.TipoUsuario;
+            //model.TipoUsuario = usuario.TipoUsuario;
            CriptografiaSenha(login.Password,model);
 
             if (await _repository.Create(model))
@@ -88,7 +89,7 @@ namespace Sellius.API.Services
             {
                 LoginModel loginModel = login;
                 loginModel.usuarioId = null;
-                loginModel.TipoUsuario = TipoUsuario.Cliente;
+                //loginModel.TipoUsuario = TipoUsuario.Cliente;
                 loginModel = CriptografiaSenha(login.Password, loginModel);
                 if(await _repository.VereficaEmailExistente(loginModel))
                 {

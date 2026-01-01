@@ -1,4 +1,5 @@
 ﻿using Sellius.API.DTOs.CadastrosDTOs.ClientesCadastros;
+using Sellius.API.Models.Empresa;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Sellius.API.Models.Cliente

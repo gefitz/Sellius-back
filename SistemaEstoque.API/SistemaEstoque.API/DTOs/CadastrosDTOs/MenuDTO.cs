@@ -1,5 +1,5 @@
 ﻿using Sellius.API.Enums;
-using Sellius.API.Models;
+using Sellius.API.Models.Usuario;
 using System.ComponentModel.DataAnnotations;
 
 namespace Sellius.API.DTOs.CadastrosDTOs
@@ -18,9 +18,12 @@ namespace Sellius.API.DTOs.CadastrosDTOs
         public DateTime? DtAtualizacao { get; set; }
 
         public List<MenuDTO>? menuFilhos { get; set; }
+        public string? sMenuPai { get;set; }
+        public MenuDTO? MenuPai {get;set; }
 
         public static implicit operator MenuDTO(MenuModel model)
-        {            
+        {   
+            if(model == null) {return new MenuDTO();}
             return new MenuDTO
             {
                 Id = model.Id,
@@ -32,7 +35,7 @@ namespace Sellius.API.DTOs.CadastrosDTOs
                 IdEmpresa = model.IdEmpresa,
                 FAtivo = model.FAtivo,
                 DtCadastro = model.DtCadastro,
-                DtAtualizacao = model.DtAtualizacao
+                DtAtualizacao = model.DtAtualizacao,
             };               
         }
 

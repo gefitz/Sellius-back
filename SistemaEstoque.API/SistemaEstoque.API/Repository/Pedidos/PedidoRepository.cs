@@ -2,7 +2,7 @@
 using Sellius.API.Context;
 using Sellius.API.DTOs.Filtros;
 using Sellius.API.DTOs.TabelasDTOs;
-using Sellius.API.Models;
+using Sellius.API.Models.Pedido;
 using Sellius.API.Repository.Pedidos.Interfaces;
 
 namespace Sellius.API.Repository.Pedidos

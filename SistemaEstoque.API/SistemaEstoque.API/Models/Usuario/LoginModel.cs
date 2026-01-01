@@ -1,8 +1,9 @@
 ﻿using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.Enums;
 using Sellius.API.Models.Cliente;
+using Sellius.API.Models.Empresa;
 
-namespace Sellius.API.Models
+namespace Sellius.API.Models.Usuario
 {
     public class LoginModel
     {
@@ -11,8 +12,8 @@ namespace Sellius.API.Models
         public byte[] Hash { get; set; }
         public byte[] Salt { get; set; }
         public bool fEmailConfirmado { get; set; } = false;
-        public TipoUsuario TipoUsuario { get; set; } = 0;
-        public int? usuarioId { get; set; } = 0;
+        //public TpUsuarioModel TipoUsuario { get; set; }
+        public int? usuarioId { get; set; }
         public UsuarioModel? Usuario { get; set; }
         public int EmpresaId { get; set; }
         public EmpresaModel Empresa { get; set; }

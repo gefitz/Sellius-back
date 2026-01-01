@@ -1,6 +1,6 @@
 ﻿using Sellius.API.DTOs.CadastrosDTOs;
 
-namespace Sellius.API.Models
+namespace Sellius.API.Models.Empresa
 {
     public class EmpresaModel
     {
@@ -31,8 +31,8 @@ namespace Sellius.API.Models
                 Rua = dto.Rua,
                 CidadeId = dto.CidadeId,
                 CEP = dto.CEP,
-                dthAlteracao = (DateTime)dto.dthAlteracao,
-                dthCadastro = (DateTime)dto.dthCadastro,
+                dthAlteracao = dto.dthAlteracao,
+                dthCadastro = dto.dthCadastro,
                 fAtivo = dto.fAtivo
             };
         }

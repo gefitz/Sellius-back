@@ -4,6 +4,7 @@ using Sellius.API.DTOs.CadastrosDTOs.ClientesCadastros;
 using Sellius.API.DTOs.Filtros;
 using Sellius.API.DTOs.TabelasDTOs;
 using Sellius.API.Models.Cliente;
+using Sellius.API.Repository.Cliente;
 using Sellius.API.Repository.Cliente.Interfaces;
 using Sellius.API.Repository.Interfaces;
 using System.Runtime.InteropServices;
@@ -12,9 +13,9 @@ namespace Sellius.API.Services.Clientes
 {
     public class ClienteService
     {
-        private readonly IClienteRepository _repository;
+        private readonly ClienteRepository _repository;
 
-        public ClienteService(IClienteRepository repository)
+        public ClienteService(ClienteRepository repository)
         {
             _repository = repository;
         }

@@ -1,7 +1,7 @@
 ﻿using Sellius.API.DTOs;
 using Sellius.API.Enums;
 
-namespace Sellius.API.Models
+namespace Sellius.API.Models.Empresa
 {
     public class LicencaModel
     {

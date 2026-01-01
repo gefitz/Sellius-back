@@ -1,10 +1,10 @@
 ﻿using Sellius.API.Context;
-using Sellius.API.Models;
 using Sellius.API.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Sellius.API.DTOs.TabelasDTOs;
 using Sellius.API.Repository.Produto.Interface;
 using Sellius.API.DTOs.Filtros;
+using Sellius.API.Models.Produto;
 
 namespace Sellius.API.Repository.Produto
 {

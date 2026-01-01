@@ -1,6 +1,6 @@
 ﻿using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.Enums;
-using Sellius.API.Models;
+using Sellius.API.Models.Produto;
 
 namespace Sellius.API.DTOs.TabelasDTOs
 {

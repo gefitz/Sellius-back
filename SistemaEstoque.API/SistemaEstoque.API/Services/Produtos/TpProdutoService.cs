@@ -2,17 +2,18 @@
 using Sellius.API.DTOs;
 using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.DTOs.TabelasDTOs;
-using Sellius.API.Models;
+using Sellius.API.Models.Produto;
 using Sellius.API.Repository.Interfaces;
+using Sellius.API.Repository.Produto;
 using Sellius.API.Repository.Produto.Interface;
 
 namespace Sellius.API.Services.Produtos
 {
     public class TpProdutoService
     {
-        private readonly ITpProdutoRepository _repository;
+        private readonly TpProdutoRepository _repository;
 
-        public TpProdutoService(ITpProdutoRepository repository, IMapper mapper)
+        public TpProdutoService(TpProdutoRepository repository)
         {
             _repository = repository;
         }

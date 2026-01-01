@@ -1,5 +1,5 @@
 ﻿using Sellius.API.Enums;
-using Sellius.API.Models;
+using Sellius.API.Models.Usuario;
 using System.ComponentModel.DataAnnotations;
 
 namespace Sellius.API.DTOs.CadastrosDTOs
@@ -16,7 +16,8 @@ namespace Sellius.API.DTOs.CadastrosDTOs
         [DataType(DataType.Date)]
         public DateTime dthCadastro { get; set; } = DateTime.UtcNow;
         public int EmpresaId { get; set; } = 0;
-        public TipoUsuario TipoUsuario { get; set; }
+        public TpUsuarioDTO TipoUsuario { get; set; }
+        public int idTpUsuario { get; set; }
         public short fAtivo { get; set; } = 0;
 
         public static implicit operator UsuarioDTO(UsuarioModel model)

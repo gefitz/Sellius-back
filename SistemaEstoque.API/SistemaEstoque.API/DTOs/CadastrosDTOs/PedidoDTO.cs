@@ -1,4 +1,4 @@
-﻿using Sellius.API.Models;
+﻿using Sellius.API.Models.Pedido;
 using System.ComponentModel.DataAnnotations;
 
 namespace Sellius.API.DTOs.CadastrosDTOs

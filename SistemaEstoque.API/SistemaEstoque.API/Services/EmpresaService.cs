@@ -3,7 +3,8 @@ using Sellius.API.DTOs;
 using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.DTOs.TabelasDTOs;
 using Sellius.API.Enums;
-using Sellius.API.Models;
+using Sellius.API.Models.Empresa;
+using Sellius.API.Repository.Empresa;
 using Sellius.API.Repository.Empresa.Interface;
 using Sellius.API.Repository.Interfaces;
 
@@ -11,12 +12,12 @@ namespace Sellius.API.Services
 {
     public class EmpresaService
     {
-        private IEmpresaRepository _repository;
+        private EmpresaRepository _repository;
         private UsuarioService _usarioService;
         private LoginService _loginService;
         private AppDbContext _context;
         private LicencaService _licenca;
-        public EmpresaService(IEmpresaRepository repository, UsuarioService suarioService, LoginService loginService, AppDbContext context, LicencaService licenca)
+        public EmpresaService(EmpresaRepository repository, UsuarioService suarioService, LoginService loginService, AppDbContext context, LicencaService licenca)
         {
             _repository = repository;
             _usarioService = suarioService;
@@ -63,7 +64,7 @@ namespace Sellius.API.Services
 
                     empresa.Empresa = emp;
                     empresa.Usuario.EmpresaId = empresa.Empresa.id;
-                    empresa.Usuario.TipoUsuario = Enums.TipoUsuario.Adm;
+                    empresa.Usuario.idTpUsuario = 1;
                     Response<UsuarioDTO> responseUsuario = await _usarioService.CriarUsuario(empresa.Usuario);
                     if (responseUsuario == null || !responseUsuario.success)
                         return Response<string>.Failed(responseUsuario.errorMessage);

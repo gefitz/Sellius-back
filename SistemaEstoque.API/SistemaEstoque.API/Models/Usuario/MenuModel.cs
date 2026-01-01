@@ -1,7 +1,7 @@
 ﻿using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.DTOs.Filtros;
 
-namespace Sellius.API.Models
+namespace Sellius.API.Models.Usuario
 {
     public class MenuModel
     {
@@ -14,9 +14,10 @@ namespace Sellius.API.Models
         public int? IdEmpresa { get; set; }
         public short FAtivo { get; set; }
 
+        public List<TpUsuarioXMenu> tpUsuarioXMenus { get; set; }
+
         public DateTime? DtCadastro { get; set; }
         public DateTime? DtAtualizacao { get; set; }
-
 
         public static implicit operator MenuModel(MenuDTO dto)
         {

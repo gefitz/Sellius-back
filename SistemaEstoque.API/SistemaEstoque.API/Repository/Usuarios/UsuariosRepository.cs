@@ -1,11 +1,11 @@
 ﻿using Sellius.API.Context;
-using Sellius.API.Models;
 using Sellius.API.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Sellius.API.DTOs;
 using Sellius.API.Services;
 using Sellius.API.Repository.Usuarios.Interfaces;
 using Sellius.API.DTOs.TabelasDTOs;
+using Sellius.API.Models.Usuario;
 
 namespace Sellius.API.Repository.Usuarios
 {

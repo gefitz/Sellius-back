@@ -1,6 +1,7 @@
 ﻿using Sellius.API.DTOs.CadastrosDTOs;
+using Sellius.API.Models.Produto;
 
-namespace Sellius.API.Models
+namespace Sellius.API.Models.Pedido
 {
     public class PedidoXProduto
     {

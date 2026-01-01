@@ -1,6 +1,7 @@
 ﻿using Sellius.API.DTOs.CadastrosDTOs;
+using Sellius.API.Models.Empresa;
 
-namespace Sellius.API.Models
+namespace Sellius.API.Models.Produto
 {
     public class TipoProdutoModel
     {

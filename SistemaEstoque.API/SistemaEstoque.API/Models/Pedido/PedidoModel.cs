@@ -1,9 +1,11 @@
 ﻿using Sellius.API.DTOs;
 using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.Models.Cliente;
+using Sellius.API.Models.Empresa;
+using Sellius.API.Models.Usuario;
 using System.ComponentModel.DataAnnotations;
 
-namespace Sellius.API.Models
+namespace Sellius.API.Models.Pedido
 {
     public class PedidoModel
     {

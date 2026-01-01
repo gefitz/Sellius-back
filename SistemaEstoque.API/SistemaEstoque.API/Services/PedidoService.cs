@@ -4,19 +4,22 @@ using Sellius.API.DTOs;
 using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.DTOs.Filtros;
 using Sellius.API.DTOs.TabelasDTOs;
-using Sellius.API.Models;
+using Sellius.API.Models.Pedido;
+using Sellius.API.Models.Produto;
 using Sellius.API.Repository;
 using Sellius.API.Repository.Interfaces;
+using Sellius.API.Repository.Pedidos;
 using Sellius.API.Repository.Pedidos.Interfaces;
+using Sellius.API.Repository.Produto;
 using Sellius.API.Repository.Produto.Interface;
 
 namespace Sellius.API.Services
 {
     public class PedidoService
     {
-        private readonly IPedidoRepository _repository;
-        private readonly IProdutoRepository _produtoRepository;
-        public PedidoService(IPedidoRepository repository, IProdutoRepository dbMethods)
+        private readonly PedidoRepository _repository;
+        private readonly ProdutoRepository _produtoRepository;
+        public PedidoService(PedidoRepository repository, ProdutoRepository dbMethods)
         {
             _repository = repository;
             _produtoRepository = dbMethods;

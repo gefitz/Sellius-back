@@ -1,5 +1,6 @@
 ﻿using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.DTOs.Filtros;
+using Sellius.API.Models.Empresa;
 
 namespace Sellius.API.Models
 {

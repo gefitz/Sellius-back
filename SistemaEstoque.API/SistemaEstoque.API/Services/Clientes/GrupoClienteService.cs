@@ -2,15 +2,16 @@
 using Sellius.API.DTOs.CadastrosDTOs.ClientesCadastros;
 using Sellius.API.DTOs.TabelasDTOs;
 using Sellius.API.Models.Cliente;
+using Sellius.API.Repository.Cliente;
 using Sellius.API.Repository.Cliente.Interfaces;
 
 namespace Sellius.API.Services.Clientes
 {
     public class GrupoClienteService
     {
-        private readonly IGrupoClientesRepository _repository;
+        private readonly GrupoClientesRepository _repository;
 
-        public GrupoClienteService(IGrupoClientesRepository repository)
+        public GrupoClienteService(GrupoClientesRepository repository)
         {
             _repository = repository;
         }

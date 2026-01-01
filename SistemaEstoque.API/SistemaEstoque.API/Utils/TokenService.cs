@@ -1,6 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Sellius.API.DTOs;
-using Sellius.API.Models;
+using Sellius.API.Models.Usuario;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -28,7 +28,7 @@ namespace Sellius.API.Utils
                   {
                         new Claim("id", idUsuarioClient),
                         new Claim("user", user),
-                        new Claim(ClaimTypes.Role, Enum.GetName(login.TipoUsuario)),
+                        new Claim(ClaimTypes.Role, login.Usuario.IdTpUsuario.ToString()),
                         new Claim("empresa", login.EmpresaId.ToString()),
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                     };

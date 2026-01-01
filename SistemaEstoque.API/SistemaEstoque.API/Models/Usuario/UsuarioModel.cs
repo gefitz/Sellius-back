@@ -1,9 +1,12 @@
 ﻿using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.Enums;
+using Sellius.API.Models.Empresa;
+using Sellius.API.Models.Pedido;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Sellius.API.Models
+namespace Sellius.API.Models.Usuario
 {
     public class UsuarioModel
     {
@@ -20,7 +23,8 @@ namespace Sellius.API.Models
         public DateTime dthCadastro { get; set; }
         public int EmpresaId { get; set; }
         public EmpresaModel Empresa { get; set; }
-        public TipoUsuario TipoUsuario { get; set; }
+        public TpUsuarioModel TipoUsuario { get; set; }
+        public int IdTpUsuario { get; set; }
         public List<PedidoModel> Pedidos { get; set; }
         public short fAtivo { get; set; }
 
@@ -35,8 +39,8 @@ namespace Sellius.API.Models
                 Rua = dto.Rua,
                 CidadeId =  dto.CidadeId,
                 CEP = dto.CEP,
-                dthCadastro = (DateTime)dto.dthCadastro,  
-                EmpresaId = (int)dto.EmpresaId,
+                dthCadastro = dto.dthCadastro,  
+                EmpresaId = dto.EmpresaId,
                 TipoUsuario = dto.TipoUsuario,
             };
         }

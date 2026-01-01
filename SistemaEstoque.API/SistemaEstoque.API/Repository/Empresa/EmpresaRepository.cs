@@ -2,7 +2,7 @@
 using Sellius.API.Context;
 using Sellius.API.DTOs;
 using Sellius.API.DTOs.TabelasDTOs;
-using Sellius.API.Models;
+using Sellius.API.Models.Empresa;
 using Sellius.API.Repository.Empresa.Interface;
 using Sellius.API.Repository.Interfaces;
 

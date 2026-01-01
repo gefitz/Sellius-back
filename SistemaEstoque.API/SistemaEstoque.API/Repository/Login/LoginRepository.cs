@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Sellius.API.Context;
-using Sellius.API.Models;
+using Sellius.API.Models.Usuario;
 using Sellius.API.Repository.Interfaces;
 using Sellius.API.Repository.Login.Interfaces;
 

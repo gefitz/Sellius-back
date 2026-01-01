@@ -1,6 +1,10 @@
 ﻿using Sellius.API.Models;
 using Microsoft.EntityFrameworkCore;
 using Sellius.API.Models.Cliente;
+using Sellius.API.Models.Usuario;
+using Sellius.API.Models.Produto;
+using Sellius.API.Models.Empresa;
+using Sellius.API.Models.Pedido;
 
 namespace Sellius.API.Context
 {
@@ -8,21 +12,41 @@ namespace Sellius.API.Context
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         public DbSet<CidadeModel> Cidades { get; set; }
-        public DbSet<ClienteModel> Clientes { get; set; }
         public DbSet<EmpresaModel> Empresas { get; set; }
         public DbSet<EstadoModel> Estados { get; set; }
         public DbSet<FornecedoresModel> Fornecedores { get; set; }
         public DbSet<LicencaModel> Licencas { get; set; }
-        public DbSet<LoginModel> Logins { get; set; }
         public DbSet<LogModel> Logs { get; set; }
+        public DbSet<MenuModel> Menus { get; set; }
+
+
+
+        #region Usuario
+            public DbSet<LoginModel> Logins { get; set; }
+            public DbSet<UsuarioModel> Usuarios { get; set; }
+            public DbSet<TpUsuarioModel> TpUsuarios { get; set; }
+            public DbSet<TpUsuarioXMenu> TpUsuariosXMenus { get; set; }
+            public DbSet<TpUsuarioConfiguracao> TpUsuarioConfiguracaos { get; set; }
+        #endregion
+
+        #region Produtos
+            public DbSet<ProdutoModel> Produtos { get; set; }
+            public DbSet<TipoProdutoModel> TpProdutos { get; set; }
+
+        #endregion
+
+        #region Pedidos
+
         public DbSet<PedidoModel> Pedidos { get; set; }
         public DbSet<PedidoXProduto> PedidoXProdutos { get; set; }
-        public DbSet<ProdutoModel> Produtos { get; set; }
-        public DbSet<TipoProdutoModel> TpProdutos { get; set; }
-        public DbSet<UsuarioModel> Usuarios { get; set; }
-        public DbSet<SegmentacaoModel> Segmentacaos { get; set; }
-        public DbSet<GrupoClienteModel> GrupoClientes { get; set; }
-        public DbSet<MenuModel> Menus { get; set; }
+        #endregion
+
+        #region Clientes
+            public DbSet<ClienteModel> Clientes { get; set; }
+            public DbSet<SegmentacaoModel> Segmentacaos { get; set; }
+            public DbSet<GrupoClienteModel> GrupoClientes { get; set; }
+
+        #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -47,6 +71,30 @@ namespace Sellius.API.Context
             #region Usuario
             modelBuilder.Entity<UsuarioModel>().HasOne(c => c.Cidade).WithMany().HasForeignKey(c => c.CidadeId);
             modelBuilder.Entity<UsuarioModel>().HasOne(e => e.Empresa).WithMany().HasForeignKey(u => u.EmpresaId);
+            modelBuilder.Entity<UsuarioModel>().HasOne(e => e.TipoUsuario).WithMany().HasForeignKey(e => e.IdTpUsuario);
+
+            #region TpUsuario
+                modelBuilder.Entity<TpUsuarioModel>().HasOne(e => e.empresa).WithMany().HasForeignKey(e => e.idEmpresa);
+                modelBuilder.Entity<TpUsuarioXMenu>()
+                    .HasKey(x => new { x.idTpUsuario, x.idMenu });
+
+                modelBuilder.Entity<TpUsuarioXMenu>()
+                    .HasOne(x => x.tpUsuario)
+                    .WithMany(u => u.tpUsuarioXMenus)
+                    .HasForeignKey(x => x.idTpUsuario);
+
+                modelBuilder.Entity<TpUsuarioXMenu>()
+                    .HasOne(x => x.Menu)
+                    .WithMany(m => m.tpUsuarioXMenus)
+                    .HasForeignKey(x => x.idMenu);
+
+                modelBuilder.Entity<TpUsuarioConfiguracao>()
+                    .HasOne(x => x.TpUsuario)
+                    .WithOne(e => e.TpUsuarioConfigurcao)
+                    .HasForeignKey<TpUsuarioConfiguracao>(x => x.idTpUsuario)
+                    .OnDelete(DeleteBehavior.Cascade);
+            #endregion
+
             #endregion
 
             #region Produto
@@ -59,7 +107,7 @@ namespace Sellius.API.Context
             #region Cliente
             modelBuilder.Entity<ClienteModel>().HasOne(c => c.Cidade).WithMany().HasForeignKey(c => c.CidadeId);
             modelBuilder.Entity<ClienteModel>().HasOne(p => p.Empresa).WithMany().HasForeignKey(c => c.EmpresaId);
-            modelBuilder.Entity<ClienteModel>().HasOne(g=> g.Grupo).WithMany().HasForeignKey(g => g.idGrupo);
+            modelBuilder.Entity<ClienteModel>().HasOne(g => g.Grupo).WithMany().HasForeignKey(g => g.idGrupo);
             modelBuilder.Entity<ClienteModel>().HasOne(s => s.segmentacao).WithMany().HasForeignKey(s => s.idSegmentacao);
             modelBuilder.Entity<GrupoClienteModel>().HasOne(e => e.Empresa).WithMany().HasForeignKey(e => e.idEmpresa).IsRequired(false);
             modelBuilder.Entity<SegmentacaoModel>().HasOne(e => e.Empresa).WithMany().HasForeignKey(e => e.idEmpresa).IsRequired(false);

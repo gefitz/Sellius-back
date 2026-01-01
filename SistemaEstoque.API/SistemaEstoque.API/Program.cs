@@ -29,6 +29,7 @@ using Sellius.API.Services.Clientes;
 using Sellius.API.Services.Produtos;
 using System.Reflection;
 using Sellius.API.DI;
+using Sellius.API.Models.Empresa;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,7 +54,6 @@ builder.Services.AddCors(opt =>
             .AllowCredentials();
         });
 });
-builder.Services.AddAutoMapper(typeof(UsuarioModel));
 var assembly = Assembly.GetExecutingAssembly();
 #region Repository
 RepositoryInjecton.RepositoryInjecao(assembly, builder.Services);

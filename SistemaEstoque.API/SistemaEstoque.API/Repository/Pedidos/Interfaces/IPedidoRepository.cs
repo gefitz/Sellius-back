@@ -1,5 +1,5 @@
 ﻿using Sellius.API.DTOs.Filtros;
-using Sellius.API.Models;
+using Sellius.API.Models.Pedido;
 using Sellius.API.Repository.Interfaces;
 
 namespace Sellius.API.Repository.Pedidos.Interfaces

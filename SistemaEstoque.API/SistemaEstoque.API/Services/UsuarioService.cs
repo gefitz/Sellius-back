@@ -2,17 +2,18 @@
 using Sellius.API.DTOs;
 using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.DTOs.TabelasDTOs;
-using Sellius.API.Models;
+using Sellius.API.Models.Usuario;
 using Sellius.API.Repository.Interfaces;
+using Sellius.API.Repository.Usuarios;
 using Sellius.API.Repository.Usuarios.Interfaces;
 
 namespace Sellius.API.Services
 {
     public class UsuarioService
     {
-        private readonly IUsuariosRepository _repository;
+        private readonly UsuariosRepository _repository;
 
-        public UsuarioService(IUsuariosRepository repository)
+        public UsuarioService(UsuariosRepository repository)
         {
             _repository = repository;
         }

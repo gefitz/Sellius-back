@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Sellius.API.Context;
 using Sellius.API.DTOs.TabelasDTOs;
-using Sellius.API.Models;
+using Sellius.API.Models.Usuario;
 using Sellius.API.Repository.Menu.Interface;
 
 namespace Sellius.API.Repository.Menu
@@ -109,6 +109,31 @@ namespace Sellius.API.Repository.Menu
                 return true;
             }
             catch (Exception ex)
+            {
+                _log.Error(ex);
+                throw ex;
+            }
+        }
+        public async Task<List<MenuModel>> obterTodosMenus(MenuModel obj)
+        {
+            try
+            {
+
+                var query = _context.Menus.AsQueryable();
+                if (!string.IsNullOrEmpty(obj.DeMenu))
+                    query = query.Where(p => p.DeMenu.Contains(obj.DeMenu));
+
+                if (obj.FAtivo != -1)
+                    query = query.Where(p => p.FAtivo == obj.FAtivo);
+
+                query.Where(p => p.IdEmpresa == obj.IdEmpresa || p.IdEmpresa == null);
+                
+                var ret =  await query
+                    .OrderBy(p => p.Id)
+                    .ToListAsync();
+
+                return ret;
+            }catch(Exception ex)
             {
                 _log.Error(ex);
                 throw ex;

@@ -1,5 +1,5 @@
 ﻿using Sellius.API.Enums;
-using Sellius.API.Models;
+using Sellius.API.Models.Empresa;
 
 namespace Sellius.API.DTOs.CadastrosDTOs
 {

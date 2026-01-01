@@ -2,15 +2,16 @@
 using Sellius.API.DTOs.CadastrosDTOs.ClientesCadastros;
 using Sellius.API.DTOs.TabelasDTOs;
 using Sellius.API.Models.Cliente;
+using Sellius.API.Repository.Cliente;
 using Sellius.API.Repository.Cliente.Interfaces;
 
 namespace Sellius.API.Services.segmentacaos
 {
     public class SegmentacaoService
     {
-        private readonly ISegmentacaoRepository _repository;
+        private readonly SegmentacaoRepository _repository;
 
-        public SegmentacaoService(ISegmentacaoRepository repository)
+        public SegmentacaoService(SegmentacaoRepository repository)
         {
             _repository = repository;
         }
