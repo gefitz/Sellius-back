@@ -21,7 +21,12 @@ namespace Sellius.API.Repository.Login
         {
             try
             {
-                return await _context.Logins.Include(u => u.Usuario).Where(l => l.Email == obj.Email).FirstOrDefaultAsync();
+                return await _context.Logins
+                    .Where(l => l.Email == obj.Email)
+                    .Include(u => u.Usuario)
+                    .ThenInclude(u=> u.TipoUsuario)
+                    .ThenInclude(t => t.TpUsuarioConfigurcao)
+                    .FirstOrDefaultAsync();
             }
             catch (Exception ex)
             {

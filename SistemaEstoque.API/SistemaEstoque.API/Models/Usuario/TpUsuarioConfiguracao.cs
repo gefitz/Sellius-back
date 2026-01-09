@@ -22,11 +22,11 @@ namespace Sellius.API.Models.Usuario
         {
             if (model == null)
             {
-                return new TpUsuarioConfiguracaoDTO();
+                return new TpUsuarioConfiguracao();
             }
 
 
-            return new TpUsuarioConfiguracaoDTO
+            return new TpUsuarioConfiguracao
             {
                 idTpUsuario = model.idTpUsuario,
                 flPodeAprovar = model.flPodeAprovar,

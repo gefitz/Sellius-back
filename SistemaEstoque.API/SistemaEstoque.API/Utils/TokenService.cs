@@ -1,9 +1,12 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Sellius.API.DTOs;
+using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.Models.Usuario;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
+using static System.Net.WebRequestMethods;
 
 namespace Sellius.API.Utils
 {
@@ -21,8 +24,10 @@ namespace Sellius.API.Utils
             string idUsuarioClient = "";
             string user = "";
 
-                idUsuarioClient = login.usuarioId.ToString();
-                user = login.Usuario.Nome;
+            idUsuarioClient = login.usuarioId.ToString();
+            user = login.Usuario.Nome;
+            TpUsuarioConfiguracaoDTO config = login.Usuario.TipoUsuario.TpUsuarioConfigurcao;
+            var configUsuarioJson = JsonSerializer.Serialize(config);
 
             claims = new[]
                   {
@@ -30,7 +35,10 @@ namespace Sellius.API.Utils
                         new Claim("user", user),
                         new Claim(ClaimTypes.Role, login.Usuario.IdTpUsuario.ToString()),
                         new Claim("empresa", login.EmpresaId.ToString()),
-                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                        new Claim("podeCriar", config.flPodeCriar.ToString()),
+                        new Claim("podeExcluir", config.flPodeExcluir.ToString()),
+                        new Claim("config", configUsuarioJson, JsonClaimValueTypes.Json),
                     };
 
             #endregion

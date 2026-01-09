@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Sellius.API.DTOs;
 using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.DTOs.TabelasDTOs;
@@ -19,6 +20,7 @@ namespace Sellius.API.Controllers
         }
 
         [HttpPost("novoUsuario")]
+        [Authorize(Policy = "PodeCriar")]
         public async Task<IActionResult> CadastroUsuario(UsuarioDTO usuarioDTO)
         {
             if (!ModelState.IsValid)

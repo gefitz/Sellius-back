@@ -177,5 +177,10 @@ namespace Sellius.API.Services
             }
             await _repository.AdicionarConfiguracao(tpUsuarioDTO.TpUsuarioConfiguracao);
         }
+
+        public async Task<Response<List<TpUsuarioDTO>>> obterTodosTpUsuarios(int idEmpresa)
+        {
+            return Response<List<TpUsuarioDTO>>.Ok(TpUsuarioDTO.fromToList(await _repository.obterTodosTpUsuarios(idEmpresa)));
+        }
     }
 }

@@ -68,5 +68,17 @@ namespace Sellius.API.Controllers
             if (ret != null && ret.success) { return Ok(ret); }
             return BadRequest(ret);
         }
+        [HttpGet("obterTodosTpUsuarios")]
+        public async Task<IActionResult> obterTodosTpUsuarios()
+        {
+            int idEmpresa = TokenService.RecuperaIdEmpresa(User);
+
+            var ret = await _service.obterTodosTpUsuarios(idEmpresa);
+            if (ret.success)
+            {
+                return Ok(ret);
+            }
+            return BadRequest(ret);
+        }
     }
 }

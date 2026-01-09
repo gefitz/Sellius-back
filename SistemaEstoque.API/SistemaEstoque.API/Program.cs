@@ -1,35 +1,36 @@
-using Sellius.API.Models;
-using Sellius.API.Repository.Interfaces;
-using Sellius.API.Repository;
-using Sellius.API.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
-using Sellius.API.Context;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Sellius.API.Repository.Produto;
-using Sellius.API.Repository.Produto.Interface;
-using Sellius.API.Repository.Fornecedor.Interfaces;
-using Sellius.API.Repository.Fornecedor;
+using Newtonsoft.Json;
+using Sellius.API.Context;
+using Sellius.API.DI;
+using Sellius.API.Models;
+using Sellius.API.Models.Empresa;
+using Sellius.API.Repository;
+using Sellius.API.Repository.CidadeEstado;
 using Sellius.API.Repository.Cliente;
 using Sellius.API.Repository.Cliente.Interfaces;
-using Sellius.API.Utils;
+using Sellius.API.Repository.Empresa;
+using Sellius.API.Repository.Empresa.Interface;
+using Sellius.API.Repository.Fornecedor;
+using Sellius.API.Repository.Fornecedor.Interfaces;
+using Sellius.API.Repository.Interfaces;
 using Sellius.API.Repository.Login;
 using Sellius.API.Repository.Login.Interfaces;
 using Sellius.API.Repository.Pedidos;
 using Sellius.API.Repository.Pedidos.Interfaces;
-using Sellius.API.Repository.Empresa;
+using Sellius.API.Repository.Produto;
+using Sellius.API.Repository.Produto.Interface;
 using Sellius.API.Repository.Usuarios;
 using Sellius.API.Repository.Usuarios.Interfaces;
-using Sellius.API.Repository.Empresa.Interface;
-using Sellius.API.Repository.CidadeEstado;
-using Newtonsoft.Json;
+using Sellius.API.Services;
 using Sellius.API.Services.Clientes;
 using Sellius.API.Services.Produtos;
+using Sellius.API.Utils;
 using System.Reflection;
-using Sellius.API.DI;
-using Sellius.API.Models.Empresa;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,7 +49,7 @@ builder.Services.AddCors(opt =>
     opt.AddPolicy("CorsPolicy",
         build =>
         {
-            build.WithOrigins("http://localhost:4200")
+            build.WithOrigins("http://localhost:4200", "https://localhost:4200")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
@@ -71,7 +72,9 @@ ServicesInjectoncs.ServicesInjecao(assembly, builder.Services);
 builder.Services.AddControllers();
 
 #region JWTBearer
-builder.Services.AddAuthentication("Bearer")
+builder.Services
+    .AddAuthentication("Bearer")
+
 .AddJwtBearer("Bearer", opt =>
 {
 
@@ -87,28 +90,23 @@ builder.Services.AddAuthentication("Bearer")
     };
     opt.Events = new JwtBearerEvents
     {
-        OnAuthenticationFailed = context =>
+        OnMessageReceived = context =>
         {
-            context.NoResult();
-            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            context.Response.ContentType = "application/json";
+            // Pega o token do cookie chamado "auth_token"
 
-            string response =
-                JsonConvert.SerializeObject("The access token provided is not valid.");
-            if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+            if (context.Request.Cookies.ContainsKey("auth_token"))
             {
-                context.Response.Headers.Add("Token-Expired", "true");
-                response =
-                    JsonConvert.SerializeObject("Token is experied.");
+                context.Token = context.Request.Cookies["auth_token"];
             }
 
-            context.Response.WriteAsync(response);
+            // Opcional: também tenta pegar do header Authorization (caso queira suportar os dois)
+            // var bearer = context.Request.Headers.Authorization.FirstOrDefault();
+            // if (!string.IsNullOrEmpty(bearer) && bearer.StartsWith("Bearer "))
+            //     context.Token = bearer["Bearer ".Length..].Trim();
+
             return Task.CompletedTask;
         },
-        OnChallenge = c => {
-            c.HandleResponse();
-            return Task.CompletedTask;
-        }
+
     };
 }
 );
@@ -141,6 +139,42 @@ builder.Services.AddSwaggerGen(x =>
         }
 
     });
+});
+
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    // Quando a autenticação falhar, em vez de redirecionar para /Account/Login,
+    // retorna 401 ou 403 sem redirecionar
+    options.Events.OnRedirectToLogin = context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        return Task.CompletedTask;
+    };
+
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        return Task.CompletedTask;
+    };
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("podeCriar", p => p.RequireClaim("flPodeCriar", "True"));
+
+    options.AddPolicy("podeEditar", p =>  p.RequireClaim("flPodeEditar", "True"));
+
+    options.AddPolicy("podeExcluir", p => p.RequireClaim("flPodeExcluir", "True"));
+
+    options.AddPolicy("podeGerenciarUsuarios", p => p.RequireClaim("flPodeGerenciarUsuarios", "True"));
+    
+    options.AddPolicy("podeInativar", p => p.RequireClaim("flPodeInativar", "True"));
+    
+    options.AddPolicy("podeAprovar", p => p.RequireClaim("flPodeAprovar", "True"));
+
+    options.AddPolicy("podeExportar", p => p.RequireClaim("flPodeExportar", "True"));
+
 });
 #endregion
 

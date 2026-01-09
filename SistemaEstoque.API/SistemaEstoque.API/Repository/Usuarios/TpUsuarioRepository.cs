@@ -211,5 +211,10 @@ namespace Sellius.API.Repository.Usuarios
                 throw ex;
             }
         }
+
+        public async Task<List<TpUsuarioModel>>obterTodosTpUsuarios(int idEmpresa)
+        {
+            return await _context.TpUsuarios.Where(c => c.idEmpresa == idEmpresa).ToListAsync();
+        }
     }
 }
