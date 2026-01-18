@@ -16,9 +16,11 @@ namespace Sellius.API.DTOs.CadastrosDTOs
         [DataType(DataType.Date)]
         public DateTime dthCadastro { get; set; } = DateTime.UtcNow;
         public int EmpresaId { get; set; } = 0;
-        public TpUsuarioDTO TipoUsuario { get; set; }
-        public int idTpUsuario { get; set; }
+        public int tipoUsuario { get; set; }
         public short fAtivo { get; set; } = 0;
+
+        public LoginDTO login { get; set; }
+        public CidadeDTO? Cidade { get; set; }
 
         public static implicit operator UsuarioDTO(UsuarioModel model)
         {
@@ -33,7 +35,9 @@ namespace Sellius.API.DTOs.CadastrosDTOs
                 CEP = model.CEP,
                 dthCadastro = model.dthCadastro,
                 EmpresaId = model.EmpresaId,
-                TipoUsuario = model.TipoUsuario
+                tipoUsuario = model.IdTpUsuario,
+                Cidade = model.Cidade == null ? null : model.Cidade,
+                fAtivo = model.fAtivo
             };
         }
         public static List<UsuarioDTO> FromList(List<UsuarioModel> List)

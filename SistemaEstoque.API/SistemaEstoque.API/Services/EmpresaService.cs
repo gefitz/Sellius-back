@@ -64,7 +64,7 @@ namespace Sellius.API.Services
 
                     empresa.Empresa = emp;
                     empresa.Usuario.EmpresaId = empresa.Empresa.id;
-                    empresa.Usuario.idTpUsuario = 1;
+                    empresa.Usuario.tipoUsuario = 1;
                     Response<UsuarioDTO> responseUsuario = await _usarioService.CriarUsuario(empresa.Usuario);
                     if (responseUsuario == null || !responseUsuario.success)
                         return Response<string>.Failed(responseUsuario.errorMessage);

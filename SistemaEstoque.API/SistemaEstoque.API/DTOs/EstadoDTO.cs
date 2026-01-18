@@ -10,6 +10,10 @@ namespace Sellius.API.DTOs
 
         public static implicit operator EstadoDTO(EstadoModel dto)
         {
+            if(dto == null)
+            {
+                return new EstadoDTO();
+            }
             return new EstadoDTO { id = dto.id, Sigla = dto.Sigla, Estado = dto.Estado };
         }
         public static List<EstadoDTO> toList(IEnumerable<EstadoModel> estados)

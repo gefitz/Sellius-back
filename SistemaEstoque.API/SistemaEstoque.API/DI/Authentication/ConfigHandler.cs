@@ -8,7 +8,7 @@ namespace Sellius.API.DI.Authentication
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, ConfigRequeriment requirement)
         {
-            var configClaim = context.User.FindFirst("configUsuario")?.Value;
+            var configClaim = context.User.FindFirst("config")?.Value;
 
             if (string.IsNullOrEmpty(configClaim))
                 return Task.CompletedTask;

@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Sellius.API.Context;
 using Sellius.API.DI;
+using Sellius.API.DI.Authentication;
 using Sellius.API.Models;
 using Sellius.API.Models.Empresa;
 using Sellius.API.Repository;
@@ -63,6 +65,7 @@ builder.Services.AddScoped<IDbMethods<LicencaModel>, LicencaRepository>();
 builder.Services.AddScoped<LogRepository>();
 builder.Services.AddScoped<IDbMethods<EstadoModel>, EstadoRespository>();
 builder.Services.AddScoped<IDbMethods<CidadeModel>, CidadeRepository>();
+builder.Services.AddScoped<IAuthorizationHandler, ConfigHandler>();
 #endregion
 
 #region Services
@@ -161,20 +164,33 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("podeCriar", p => p.RequireClaim("flPodeCriar", "True"));
+    options.AddPolicy("podeCriar",
+        policy => policy.Requirements.Add(
+            new ConfigRequeriment("flPodeCriar")));
 
-    options.AddPolicy("podeEditar", p =>  p.RequireClaim("flPodeEditar", "True"));
+    options.AddPolicy("podeEditar",
+        policy => policy.Requirements.Add(
+            new ConfigRequeriment("flPodeEditar")));
 
-    options.AddPolicy("podeExcluir", p => p.RequireClaim("flPodeExcluir", "True"));
+    options.AddPolicy("podeExcluir",
+        policy => policy.Requirements.Add(
+            new ConfigRequeriment("flPodeExcluir")));
 
-    options.AddPolicy("podeGerenciarUsuarios", p => p.RequireClaim("flPodeGerenciarUsuarios", "True"));
-    
-    options.AddPolicy("podeInativar", p => p.RequireClaim("flPodeInativar", "True"));
-    
-    options.AddPolicy("podeAprovar", p => p.RequireClaim("flPodeAprovar", "True"));
+    options.AddPolicy("podeGerenciarUsuarios",
+        policy => policy.Requirements.Add(
+            new ConfigRequeriment("flPodeGerenciarUsuarios")));
 
-    options.AddPolicy("podeExportar", p => p.RequireClaim("flPodeExportar", "True"));
+    options.AddPolicy("podeInativar",
+        policy => policy.Requirements.Add(
+            new ConfigRequeriment("flPodeInativar")));
 
+    options.AddPolicy("podeAprovar",
+        policy => policy.Requirements.Add(
+            new ConfigRequeriment("flPodeAprovar")));
+
+    options.AddPolicy("podeExportar",
+        policy => policy.Requirements.Add(
+            new ConfigRequeriment("flPodeExportar")));
 });
 #endregion
 

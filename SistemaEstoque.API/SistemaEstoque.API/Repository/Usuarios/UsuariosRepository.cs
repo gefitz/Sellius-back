@@ -60,7 +60,24 @@ namespace Sellius.API.Repository.Usuarios
                 throw ex;
             }
         }
-        public async Task<UsuarioModel> BuscaDireto(UsuarioModel usuario)
+        public async Task<UsuarioModel> BuscaDireto(UsuarioModel obj)
+        {
+            try
+            {
+                return await _context.Usuarios
+                    .Where(u => u.id == obj.id && u.EmpresaId == obj.EmpresaId)
+                    .Include(u => u.TipoUsuario)
+                    .Include(c => c.Cidade)
+                    .ThenInclude(e => e.Estado)
+                    .FirstOrDefaultAsync();
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+        public async Task<UsuarioModel> BuscaDiretoEmail(UsuarioModel usuario)
         {
             try
             {
@@ -68,7 +85,9 @@ namespace Sellius.API.Repository.Usuarios
                 if (usuario.EmpresaId != 0)
                 {
 
-                    ret = await _context.Usuarios.Where(u => u.Email == usuario.Email && u.EmpresaId == usuario.EmpresaId).FirstOrDefaultAsync();
+                    ret = await _context.Usuarios
+                        .Where(u => u.Email == usuario.Email && u.EmpresaId == usuario.EmpresaId)
+                        .FirstOrDefaultAsync();
                     if (ret != null)
                     {
                         return ret;
@@ -101,9 +120,9 @@ namespace Sellius.API.Repository.Usuarios
                     query = query.Where(p => p.Nome.Contains(obj.Filtro.Nome));
                 if (!string.IsNullOrEmpty(obj.Filtro.Documento))
                     query = query.Where(p => p.Documento.Contains(obj.Filtro.Documento));
-                if (obj.Filtro.fAtivo != 0)
+                if (obj.Filtro.fAtivo != -1)
                     query = query.Where(p => p.fAtivo.Equals(obj.Filtro.fAtivo));
-                if (obj.Filtro.CidadeId != 0)
+                if (obj.Filtro.Cidade.id != -1)
                     query = query.Where(p => p.CidadeId.Equals(obj.Filtro.CidadeId));
                 query = query.Where(u => u.EmpresaId == obj.Filtro.EmpresaId);
 
@@ -111,6 +130,9 @@ namespace Sellius.API.Repository.Usuarios
                 obj.TotalPaginas = (int)Math.Ceiling((double)obj.TotalRegistros / obj.TamanhoPagina);
 
                 obj.Dados = await query
+                    .Include(t => t.TipoUsuario)
+                    .Include(c => c.Cidade)
+                    .ThenInclude(e => e.Estado)
                     .OrderBy(p => p.id)
                     .Skip((obj.PaginaAtual - 1) * obj.TotalRegistros)
                     .Take(obj.TamanhoPagina)

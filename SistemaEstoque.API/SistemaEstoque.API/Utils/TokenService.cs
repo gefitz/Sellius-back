@@ -36,8 +36,6 @@ namespace Sellius.API.Utils
                         new Claim(ClaimTypes.Role, login.Usuario.IdTpUsuario.ToString()),
                         new Claim("empresa", login.EmpresaId.ToString()),
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                        new Claim("podeCriar", config.flPodeCriar.ToString()),
-                        new Claim("podeExcluir", config.flPodeExcluir.ToString()),
                         new Claim("config", configUsuarioJson, JsonClaimValueTypes.Json),
                     };
 

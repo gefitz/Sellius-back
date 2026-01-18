@@ -17,7 +17,7 @@ namespace Sellius.API.DTOs
             {
                 Cidade = cidade.Cidade,
                 id = cidade.id,
-                Estado = cidade.Estado
+                Estado = cidade.Estado == null ? null : cidade.Estado 
             };
         }
         public static List<CidadeDTO> toList(IEnumerable<CidadeModel> cidades)

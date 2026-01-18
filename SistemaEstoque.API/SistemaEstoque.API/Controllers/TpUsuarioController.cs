@@ -10,7 +10,7 @@ using Sellius.API.Utils;
 namespace Sellius.API.Controllers
 {
     [ApiController]
-    [Route("/api/Usuario/[controller]")]
+    [Route("/api/[controller]")]
     [Authorize]
     public class TpUsuarioController : Controller
     {

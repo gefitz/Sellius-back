@@ -25,7 +25,7 @@ namespace Sellius.API.Services
         private readonly LoginRepository _repository;
         private readonly TokenService _tokenService;
         private readonly ClienteService _clienteService;
-        public LoginService(IConfiguration configuration, LoginRepository repository,TokenService tokenService, ClienteService cliente)
+        public LoginService(IConfiguration configuration, LoginRepository repository, TokenService tokenService, ClienteService cliente)
         {
             _configuration = configuration;
             _repository = repository;
@@ -38,7 +38,7 @@ namespace Sellius.API.Services
             model.usuarioId = usuario.id;
             model.EmpresaId = (int)usuario.EmpresaId;
             //model.TipoUsuario = usuario.TipoUsuario;
-           CriptografiaSenha(login.Password,model);
+            CriptografiaSenha(login.Password, model);
 
             if (await _repository.Create(model))
             {
@@ -54,10 +54,14 @@ namespace Sellius.API.Services
                 LoginModel usuarioAutenticar = await _repository.BuscaDireto(login);
                 if (usuarioAutenticar == null)
                     return Response<string>.Failed("Falha ao encontrar o email cadastrado");
-                //if (!await ValidaSenha(usuarioAutenticar, login.Password))
-                //{
-                //    return Response<string>.Failed("Senha incorreta");
-                //}
+                if (!await ValidaSenha(usuarioAutenticar, login.Password))
+                {
+                    return Response<string>.Failed("Senha incorreta");
+                }
+                if (usuarioAutenticar.Usuario.fAtivo == 0)
+                {
+                    return Response<string>.Failed("Usuario inativo, contate o admistrador do sistema para mais informacoes");
+                }
                 return await _tokenService.GerarCookie(usuarioAutenticar);
 
             }
@@ -73,7 +77,7 @@ namespace Sellius.API.Services
                 LoginModel loginRaiz = await _repository.BuscaDireto(login);
                 if (loginRaiz == null)
                     return Response<LoginDTO>.Failed("Usuario não encontrado");
-                 CriptografiaSenha(login.Password,loginRaiz);
+                CriptografiaSenha(login.Password, loginRaiz);
                 if (!await _repository.Update(loginRaiz))
                     return Response<LoginDTO>.Failed("Falha ao tentar alterar a senha");
             }
@@ -91,7 +95,7 @@ namespace Sellius.API.Services
                 loginModel.usuarioId = null;
                 //loginModel.TipoUsuario = TipoUsuario.Cliente;
                 loginModel = CriptografiaSenha(login.Password, loginModel);
-                if(await _repository.VereficaEmailExistente(loginModel))
+                if (await _repository.VereficaEmailExistente(loginModel))
                 {
                     return Response<string>.Failed("Esse email já está sendo utilizado na sua base");
                 }
@@ -107,7 +111,8 @@ namespace Sellius.API.Services
                 }
                 return Response<string>.Failed("Falha ao criar o login de acesso do cliente");
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return Response<string>.Failed(ex.Message);
             }
         }
@@ -142,8 +147,8 @@ namespace Sellius.API.Services
             {
                 using (var hmac = new HMACSHA512())
                 {
-                    login.Hash  = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-                   login.Salt = hmac.Key;
+                    login.Hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+                    login.Salt = hmac.Key;
                 }
                 return login;
             }

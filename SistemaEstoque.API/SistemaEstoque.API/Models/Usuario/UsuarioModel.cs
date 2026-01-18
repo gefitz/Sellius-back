@@ -1,4 +1,5 @@
 ﻿using Sellius.API.DTOs.CadastrosDTOs;
+using Sellius.API.DTOs.Filtros;
 using Sellius.API.Enums;
 using Sellius.API.Models.Empresa;
 using Sellius.API.Models.Pedido;
@@ -15,7 +16,7 @@ namespace Sellius.API.Models.Usuario
         public string Documento { get; set; }
         public string Email { get; set; }
         public int CidadeId { get; set; }
-        public CidadeModel Cidade { get; set; }
+        public CidadeModel Cidade { get; set; } = new CidadeModel();
         public string CEP { get; set; }
         public string Rua { get; set; }
 
@@ -37,12 +38,23 @@ namespace Sellius.API.Models.Usuario
                 Documento = dto.Documento,
                 Email = dto.Email,
                 Rua = dto.Rua,
-                CidadeId =  dto.CidadeId,
+                CidadeId = dto.CidadeId,
                 CEP = dto.CEP,
-                dthCadastro = dto.dthCadastro,  
+                dthCadastro = dto.dthCadastro,
                 EmpresaId = dto.EmpresaId,
-                TipoUsuario = dto.TipoUsuario,
+                IdTpUsuario = dto.tipoUsuario,
+                fAtivo = dto.fAtivo,
             };
         }
+        public static implicit operator UsuarioModel(UsuarioFiltro filtro) => new UsuarioModel
+        {
+            Nome = filtro.Nome,
+            Cidade = new CidadeModel() { id = filtro.Cidade,EstadoId = filtro.Estado},
+            IdTpUsuario = filtro.TpUsuario,
+            Documento = filtro.Cpf,
+            fAtivo = filtro.FAtivo,
+            EmpresaId = filtro.idEmpresa,
+
+        };
     }
 }
