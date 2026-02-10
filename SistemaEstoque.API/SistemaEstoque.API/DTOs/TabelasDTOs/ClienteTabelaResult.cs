@@ -7,17 +7,17 @@ namespace Sellius.API.DTOs.TabelasDTOs
     public class ClienteTabelaResult
     {
         public int id { get; set; }
-        public string Nome { get; set; }
-        public string Documento { get; set; }
-        public string Telefone { get; set; }
-        public string Email { get; set; }
-        public string CidadeEstado { get; set; }
-        public string Rua { get; set; }
+        public string? Nome { get; set; }
+        public string? Documento { get; set; }
+        public string? Telefone { get; set; }
+        public string? Email { get; set; }
+        public string? CidadeEstado { get; set; }
+        public string? Rua { get; set; }
         public DateTime dthCadastro { get; set; }
         public DateTime dthAlteracao { get; set; }
         public short fAtivo { get; set; }
-        public string Grupo { get; set; }
-        public string Segmentacao { get; set; }
+        public string? Grupo { get; set; }
+        public string? Segmentacao { get; set; }
         public static implicit operator ClienteTabelaResult(ClienteModel model)
         {
             return new ClienteTabelaResult

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Sellius.API.Context;
+using Sellius.API.DTOs.Filtros;
 using Sellius.API.DTOs.TabelasDTOs;
 using Sellius.API.Models;
 using Sellius.API.Repository.Fornecedor.Interfaces;
@@ -20,7 +21,7 @@ namespace Sellius.API.Repository.Fornecedor
         {
             try
             {
-                return await _context.Fornecedores.Where(f => f.id.Equals(obj.id)).Include(c=>c.Cidade).ThenInclude(e=>e.Estado).AsNoTracking().FirstOrDefaultAsync();
+                return await _context.Fornecedores.Where(f => f.id.Equals(obj.id)).Include(c => c.Cidade).ThenInclude(e => e.Estado).AsNoTracking().FirstOrDefaultAsync();
             }
             catch (Exception ex)
             {
@@ -32,7 +33,7 @@ namespace Sellius.API.Repository.Fornecedor
         public async Task<bool> Create(FornecedoresModel obj)
         {
             try
-            {   
+            {
                 _context.Fornecedores.Add(obj);
                 await _context.SaveChangesAsync();
                 return true;
@@ -71,10 +72,10 @@ namespace Sellius.API.Repository.Fornecedor
                 if (obj.Filtro.fAtivo != -1)
                     query = query.Where(p => p.fAtivo == obj.Filtro.fAtivo);
 
-                if (obj.Filtro.CidadeId != 0)
+                if (obj.Filtro.CidadeId != -1)
                     query = query.Where(p => p.CidadeId == obj.Filtro.CidadeId);
 
-                if (obj.Filtro.Cidade != null && obj.Filtro.Cidade.EstadoId != 0)
+                if (obj.Filtro.Cidade != null && obj.Filtro.Cidade.EstadoId != -1)
                     query = query.Where(p => p.Cidade != null && p.Cidade.EstadoId == obj.Filtro.Cidade.EstadoId);
 
                 query = query.Where(p => p.EmpresaId == obj.Filtro.EmpresaId);
@@ -84,7 +85,7 @@ namespace Sellius.API.Repository.Fornecedor
 
                 obj.Dados = await query
                     .OrderBy(p => p.id)
-                    .Skip((obj.PaginaAtual - 1) * obj.TotalRegistros)
+                    .Skip(obj.PaginaAtual * obj.TotalRegistros)
                     .Take(obj.TamanhoPagina)
                     .Include(c => c.Cidade)
                         .ThenInclude(c => c.Estado)
@@ -116,6 +117,76 @@ namespace Sellius.API.Repository.Fornecedor
         public Task<List<FornecedoresModel>> CarregarComboFornecedor(FornecedoresModel model)
         {
             return _context.Fornecedores.Where(f => f.EmpresaId == model.EmpresaId).ToListAsync();
+        }
+
+        public bool addFornecedorXCliente(FornecedorXCliente model)
+        {
+            try
+            {
+                _context.FornecedorXClientes.Add(model);
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logRepository.Error(ex);
+                return false;
+            }
+        }
+        public async Task<PaginacaoTabelaResult<FornecedorXClienteDTO, FornecedorXClienteFiltro>> obterFornecedorXClientePaginada(PaginacaoTabelaResult<FornecedorXClienteDTO, FornecedorXClienteFiltro> obj)
+        {
+            try
+            {
+
+                var query = _context.FornecedorXClientes.AsQueryable();
+
+                //Filtro que vai ser utilzado na tela do fornecedor
+                if(obj.Filtro.idFornecedor != 0)
+                {
+                    query.Where(f => f.idFornecedor == obj.Filtro.idFornecedor);
+                }
+
+                //Filtro que vai ser utilizado na tela do cliente
+                if(obj.Filtro.idCliente != 0)
+                {
+                    query.Where(f => f.idCliente == obj.Filtro.idCliente);
+                }
+                
+
+                obj.TotalRegistros = await query.CountAsync();
+                obj.TotalPaginas = (int)Math.Ceiling((double)obj.TotalRegistros / obj.TamanhoPagina);
+
+                List<FornecedorXCliente> dados =  await query
+                    .Skip(obj.PaginaAtual * obj.TotalRegistros)
+                    .Take(obj.TamanhoPagina)
+                    .Include(c => c.Cliente)
+                    .ThenInclude(ci=> ci.Cidade)
+                    .ThenInclude(e => e.Estado)
+                    .Include(f => f.Fornecedor)
+                    .ToListAsync();
+
+                obj.Dados = PaginacaoTabelaResult<FornecedorXClienteDTO,FornecedorXCliente>.fromList<FornecedorXCliente,FornecedorXClienteDTO>(dados,fxc => fxc);
+
+                return obj;
+            }
+            catch (Exception ex)
+            {
+                _logRepository.Error(ex);
+                return null;
+            }
+        }
+        public async Task<bool> removerVinculoFornecedorXCliente(FornecedorXCliente fornecedorXCliente)
+        {
+            try
+            {
+                _context.FornecedorXClientes.Remove(fornecedorXCliente);
+                _context.SaveChanges();
+                return true;
+            }catch(Exception ex)
+            {
+                _logRepository.Error(ex);
+                return false;
+            }
         }
     }
 }

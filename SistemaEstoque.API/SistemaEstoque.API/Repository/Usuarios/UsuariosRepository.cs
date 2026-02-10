@@ -134,7 +134,7 @@ namespace Sellius.API.Repository.Usuarios
                     .Include(c => c.Cidade)
                     .ThenInclude(e => e.Estado)
                     .OrderBy(p => p.id)
-                    .Skip((obj.PaginaAtual - 1) * obj.TotalRegistros)
+                    .Skip((obj.PaginaAtual) * obj.TotalRegistros)
                     .Take(obj.TamanhoPagina)
                     .ToListAsync();
 

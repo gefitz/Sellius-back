@@ -113,7 +113,7 @@ namespace Sellius.API.Services
                     TamanhoPagina = modelPaginacao.TamanhoPagina,
                     TotalPaginas = modelPaginacao.TotalPaginas,
                     TotalRegistros = modelPaginacao.TotalRegistros,
-                    Dados = MenuDTO.FromList(modelPaginacao.Dados)
+                    Dados = PaginacaoTabelaResult<MenuDTO,MenuFiltro>.fromList<MenuModel,MenuDTO>(modelPaginacao.Dados, m => m)
                 };
                 return Response<PaginacaoTabelaResult<MenuDTO, MenuFiltro>>.Ok(paginacao);
             }

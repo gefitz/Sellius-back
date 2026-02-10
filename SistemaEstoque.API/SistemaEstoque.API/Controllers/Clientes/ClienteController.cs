@@ -21,7 +21,6 @@ namespace Sellius.API.Controllers.Clientes
             _service = service;
         }
         [HttpPost("obterClientes")]
-        [Authorize(Roles ="Funcionario,Adm,Gerente")]
         public async Task<IActionResult> ObterClientes([FromBody] PaginacaoTabelaResult<ClienteTabelaResult, FiltroCliente> clienteDTO)
         {
             if(clienteDTO.Filtro == null)
@@ -37,8 +36,8 @@ namespace Sellius.API.Controllers.Clientes
             }
             return Ok(ret);
         }
-        [HttpPost]
-        [Authorize(Roles ="Funcionario,Adm,Gerente")]
+        [HttpPost("cadastrarCliente")]
+        [Authorize(Policy ="podeCriar")]
         public async Task<IActionResult> Cadastrar(ClienteDTO cliente)
         {
             cliente.EmpresaId = TokenService.RecuperaIdEmpresa(User);
@@ -58,7 +57,7 @@ namespace Sellius.API.Controllers.Clientes
 
         }
         [HttpDelete]
-        [Authorize(Roles = "Funcionario,Adm,Gerente")]
+        [Authorize(Policy = "podeCriar")]
         public async Task<IActionResult> InativarCliente(int id)
         {
             var ret = await _service.InativarCliente(id);
@@ -70,7 +69,7 @@ namespace Sellius.API.Controllers.Clientes
 
         }
         [HttpPut]
-        [Authorize(Roles = "Funcionario,Adm,Gerente")]
+        [Authorize(Policy = "podeCriar")]
         public async Task<IActionResult> UpdateCliente(ClienteDTO cliente)
         {
             cliente.EmpresaId = TokenService.RecuperaIdEmpresa(User);

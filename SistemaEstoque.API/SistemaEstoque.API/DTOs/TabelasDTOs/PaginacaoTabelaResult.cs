@@ -11,17 +11,17 @@
 
 
         //Tentar implementar futuramente um fromList dinamico na paginação assim matando o from list em cada dtos
-        //public static List<model> fromList(List<model> lista)
-        //{
-        //    List<model> ret = new List<model>();
+        public static List<TDto> fromList<model,TDto>(List<model> lista,Func<model,TDto>converter)
+        {
+            var ret = new List<TDto>();
 
-        //    for (int i = 0; i < lista.Count; i++)
-        //    {
-        //        ret.Add(lista[i]);
-        //    }
-        //    return ret;
+            for (int i = 0; i < lista.Count; i++)
+            {
+                ret.Add(converter(lista[i]));
+            }
+            return ret;
 
-        //}
+        }
         public static PaginacaoTabelaResult<dto,filtro> RetPaginacao<model,filtroModel>(PaginacaoTabelaResult<model, filtroModel> obj){
             return new PaginacaoTabelaResult<dto, filtro>
             {
@@ -31,5 +31,6 @@
                 TamanhoPagina = obj.TamanhoPagina,
             };
         }
+        
     }
 }

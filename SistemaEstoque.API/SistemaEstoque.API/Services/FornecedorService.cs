@@ -66,13 +66,13 @@ namespace Sellius.API.Services
             var fornecedorOriginal = await BuscarId(dto.id);
             if (!fornecedorOriginal.success)
                 return Response<FornecedorDTO>.Failed("Fornecedor não foi encontrado");
-            
+
 
             FornecedoresModel model = dto;
             model.dthAlteracao = DateTime.UtcNow;
             model.dthCadastro = (DateTime)fornecedorOriginal.Data.dthCadastro;
-            if(fornecedorOriginal.Data.cidade != null)
-            model.Cidade = fornecedorOriginal.Data.cidade;
+            if (fornecedorOriginal.Data.cidade != null)
+                model.Cidade = fornecedorOriginal.Data.cidade;
 
             if (await _repository.Update(model))
                 return Response<FornecedorDTO>.Ok(model);
@@ -87,10 +87,39 @@ namespace Sellius.API.Services
             }
             return await UpdateFornecedor(dto);
         }
-        public async Task<Response<List<FornecedorDTO>>>CarregarComboFornecedor(FornecedorDTO fornecedor)
+        public async Task<Response<List<FornecedorDTO>>> CarregarComboFornecedor(FornecedorDTO fornecedor)
         {
             var fornecedoRet = await _repository.CarregarComboFornecedor(fornecedor);
             return Response<List<FornecedorDTO>>.Ok(FornecedorDTO.FromList(fornecedoRet));
         }
+        public async Task<Response<FornecedorXClienteDTO>> AddFornecedorXCliente(FornecedorXClienteDTO fornecedorXCliente)
+        {
+            if (_repository.addFornecedorXCliente(fornecedorXCliente))
+            {
+                return Response<FornecedorXClienteDTO>.Ok();
+            }
+            return Response<FornecedorXClienteDTO>.Failed("Falha ao tenta criar um vinculo com fonecedor ao cliente");
+        }
+
+        public async Task<Response<PaginacaoTabelaResult<FornecedorXClienteDTO, FornecedorXClienteFiltro>>> ObterFornecedorXClientePaginada(PaginacaoTabelaResult<FornecedorXClienteDTO, FornecedorXClienteFiltro> fornecedorXCliente)
+        {
+            try
+            {
+                fornecedorXCliente = await _repository.obterFornecedorXClientePaginada(fornecedorXCliente);
+                return Response<PaginacaoTabelaResult<FornecedorXClienteDTO, FornecedorXClienteFiltro>>.Ok(fornecedorXCliente);
+            }catch (Exception ex) {
+                
+                return Response<PaginacaoTabelaResult<FornecedorXClienteDTO, FornecedorXClienteFiltro>>.Failed(ex.Message);
+            }
+        }
+
+        public async Task<Response<FornecedorXClienteDTO>> removerVinculoFornecedorXCliente(FornecedorXClienteDTO fornecedorXCliente)
+        {
+            if(await _repository.removerVinculoFornecedorXCliente(fornecedorXCliente))
+            {
+                return Response<FornecedorXClienteDTO>.Ok();
+            }
+            return Response<FornecedorXClienteDTO>.Failed("Falha ao tentar remover o vinculo");
+        } 
     }
 }

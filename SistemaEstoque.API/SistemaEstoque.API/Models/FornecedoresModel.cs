@@ -22,6 +22,8 @@ namespace Sellius.API.Models
         public string Rua { get; set; }
         public string? Complemento { get; set; }
 
+        public List<FornecedorXCliente> FornecedorXClientes { get; set; }
+
         public static implicit operator  FornecedoresModel(FornecedorDTO model)
         {
             return new FornecedoresModel

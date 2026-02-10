@@ -4,6 +4,7 @@ using Sellius.API.DTOs;
 using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.DTOs.Filtros;
 using Sellius.API.DTOs.TabelasDTOs;
+using Sellius.API.Models;
 using Sellius.API.Services;
 using Sellius.API.Utils;
 using System.Text;
@@ -22,8 +23,12 @@ namespace Sellius.API.Controllers
             _service = service;
         }
         [HttpPost("ObterTabelaFornecedor")]
-        public async Task<IActionResult> ObterTpProduto([FromBody]PaginacaoTabelaResult<FornecedorTabelaResult, FiltroFornecedor> tipoProdutoDTO)
+        public async Task<IActionResult> ObterTabelaFornecedor([FromBody] PaginacaoTabelaResult<FornecedorTabelaResult, FiltroFornecedor> tipoProdutoDTO)
         {
+            if(tipoProdutoDTO.Filtro == null)
+            {
+                tipoProdutoDTO.Filtro = new FiltroFornecedor();
+            }
             tipoProdutoDTO.Filtro.EmpresaId = TokenService.RecuperaIdEmpresa(User);
             var ret = await _service.BuscarFornecedor(tipoProdutoDTO);
             if (!ret.success)
@@ -35,9 +40,9 @@ namespace Sellius.API.Controllers
         [HttpGet("carregarComboFornecedor")]
         public async Task<IActionResult> CarregarComboFornecedor()
         {
-            FornecedorDTO fornecedor = new FornecedorDTO() { EmpresaId = TokenService.RecuperaIdEmpresa(User)};
+            FornecedorDTO fornecedor = new FornecedorDTO() { EmpresaId = TokenService.RecuperaIdEmpresa(User) };
             var response = await _service.CarregarComboFornecedor(fornecedor);
-            return  Ok(response);
+            return Ok(response);
         }
         [HttpGet]
         public async Task<IActionResult> obterFornecedor(int idFornecedor)
@@ -90,6 +95,38 @@ namespace Sellius.API.Controllers
             }
             //ViewBag.Error = _log.Messagem;
             return BadRequest(result);
+
+        }
+        [HttpPost("addFornecedorXCliente")]
+        public async Task<IActionResult> AddFornecedorXCliente(FornecedorXClienteDTO dto)
+        {
+            var result = await _service.AddFornecedorXCliente(dto);
+            if (result.success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpPost("obterFornecedorXClientePaginada")]
+        public async Task<IActionResult> obterFornecedorXClientePaginada(PaginacaoTabelaResult<FornecedorXClienteDTO, FornecedorXClienteFiltro> dto)
+        {
+            var result = await _service.ObterFornecedorXClientePaginada(dto);
+            if (result.success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpPost("removerVinculoFornecedorXCliente")]
+        public async Task<IActionResult> removerVinculoFornecedorXCliente(FornecedorXClienteDTO fornecedorXCliente)
+        {
+            var ret = await _service.removerVinculoFornecedorXCliente(fornecedorXCliente);
+            if(ret.success) {
+                return Ok(ret);
+            }
+            return BadRequest(ret);
 
         }
     }

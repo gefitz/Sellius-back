@@ -88,7 +88,7 @@ namespace Sellius.API.Repository.Cliente
 
                 obj.Dados = await query
                     .OrderBy(p => p.id)
-                    .Skip((obj.PaginaAtual - 1) * obj.TotalRegistros)
+                    .Skip((obj.PaginaAtual) * obj.TotalRegistros)
                     .Take(obj.TamanhoPagina)
                     .Include(c => c.Cidade)
                     .ThenInclude(e => e.Estado)

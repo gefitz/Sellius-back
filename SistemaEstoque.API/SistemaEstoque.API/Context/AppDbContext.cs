@@ -18,11 +18,12 @@ namespace Sellius.API.Context
         public DbSet<LicencaModel> Licencas { get; set; }
         public DbSet<LogModel> Logs { get; set; }
         public DbSet<MenuModel> Menus { get; set; }
+        public DbSet<FornecedorXCliente> FornecedorXClientes { get; set; }
 
 
 
         #region Usuario
-            public DbSet<LoginModel> Logins { get; set; }
+        public DbSet<LoginModel> Logins { get; set; }
             public DbSet<UsuarioModel> Usuarios { get; set; }
             public DbSet<TpUsuarioModel> TpUsuarios { get; set; }
             public DbSet<TpUsuarioXMenu> TpUsuariosXMenus { get; set; }
@@ -32,6 +33,7 @@ namespace Sellius.API.Context
         #region Produtos
             public DbSet<ProdutoModel> Produtos { get; set; }
             public DbSet<TipoProdutoModel> TpProdutos { get; set; }
+            public DbSet<TabelaPrecoModel> TabelaPrecos { get; set; }
 
         #endregion
 
@@ -51,6 +53,7 @@ namespace Sellius.API.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             #region Relações de tabela
+
             #region PedidoxProduto
             modelBuilder.Entity<PedidoXProduto>()
     .HasOne(p => p.Pedido)
@@ -102,6 +105,11 @@ namespace Sellius.API.Context
             modelBuilder.Entity<ProdutoModel>().HasOne(e => e.Empresa).WithMany().HasForeignKey(p => p.EmpresaId);
             modelBuilder.Entity<ProdutoModel>().HasOne(f => f.Fornecedor);
             modelBuilder.Entity<TipoProdutoModel>().HasOne(e => e.Empresa).WithMany().HasForeignKey(e => e.Empresaid);
+            modelBuilder.Entity<TabelaPrecoModel>().HasOne(e => e.empresa).WithMany().HasForeignKey(e => e.idEmpresa);
+            modelBuilder.Entity<TabelaPrecoXProdutoModel>()
+                .HasKey(txp => new {txp.idTabelaPreco,txp.idProduto});
+            modelBuilder.Entity<TabelaPrecoXProdutoModel>().HasOne(txp => txp.TabelaPreco).WithMany(t => t.TabelaPrecoXProdutos).HasForeignKey(txp => txp.idTabelaPreco);
+            modelBuilder.Entity<TabelaPrecoXProdutoModel>().HasOne(txp => txp.Produto).WithMany(t => t.TabelaPrecoXProdutos).HasForeignKey(txp=>txp.idProduto);
             #endregion
 
             #region Cliente
@@ -129,6 +137,12 @@ namespace Sellius.API.Context
             modelBuilder.Entity<CidadeModel>()
                 .HasOne(c => c.Estado).WithMany(e => e.Cidade)
                 .HasForeignKey(c => c.EstadoId);
+
+            modelBuilder.Entity<FornecedorXCliente>()
+                .HasKey(fxc => new {fxc.idCliente ,fxc.idFornecedor });
+            modelBuilder.Entity<FornecedorXCliente>().HasOne(fxc => fxc.Cliente).WithMany(fxc => fxc.FornecedorXClientes).HasForeignKey(fxc=> fxc.idCliente);
+            modelBuilder.Entity<FornecedorXCliente>().HasOne(fxc => fxc.Fornecedor).WithMany(fxc => fxc.FornecedorXClientes).HasForeignKey(fxc=> fxc.idFornecedor);
+
 
             #endregion
         }

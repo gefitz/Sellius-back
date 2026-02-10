@@ -27,6 +27,8 @@ namespace Sellius.API.Models.Produto
         public OrigemTabelaPreco origemTabelaPreco {  get; set; }
         public int EmpresaId { get; set; }
 
+        public List<TabelaPrecoXProdutoModel> TabelaPrecoXProdutos { get; set; }
+
 
         #region Mapper
         public static implicit operator ProdutoModel(FiltroProduto filtroProduto)

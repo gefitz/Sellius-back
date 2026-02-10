@@ -29,6 +29,7 @@ namespace Sellius.API.Models.Cliente
         public short fAtivo { get; set; }
         public int? idGrupo { get; set; }
         public GrupoClienteModel Grupo { get; set; }
+        public List<FornecedorXCliente> FornecedorXClientes { get; set; }
 
         public static implicit operator ClienteModel(ClienteDTO dto)
         {
