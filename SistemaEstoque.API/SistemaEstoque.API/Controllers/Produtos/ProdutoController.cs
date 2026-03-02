@@ -8,7 +8,7 @@ using Sellius.API.DTOs.Filtros;
 using Sellius.API.Utils;
 using Sellius.API.Services.Produtos;
 
-namespace Sellius.API.Controllers
+namespace Sellius.API.Controllers.Produtos
 {
     [ApiController]
     [Route("/api/[controller]")]
@@ -73,6 +73,19 @@ namespace Sellius.API.Controllers
                 return Ok(ret);
             }
             return BadRequest(ret);
+        }
+        [HttpGet("recuperarProdutosComTabelaPreco")]
+        public async Task<IActionResult> RecuperarProdutosComTabelaPreco(int idCliente)
+        {
+            int idEmpresa = TokenService.RecuperaIdEmpresa(User);
+
+            var resp = await _service.recuperarProdutosComTabelaPreco(idEmpresa,idCliente);
+
+            if (resp.success)
+            {
+                return Ok(resp);
+            }
+            return BadRequest(resp);
         }
 
     }

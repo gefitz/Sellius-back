@@ -7,7 +7,7 @@ using Sellius.API.DTOs.TabelasDTOs;
 using Microsoft.AspNetCore.Authorization;
 using Sellius.API.Utils;
 using Sellius.API.Services.Produtos;
-namespace Sellius.API.Controllers
+namespace Sellius.API.Controllers.Produtos
 {
     [ApiController]
     [Route("/api/[controller]")]

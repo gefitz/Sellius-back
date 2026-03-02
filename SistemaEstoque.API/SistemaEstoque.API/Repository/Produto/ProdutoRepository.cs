@@ -12,6 +12,7 @@ namespace Sellius.API.Repository.Produto
     {
         private readonly AppDbContext _context;
         private readonly LogRepository _log;
+
         public ProdutoRepository(AppDbContext context, LogRepository log)
         {
             _context = context;
@@ -24,11 +25,13 @@ namespace Sellius.API.Repository.Produto
             try
             {
 
-                var produto = await _context.Produtos.Include(tp => tp.tipoProduto).Include(f=>f.Fornecedor).Where(p => p.id == obj.id).AsNoTracking().FirstOrDefaultAsync();
-                if(produto != null)
+                var produto = await _context.Produtos.Include(tp => tp.tipoProduto).Include(f => f.Fornecedor)
+                    .Where(p => p.id == obj.id).AsNoTracking().FirstOrDefaultAsync();
+                if (produto != null)
                 {
                     return produto;
                 }
+
                 return null;
             }
             catch (Exception ex)
@@ -67,27 +70,28 @@ namespace Sellius.API.Repository.Produto
             }
         }
 
-        public async Task<PaginacaoTabelaResult<ProdutoModel,FiltroProduto>> Filtrar(PaginacaoTabelaResult<ProdutoModel,FiltroProduto> obj)
+        public async Task<PaginacaoTabelaResult<ProdutoModel, FiltroProduto>> Filtrar(
+            PaginacaoTabelaResult<ProdutoModel, FiltroProduto> obj)
         {
             try
             {
                 FiltroProduto filtro = (FiltroProduto)obj.Filtro;
                 var query = _context.Produtos.AsQueryable();
 
-                if(!string.IsNullOrEmpty(filtro.Nome))
+                if (!string.IsNullOrEmpty(filtro.Nome))
                     query = query.Where(p => p.Nome.Contains(filtro.Nome));
-                if(filtro.tipoProdutoId != 0)
+                if (filtro.tipoProdutoId != 0)
                     query = query.Where(p => p.TipoProdutoId.Equals(filtro.tipoProdutoId));
                 if (filtro.fAtivo != -1)
                     query = query.Where(p => p.fAtivo.Equals(filtro.fAtivo));
-                if(filtro.FornecedorId != 0)
+                if (filtro.FornecedorId != 0)
                     query = query.Where(p => p.FornecedorId.Equals(filtro.FornecedorId));
                 query.Where(p => p.EmpresaId == 0);
-                
+
                 obj.TotalRegistros = query.Count();
                 obj.TotalPaginas = (int)Math.Ceiling((double)obj.TotalRegistros / obj.TamanhoPagina);
 
-                obj.Dados =   await query
+                obj.Dados = await query
                     .Include(tp => tp.tipoProduto)
                     .Include(f => f.Fornecedor)
                     .OrderBy(p => p.id)
@@ -120,6 +124,42 @@ namespace Sellius.API.Repository.Produto
             catch (Exception ex)
             {
                 _log.Error(ex);
+                throw ex;
+            }
+
+        }
+
+        public async Task<List<TabelaPrecoXProdutoModel>> recuperarProdutosComTabelaPreco(int idEmpresa, int idCliente)
+        {
+            try
+            {
+                var fxc = await _context.FornecedorXClientes.Where(fxc => fxc.idCliente == idCliente)
+                    .FirstOrDefaultAsync();
+
+                if (fxc == null)
+                {
+                    return null;
+                }
+
+                var tabelaPreco = await _context.TabelaPrecos.Where(t =>
+                        t.idReferenciaOrigem == fxc.idFornecedor && t.dtInicioVigencia <= DateTime.UtcNow)
+                    .OrderBy(t => t.dtInicioVigencia)
+                    .FirstOrDefaultAsync();
+
+                if (tabelaPreco == null)
+                {
+                    return null;
+                }
+
+                var tabelaPrecoXProduto = await _context.TabelaPrecoXProdutoModels
+                    .Where(p => p.idTabelaPreco == tabelaPreco.Id).ToListAsync();
+
+                return tabelaPrecoXProduto;
+
+            }
+            catch (Exception ex)
+            {
+                this._log.Error(ex);
                 throw ex;
             }
 

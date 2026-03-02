@@ -12,19 +12,28 @@ namespace Sellius.API.Services.Produtos
 {
     public class ProdutoService
     {
-        private readonly ProdutoRepository _repository;
+        private readonly IProdutoRepository _repository;
 
 
-        public ProdutoService(ProdutoRepository repository)
+        public ProdutoService(IProdutoRepository repository)
         {
             _repository = repository;
         }
         public async Task<Response<ProdutoDTO>> CadastrarProduto(ProdutoDTO produtoDTO)
         {
-            ProdutoModel produto = produtoDTO;
-            if (await _repository.Create(produto))
-                return Response<ProdutoDTO>.Ok();
-            return Response<ProdutoDTO>.Failed("Falha ao cadastrar o produto");
+            try
+            {
+                ProdutoModel produto = produtoDTO;
+                if (await _repository.Create(produto))
+                    return Response<ProdutoDTO>.Ok(produto);
+                return Response<ProdutoDTO>.Failed("Falha ao cadastrar o produto");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            
         }
         public async Task<Response<PaginacaoTabelaResult<ProdutoTabela, FiltroProduto>>> FiltrarProduto(PaginacaoTabelaResult<ProdutoDTO, FiltroProduto> paginacao)
         {
@@ -83,6 +92,23 @@ namespace Sellius.API.Services.Produtos
             if (produto == null)
                 return Response<ProdutoDTO>.Failed("Produto não encontrado");
             return Response<ProdutoDTO>.Ok(produto);
+        }
+        public async Task<Response<List<TabelaPrecoXProdutoModel>>> recuperarProdutosComTabelaPreco(int idEmpresa,int idCliente)
+        {
+            /*
+            try
+            {
+                /*var tabelaPrecoXProduto = await _repository.recuperarProdutosComTabelaPreco(idEmpresa, idCliente);
+                #1#
+                
+                return Response<List<TabelaPrecoXProdutoModel>>.Ok(tabelaPrecoXProduto);
+            }
+            catch (Exception e)
+            {
+                return  Response<List<TabelaPrecoXProdutoModel>>.Failed(e.Message);    
+            }
+            */
+            return null;
         }
     }
 }
