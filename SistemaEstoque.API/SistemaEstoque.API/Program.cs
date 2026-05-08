@@ -1,35 +1,12 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
-using Sellius.API.Context;
 using Sellius.API.DI;
 using Sellius.API.DI.Authentication;
-using Sellius.API.Models;
-using Sellius.API.Models.Empresa;
-using Sellius.API.Repository;
-using Sellius.API.Repository.CidadeEstado;
-using Sellius.API.Repository.Cliente;
-using Sellius.API.Repository.Cliente.Interfaces;
-using Sellius.API.Repository.Empresa;
-using Sellius.API.Repository.Empresa.Interface;
-using Sellius.API.Repository.Fornecedor;
-using Sellius.API.Repository.Fornecedor.Interfaces;
-using Sellius.API.Repository.Interfaces;
-using Sellius.API.Repository.Login;
-using Sellius.API.Repository.Login.Interfaces;
-using Sellius.API.Repository.Pedidos;
-using Sellius.API.Repository.Pedidos.Interfaces;
-using Sellius.API.Repository.Produto;
-using Sellius.API.Repository.Produto.Interface;
-using Sellius.API.Repository.Usuarios;
-using Sellius.API.Repository.Usuarios.Interfaces;
-using Sellius.API.Services;
-using Sellius.API.Services.Clientes;
-using Sellius.API.Services.Produtos;
+using Sellius.API.Infra.Context;
+using Sellius.API.Infra.Repository;
 using Sellius.API.Utils;
 using System.Reflection;
 using System.Text;
@@ -61,10 +38,7 @@ var assembly = Assembly.GetExecutingAssembly();
 #region Repository
 RepositoryInjecton.RepositoryInjecao(assembly, builder.Services);
 
-builder.Services.AddScoped<IDbMethods<LicencaModel>, LicencaRepository>();
 builder.Services.AddScoped<LogRepository>();
-builder.Services.AddScoped<IDbMethods<EstadoModel>, EstadoRespository>();
-builder.Services.AddScoped<IDbMethods<CidadeModel>, CidadeRepository>();
 builder.Services.AddScoped<IAuthorizationHandler, ConfigHandler>();
 #endregion
 
