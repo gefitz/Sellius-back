@@ -35,7 +35,7 @@ namespace Sellius.API.Context
             public DbSet<TipoProdutoModel> TpProdutos { get; set; }
             public DbSet<TabelaPrecoModel> TabelaPrecos { get; set; }
 
-            public DbSet<TabelaPrecoXProdutoModel> TabelaPrecoXProdutoModels { get; set; }
+            public DbSet<TabelaPrecoXProdutoModel> TabelaPrecoXProduto { get; set; }
 
         #endregion
 

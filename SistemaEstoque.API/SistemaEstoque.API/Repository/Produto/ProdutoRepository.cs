@@ -129,10 +129,12 @@ namespace Sellius.API.Repository.Produto
 
         }
 
-        public async Task<List<TabelaPrecoXProdutoModel>> recuperarProdutosComTabelaPreco(int idEmpresa, int idCliente)
+        public async Task<PaginacaoTabelaResult<TabelaPrecoXProdutoModel,TabelaPrecoXProdutoModel>> recuperarProdutosComTabelaPreco(int idEmpresa, int idCliente)
         {
             try
             {
+                PaginacaoTabelaResult<TabelaPrecoXProdutoModel, TabelaPrecoXProdutoModel> obj =
+                    new PaginacaoTabelaResult<TabelaPrecoXProdutoModel, TabelaPrecoXProdutoModel>();
                 var fxc = await _context.FornecedorXClientes.Where(fxc => fxc.idCliente == idCliente)
                     .FirstOrDefaultAsync();
 
@@ -142,7 +144,7 @@ namespace Sellius.API.Repository.Produto
                 }
 
                 var tabelaPreco = await _context.TabelaPrecos.Where(t =>
-                        t.idReferenciaOrigem == fxc.idFornecedor && t.dtInicioVigencia <= DateTime.UtcNow)
+                        t.idReferenciaOrigem == fxc.idFornecedor && t.dtInicioVigencia <= DateTime.UtcNow && t.dtFimVigencia == null)
                     .OrderBy(t => t.dtInicioVigencia)
                     .FirstOrDefaultAsync();
 
@@ -151,10 +153,19 @@ namespace Sellius.API.Repository.Produto
                     return null;
                 }
 
-                var tabelaPrecoXProduto = await _context.TabelaPrecoXProdutoModels
-                    .Where(p => p.idTabelaPreco == tabelaPreco.Id).ToListAsync();
+                var query = _context.TabelaPrecoXProduto
+                    .Where(p => p.idTabelaPreco == tabelaPreco.Id);
+                    
+                obj.TotalRegistros = query.Count();
+                obj.TotalPaginas = (int)Math.Ceiling((double)obj.TotalRegistros / obj.TamanhoPagina);
+                    
+                   obj.Dados = await query.Include(p => p.Produto)
+                       .OrderBy(p => p.idProduto)
+                       .Skip(obj.PaginaAtual * obj.TamanhoPagina)
+                       .Take(obj.TamanhoPagina)
+                    .ToListAsync();
 
-                return tabelaPrecoXProduto;
+                return obj;
 
             }
             catch (Exception ex)

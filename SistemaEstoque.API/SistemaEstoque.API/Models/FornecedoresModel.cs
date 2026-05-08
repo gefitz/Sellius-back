@@ -25,7 +25,6 @@ namespace Sellius.API.Models
 
         public List<FornecedorXCliente> FornecedorXClientes { get; set; }
 
-        public TabelaPrecoModel TabelaPrecoModels { get; set; }
 
         public static implicit operator  FornecedoresModel(FornecedorDTO model)
         {

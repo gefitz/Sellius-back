@@ -5,7 +5,7 @@
         public int PaginaAtual { get; set; }
         public int TotalPaginas { get; set; }
         public int TotalRegistros { get; set; }
-        public int TamanhoPagina { get; set; }
+        public int TamanhoPagina { get; set; } = 15;
         public List<dto>? Dados { get; set; }
         public filtro? Filtro { get; set; }
 

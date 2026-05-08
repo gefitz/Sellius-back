@@ -12,10 +12,10 @@ namespace Sellius.API.Services.Produtos
 {
     public class ProdutoService
     {
-        private readonly IProdutoRepository _repository;
+        private readonly ProdutoRepository _repository;
 
 
-        public ProdutoService(IProdutoRepository repository)
+        public ProdutoService(ProdutoRepository repository)
         {
             _repository = repository;
         }
@@ -93,22 +93,29 @@ namespace Sellius.API.Services.Produtos
                 return Response<ProdutoDTO>.Failed("Produto não encontrado");
             return Response<ProdutoDTO>.Ok(produto);
         }
-        public async Task<Response<List<TabelaPrecoXProdutoModel>>> recuperarProdutosComTabelaPreco(int idEmpresa,int idCliente)
+        public async Task<Response<PaginacaoTabelaResult<TabelaPrecoXProdutoDTO,TabelaPrecoXProdutoModel>>> recuperarProdutosComTabelaPreco(int idEmpresa,int idCliente)
         {
-            /*
+            
             try
             {
-                /*var tabelaPrecoXProduto = await _repository.recuperarProdutosComTabelaPreco(idEmpresa, idCliente);
-                #1#
+                var tabelaPrecoXProduto = await _repository.recuperarProdutosComTabelaPreco(idEmpresa, idCliente);
                 
-                return Response<List<TabelaPrecoXProdutoModel>>.Ok(tabelaPrecoXProduto);
+                var tabelaPrecoXProdutoDTO =
+                    PaginacaoTabelaResult<TabelaPrecoXProdutoDTO, TabelaPrecoXProdutoModel>
+                        .RetPaginacao<TabelaPrecoXProdutoModel, TabelaPrecoXProdutoModel>(tabelaPrecoXProduto);
+
+                tabelaPrecoXProdutoDTO.Dados =
+                    PaginacaoTabelaResult<TabelaPrecoXProdutoDTO, TabelaPrecoXProdutoModel>
+                        .fromList<TabelaPrecoXProdutoModel, TabelaPrecoXProdutoDTO>(tabelaPrecoXProduto.Dados!,
+                            dto => dto);
+                
+                
+                return Response<PaginacaoTabelaResult<TabelaPrecoXProdutoDTO,TabelaPrecoXProdutoModel>>.Ok(tabelaPrecoXProdutoDTO);
             }
             catch (Exception e)
             {
-                return  Response<List<TabelaPrecoXProdutoModel>>.Failed(e.Message);    
+                return  Response<PaginacaoTabelaResult<TabelaPrecoXProdutoDTO,TabelaPrecoXProdutoModel>>.Failed(e.Message);    
             }
-            */
-            return null;
         }
     }
 }
