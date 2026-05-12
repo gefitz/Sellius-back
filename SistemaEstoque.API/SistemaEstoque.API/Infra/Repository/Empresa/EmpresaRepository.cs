@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
-using Sellius.API.Domain.Entity.Enterprises;
+using Sellius.API.Domain.Entity.EntityEnterprises;
 using Sellius.API.Infra.Context;
 using Sellius.API.Infra.Repository.Empresa.Interfaces;
 using Sellius.API.Repository.Abstract;

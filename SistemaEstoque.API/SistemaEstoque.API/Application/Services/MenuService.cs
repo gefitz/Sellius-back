@@ -1,8 +1,10 @@
-﻿using Sellius.API.DTOs;
+﻿using Sellius.API.Application.DTOs.Filters;
+using Sellius.API.Application.DTOs.RegisterDTOs;
+using Sellius.API.Domain.Entity.EntityUsers;
+using Sellius.API.Domain.Models;
+using Sellius.API.DTOs;
 using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.DTOs.Filtros;
-using Sellius.API.DTOs.TabelasDTOs;
-using Sellius.API.Models.Usuario;
 using Sellius.API.Repository.Menu;
 using Sellius.API.Repository.Menu.Interface;
 
@@ -18,65 +20,65 @@ namespace Sellius.API.Services
             _repository = repository;
         }
 
-        public async Task<Response<MenuDTO>> CriarMenu(MenuDTO dto)
+        public async Task<Response<MenuRegister>> CriarMenu(MenuRegister register)
         {
             try
             {
-                MenuModel menu = dto;
+                Menu menu = register;
                 menu.DtCadastro = DateTime.UtcNow;
                 menu.FAtivo = 1;
 
                 if (await _repository.Create(menu))
                 {
-                    dto = menu;
-                    return Response<MenuDTO>.Ok(dto);
+                    register = menu;
+                    return Response<MenuRegister>.Ok(register);
                 }
-                return Response<MenuDTO>.Failed("Falha ao cadastrar o menu.");
+                return Response<MenuRegister>.Failed("Falha ao cadastrar o menu.");
             }
             catch (Exception ex)
             {
-                return Response<MenuDTO>.Failed(ex.Message);
+                return Response<MenuRegister>.Failed(ex.Message);
             }
         }
 
-        public async Task<Response<MenuDTO>> UpdateMenu(MenuDTO dto)
+        public async Task<Response<MenuRegister>> UpdateMenu(MenuRegister register)
         {
             try
             {
-                MenuModel model = dto;
+                Menu model = register;
                 model.DtAtualizacao = DateTime.UtcNow;
 
                 if (await _repository.Update(model))
                 {
-                    return Response<MenuDTO>.Ok(model);
+                    return Response<MenuRegister>.Ok(model);
                 }
-                return Response<MenuDTO>.Failed("Falha ao tentar atualizar o menu.");
+                return Response<MenuRegister>.Failed("Falha ao tentar atualizar o menu.");
             }
             catch (Exception ex)
             {
-                return Response<MenuDTO>.Failed(ex.Message);
+                return Response<MenuRegister>.Failed(ex.Message);
             }
         }
 
-        public async Task<Response<MenuDTO>> BuscaMenuPorId(int id)
+        public async Task<Response<MenuRegister>> BuscaMenuPorId(int id)
         {
             try
             {
-                MenuModel menu = new MenuModel { Id = id };
+                Menu menu = new Menu { Id = id };
                 menu = await _repository.BuscaDireto(menu);
 
                 if (menu != null)
-                    return Response<MenuDTO>.Ok(menu);
+                    return Response<MenuRegister>.Ok(menu);
 
-                return Response<MenuDTO>.Failed("Menu não localizado.");
+                return Response<MenuRegister>.Failed("Menu não localizado.");
             }
             catch (Exception ex)
             {
-                return Response<MenuDTO>.Failed(ex.Message);
+                return Response<MenuRegister>.Failed(ex.Message);
             }
         }
 
-        public async Task<Response<MenuDTO>> InativarMenu(int id)
+        public async Task<Response<MenuRegister>> InativarMenu(int id)
         {
             try
             {
@@ -89,15 +91,15 @@ namespace Sellius.API.Services
             }
             catch (Exception ex)
             {
-                return Response<MenuDTO>.Failed(ex.Message);
+                return Response<MenuRegister>.Failed(ex.Message);
             }
         }
 
-        public async Task<Response<PaginacaoTabelaResult<MenuDTO, MenuFiltro>>> ObterTodosMenus(PaginacaoTabelaResult<MenuDTO, MenuFiltro> paginacao)
+        public async Task<Response<PaginationTableResult<>>> ObterTodosMenus(PaginationTableResult<> paginacao)
         {
             try
             {
-                PaginacaoTabelaResult<MenuModel, MenuModel> modelPaginacao = new PaginacaoTabelaResult<MenuModel, MenuModel>
+                PaginationTableResult<> modelPaginacao = new PaginationTableResult<>
                 {
                     Filtro = paginacao.Filtro,
                     PaginaAtual = paginacao.PaginaAtual,
@@ -107,52 +109,52 @@ namespace Sellius.API.Services
                 };
                 modelPaginacao = await _repository.Filtrar(modelPaginacao);
                 //paginacao.Dados = MenuDTO.FromList(modelPaginacao.Dados);
-                paginacao = new PaginacaoTabelaResult<MenuDTO, MenuFiltro>
+                paginacao = new PaginationTableResult<>
                 {
                     PaginaAtual = modelPaginacao.PaginaAtual,
                     TamanhoPagina = modelPaginacao.TamanhoPagina,
                     TotalPaginas = modelPaginacao.TotalPaginas,
                     TotalRegistros = modelPaginacao.TotalRegistros,
-                    Dados = PaginacaoTabelaResult<MenuDTO,MenuFiltro>.fromList<MenuModel,MenuDTO>(modelPaginacao.Dados, m => m)
+                    Dados = PaginationTableResult<>.fromList<Menu,MenuRegister>(modelPaginacao.Dados, m => m)
                 };
-                return Response<PaginacaoTabelaResult<MenuDTO, MenuFiltro>>.Ok(paginacao);
+                return Response<PaginationTableResult<>>.Ok(paginacao);
             }
             catch (Exception ex)
             {
-                return Response<PaginacaoTabelaResult<MenuDTO, MenuFiltro>>.Failed(ex.Message);
+                return Response<PaginationTableResult<>>.Failed(ex.Message);
             }
         }
 
-        public async Task<Response<List<MenuDTO>>> recuperaMenus(int idEmpresa)
+        public async Task<Response<List<MenuRegister>>> recuperaMenus(int idEmpresa)
         {
             try
             {
                 var listaMenus = await _repository.recuperaMenus(idEmpresa);
-                List<MenuDTO> dto = MenuDTO.FromList(listaMenus);
+                List<MenuRegister> dto = MenuRegister.FromList(listaMenus);
                 dto = montaHieraquia(dto);
 
-                return Response<List<MenuDTO>>.Ok(dto);
+                return Response<List<MenuRegister>>.Ok(dto);
             }
             catch (Exception ex)
             {
-                return Response<List<MenuDTO>>.Failed(ex.Message);
+                return Response<List<MenuRegister>>.Failed(ex.Message);
             }
         }
 
-        public async Task<Response<List<MenuDTO>>> carregaComboMenu(int idEmpresa)
+        public async Task<Response<List<MenuRegister>>> carregaComboMenu(int idEmpresa)
         {
             try
             {
                 var listaMenus = await _repository.recuperaMenus(idEmpresa);
-                List<MenuDTO> dto = MenuDTO.FromList(listaMenus);
-                return Response<List<MenuDTO>>.Ok(dto);
+                List<MenuRegister> dto = MenuRegister.FromList(listaMenus);
+                return Response<List<MenuRegister>>.Ok(dto);
             }
             catch (Exception ex)
             {
-                return Response<List<MenuDTO>>.Failed(ex.Message);
+                return Response<List<MenuRegister>>.Failed(ex.Message);
             }
         }
-        private List<MenuDTO> montaHieraquia(List<MenuDTO> menus)
+        private List<MenuRegister> montaHieraquia(List<MenuRegister> menus)
         {
             var lookup = menus.ToDictionary(m => m.Id);
 
@@ -160,7 +162,7 @@ namespace Sellius.API.Services
             {
                 if (menu.IdMenuPai.HasValue && lookup.TryGetValue(menu.IdMenuPai.Value, out var menuPai))
                 {
-                    menuPai.menuFilhos ??= new List<MenuDTO>();
+                    menuPai.menuFilhos ??= new List<MenuRegister>();
                     menuPai.menuFilhos.Add(menu);
                 }
             }
@@ -170,26 +172,26 @@ namespace Sellius.API.Services
          .ToList();
         }
 
-        public async Task<Response<List<MenuDTO>>> obterTodosMenus(MenuFiltro menu)
+        public async Task<Response<List<MenuRegister>>> obterTodosMenus(MenuFilter menu)
         {
             try
             {
 
-                List<MenuDTO> listMenus = MenuDTO.FromList(await _repository.obterTodosMenus(menu));
+                List<MenuRegister> listMenus = MenuRegister.FromList(await _repository.obterTodosMenus(menu));
                 listMenus = montarPai(listMenus);
 
                 if (listMenus.Count == 0)
                 {
-                    return Response<List<MenuDTO>>.Ok(listMenus, "Nenhum registro encontrado");
+                    return Response<List<MenuRegister>>.Ok(listMenus, "Nenhum registro encontrado");
                 }
-                return Response<List<MenuDTO>>.Ok(listMenus);
+                return Response<List<MenuRegister>>.Ok(listMenus);
             }
             catch (Exception ex)
             {
-                return Response<List<MenuDTO>>.Failed(ex);
+                return Response<List<MenuRegister>>.Failed(ex);
             }
         }
-        private List<MenuDTO> montarPai(List<MenuDTO> menus)
+        private List<MenuRegister> montarPai(List<MenuRegister> menus)
         {
              var lookup = menus.ToDictionary(m => m.Id);
 

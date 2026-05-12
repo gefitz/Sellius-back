@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Sellius.API.DTOs.CadastrosDTOs.ClientesCadastros;
-using Sellius.API.DTOs.TabelasDTOs;
+using Sellius.API.Application.DTOs.RegisterDTOs.CustomerRegisterDTOs;
+using Sellius.API.Domain.Models;
 using Sellius.API.Repository.Interfaces;
 using Sellius.API.Services.segmentacaos;
 using Sellius.API.Utils;
@@ -31,7 +31,7 @@ namespace Sellius.API.Controllers.Clientes
             return BadRequest(response);
         }
         [HttpPost("listaSegmentacao")]
-        public async Task<IActionResult> Paginacao(PaginacaoTabelaResult<SegmentacaoDTO, SegmentacaoDTO> segmento)
+        public async Task<IActionResult> Paginacao(PaginationTableResult<> segmento)
         {
             segmento.Filtro.idEmpresa = TokenService.RecuperaIdEmpresa(User);
             var response = await _service.Buscarsegmentacaos(segmento);

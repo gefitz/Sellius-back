@@ -1,6 +1,15 @@
-﻿namespace Sellius.API.Repository.Abstract;
+﻿using Microsoft.EntityFrameworkCore;
+using Sellius.API.Infra.Context;
 
-public class BaseRepository
+namespace Sellius.API.Repository.Abstract;
+
+public class BaseRepository<T>(AppDbContext context) where T: class
 {
+    protected DbSet<T> DbConext = context.Set<T>();
+
+    protected async Task SaveChangesAsync()
+    {
+       await context.SaveChangesAsync();
+    }
     
 }

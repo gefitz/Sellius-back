@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Sellius.API.DTOs.TabelasDTOs;
+using Sellius.API.Application.DTOs.Filters;
+using Sellius.API.Application.DTOs.RegisterDTOs.CustomerRegisterDTOs;
+using Sellius.API.Domain.Models;
 using Sellius.API.DTOs;
 using Sellius.API.DTOs.Filtros;
 using Sellius.API.Utils;
 using Sellius.API.Services.Clientes;
-using Sellius.API.DTOs.CadastrosDTOs.ClientesCadastros;
 
 namespace Sellius.API.Controllers.Clientes
 {
@@ -21,11 +22,11 @@ namespace Sellius.API.Controllers.Clientes
             _service = service;
         }
         [HttpPost("obterClientes")]
-        public async Task<IActionResult> ObterClientes([FromBody] PaginacaoTabelaResult<ClienteTabelaResult, FiltroCliente> clienteDTO)
+        public async Task<IActionResult> ObterClientes([FromBody] PaginationTableResult<> clienteDTO)
         {
             if(clienteDTO.Filtro == null)
             {
-                clienteDTO.Filtro = new FiltroCliente();
+                clienteDTO.Filtro = new CustomerFilter();
                 clienteDTO.Filtro.fAtivo = -1;
             }
             clienteDTO.Filtro.EmpresaId = TokenService.RecuperaIdEmpresa(User);
@@ -38,14 +39,14 @@ namespace Sellius.API.Controllers.Clientes
         }
         [HttpPost("cadastrarCliente")]
         [Authorize(Policy ="podeCriar")]
-        public async Task<IActionResult> Cadastrar(ClienteDTO cliente)
+        public async Task<IActionResult> Cadastrar(CustomerRegister cliente)
         {
             cliente.EmpresaId = TokenService.RecuperaIdEmpresa(User);
 
             if (!ModelState.IsValid)
                 {
                     var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
-                    return BadRequest(Response<ClienteDTO>.Failed(menssagemErro));
+                    return BadRequest(Response<CustomerRegister>.Failed(menssagemErro));
                 }
 
 
@@ -70,13 +71,13 @@ namespace Sellius.API.Controllers.Clientes
         }
         [HttpPut]
         [Authorize(Policy = "podeCriar")]
-        public async Task<IActionResult> UpdateCliente(ClienteDTO cliente)
+        public async Task<IActionResult> UpdateCliente(CustomerRegister cliente)
         {
             cliente.EmpresaId = TokenService.RecuperaIdEmpresa(User);
             if (!ModelState.IsValid)
             {
                 var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(Response<ClienteDTO>.Failed(menssagemErro));
+                return BadRequest(Response<CustomerRegister>.Failed(menssagemErro));
             }
             var ret = await _service.UpdateCliente(cliente);
             if (ret.success)

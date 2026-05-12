@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Sellius.API.Models.Usuario;
 using System.Text.Json;
+using Sellius.API.Domain.Entity.EntityUsers;
 
 namespace Sellius.API.DI.Authentication
 {
@@ -13,9 +13,9 @@ namespace Sellius.API.DI.Authentication
             if (string.IsNullOrEmpty(configClaim))
                 return Task.CompletedTask;
 
-            var config = JsonSerializer.Deserialize<TpUsuarioConfiguracao>(configClaim);
+            var config = JsonSerializer.Deserialize<UserConfiguration>(configClaim);
 
-            var prop = typeof(TpUsuarioConfiguracao)
+            var prop = typeof(UserConfiguration)
                 .GetProperty(requirement.Propriedade);
 
             if (prop == null)

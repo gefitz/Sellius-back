@@ -1,35 +1,35 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
-using Sellius.API.Domain.Models.Enterprise;
+using Sellius.API.Domain.Entity.EntityEnterprises;
 using Sellius.API.Infra.Context;
 using Sellius.API.Infra.Repository.Interfaces;
 using Sellius.API.Repository.Abstract;
 
 namespace Sellius.API.Infra.Repository
 {
-    public class LicencaRepository(AppDbContext context) : BaseRepository<LicencaModel>(context), ILicencaRepository
+    public class LicencaRepository(AppDbContext context) : BaseRepository<License>(context), ILicencaRepository
     {
-        public async Task<bool> CreateLicencaAsync(LicencaModel model)
+        public async Task<bool> CreateLicencaAsync(License model)
         {
             DbConext.Add(model);
             await SaveChangesAsync();
             return true;
         }
 
-        public async Task<bool> UpdateLicencaAsync(LicencaModel model)
+        public async Task<bool> UpdateLicencaAsync(License model)
         {
             DbConext.Update(model);
             await SaveChangesAsync();
             return true;
         }
 
-        public async Task<LicencaModel?> FindByPredicateAsync(
-            Expression<Func<LicencaModel, bool>> predicate,
-            Func<IQueryable<LicencaModel>, IIncludableQueryable<LicencaModel, object>>? include = null,
+        public async Task<License?> FindByPredicateAsync(
+            Expression<Func<License, bool>> predicate,
+            Func<IQueryable<License>, IIncludableQueryable<License, object>>? include = null,
             bool asNoTracking = false)
         {
-            IQueryable<LicencaModel> query = DbConext.Where(predicate);
+            IQueryable<License> query = DbConext.Where(predicate);
             if (include is not null)
                 query = include(query);
             if (asNoTracking)
@@ -37,12 +37,12 @@ namespace Sellius.API.Infra.Repository
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<List<LicencaModel>> FindAllAsync(
-            Expression<Func<LicencaModel, bool>> predicate,
-            Func<IQueryable<LicencaModel>, IIncludableQueryable<LicencaModel, object>>? include = null,
-            Func<IQueryable<LicencaModel>, IOrderedQueryable<LicencaModel>>? orderBy = null)
+        public async Task<List<License>> FindAllAsync(
+            Expression<Func<License, bool>> predicate,
+            Func<IQueryable<License>, IIncludableQueryable<License, object>>? include = null,
+            Func<IQueryable<License>, IOrderedQueryable<License>>? orderBy = null)
         {
-            IQueryable<LicencaModel> query = DbConext.Where(predicate);
+            IQueryable<License> query = DbConext.Where(predicate);
             if (include is not null)
                 query = include(query);
             if (orderBy is not null)

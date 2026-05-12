@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore.Query;
-using Sellius.API.Domain.Entity.Enterprises;
+using Sellius.API.Domain.Entity.EntityEnterprises;
 
 namespace Sellius.API.Infra.Repository.Empresa.Interfaces
 {

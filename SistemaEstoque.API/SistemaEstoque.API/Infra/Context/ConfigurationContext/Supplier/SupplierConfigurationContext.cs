@@ -1,13 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Sellius.API.Infra.Context.ConfigurationContext.Abstract;
-using Sellius.API.Models;
 
-namespace Sellius.API.Infra.Context.ConfigurationContext;
+namespace Sellius.API.Infra.Context.ConfigurationContext.Supplier;
 
-public class SupplierConfigurationContext : BaseDateName, IEntityTypeConfiguration<Supplier>
+public class SupplierConfigurationContext : BaseDateName, IEntityTypeConfiguration<Domain.Entity.Supplier>
 {
-    public void Configure(EntityTypeBuilder<Supplier> builder)
+    public void Configure(EntityTypeBuilder<Domain.Entity.Supplier> builder)
     {
         builder.ToTable("Suppliers",DataBaseName);
 

@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Sellius.API.Application.DTOs.RegisterDTOs;
+using Sellius.API.Domain.Models;
 using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.DTOs.Filtros;
-using Sellius.API.DTOs.TabelasDTOs;
 using Sellius.API.Repository.Interfaces;
 using Sellius.API.Services;
 using Sellius.API.Utils;
@@ -21,7 +22,7 @@ namespace Sellius.API.Controllers
             _service = service;
         }
         [HttpPost("cadastrarTpUsuario")]
-        public async Task<IActionResult> cadastrarTpUsuario(TpUsuarioDTO tpUsuario)
+        public async Task<IActionResult> cadastrarTpUsuario(TypeUserRegister tpUsuario)
         {
 
             tpUsuario.idEmpresa = TokenService.RecuperaIdEmpresa(User);
@@ -33,7 +34,7 @@ namespace Sellius.API.Controllers
             return BadRequest(ret);
         }
         [HttpPost("paginacao")]
-        public async Task<IActionResult> paginacao(PaginacaoTabelaResult<TpUsuarioDTO, TpUsuarioFiltro> tpUsuario)
+        public async Task<IActionResult> paginacao(PaginationTableResult<> tpUsuario)
         {
 
             tpUsuario.Filtro.idEmpresa = TokenService.RecuperaIdEmpresa(User);
@@ -53,7 +54,7 @@ namespace Sellius.API.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> update(TpUsuarioDTO tpUsuario)
+        public async Task<IActionResult> update(TypeUserRegister tpUsuario)
         {
 
             tpUsuario.idEmpresa = TokenService.RecuperaIdEmpresa(User);

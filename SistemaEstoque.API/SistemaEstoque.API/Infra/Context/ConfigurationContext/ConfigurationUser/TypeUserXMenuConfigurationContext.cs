@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Sellius.API.Domain.Entity.EntityUsers;
 using Sellius.API.Infra.Context.ConfigurationContext.Abstract;
-using Sellius.API.Models.Usuario;
 
-namespace Sellius.API.Infra.Context.ConfigurationContext;
+namespace Sellius.API.Infra.Context.ConfigurationContext.ConfigurationUser;
 
 public class TypeUserXMenuConfigurationContext : BaseDateName,IEntityTypeConfiguration<TypeUserXMenu>
 {
@@ -12,15 +12,15 @@ public class TypeUserXMenuConfigurationContext : BaseDateName,IEntityTypeConfigu
         
         builder.ToTable("TypeUserXMenus", DataBaseName);
         
-        builder.HasKey(x => new { x.idTpUsuario, x.idMenu });
+        builder.HasKey(x => new { x.TypeUserId, x.MenuId });
 
-        builder.HasOne(x => x.tpUsuario)
-            .WithMany(u => u.TpUsuarioXMenus)
-            .HasForeignKey(x => x.idTpUsuario);
+        builder.HasOne(x => x.TypeUser)
+            .WithMany(u => u.TypeUserXMenus)
+            .HasForeignKey(x => x.TypeUserId);
 
         builder.HasOne(x => x.Menu)
-            .WithMany(m => m.TpUsuarioXMenus)
-            .HasForeignKey(x => x.idMenu);
+            .WithMany(m => m.TypeUserXMenus)
+            .HasForeignKey(x => x.MenuId);
 
     }
 }

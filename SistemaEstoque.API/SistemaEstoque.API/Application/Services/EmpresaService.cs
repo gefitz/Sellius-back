@@ -1,9 +1,11 @@
-﻿using Sellius.API.Context;
+﻿using Sellius.API.Application.DTOs.RegisterDTOs;
+using Sellius.API.Domain.Entity.Enterprise.Enterprise;
+using Sellius.API.Domain.Enums;
+using Sellius.API.Domain.Models;
 using Sellius.API.DTOs;
 using Sellius.API.DTOs.CadastrosDTOs;
-using Sellius.API.DTOs.TabelasDTOs;
 using Sellius.API.Enums;
-using Sellius.API.Models.Empresa;
+using Sellius.API.Infra.Context;
 using Sellius.API.Repository.Empresa;
 using Sellius.API.Repository.Empresa.Interface;
 using Sellius.API.Repository.Interfaces;
@@ -38,11 +40,11 @@ namespace Sellius.API.Services
 
                         return Response<string>.Failed("Esse email de usuario ja está sendo utilizado");
 
-                    EmpresaModel emp = empresa.Empresa;
+                    Enterprise emp = empresa.Empresa;
                     #region Criação da empresa
                     #region Gerar Licenca
                     //Gera a licenca da empresa e retorna o id da licenca
-                    int idLicenca = await _licenca.GerarLicenca((TipoLicenca)empresa.Empresa.TipoLicenca);
+                    int idLicenca = await _licenca.GerarLicenca((TypeLicense)empresa.Empresa.TipoLicenca);
 
                     if (idLicenca == 0)
                         return Response<string>.Failed("Falha ao gerar a licenca da empresa");
@@ -65,7 +67,7 @@ namespace Sellius.API.Services
                     empresa.Empresa = emp;
                     empresa.Usuario.EmpresaId = empresa.Empresa.id;
                     empresa.Usuario.tipoUsuario = 1;
-                    Response<UsuarioDTO> responseUsuario = await _usarioService.CriarUsuario(empresa.Usuario);
+                    Response<UserRegister> responseUsuario = await _usarioService.CriarUsuario(empresa.Usuario);
                     if (responseUsuario == null || !responseUsuario.success)
                         return Response<string>.Failed(responseUsuario.errorMessage);
 
@@ -91,60 +93,60 @@ namespace Sellius.API.Services
 
 
         }
-        public async Task<Response<EmpresaDTO>> UpdateEmpresa(EmpresaDTO empresa)
+        public async Task<Response<EnterpriseRegister>> UpdateEmpresa(EnterpriseRegister empresa)
         {
             try
             {
-                EmpresaModel emp = empresa;
+                Enterprise emp = empresa;
                 if (await _repository.Update(emp))
                 {
-                    return Response<EmpresaDTO>.Ok(empresa);
+                    return Response<EnterpriseRegister>.Ok(empresa);
                 }
-                return Response<EmpresaDTO>.Failed("Erro ao fazer modeificação na empresa");
+                return Response<EnterpriseRegister>.Failed("Erro ao fazer modeificação na empresa");
             }
             catch (Exception ex)
             {
-                return Response<EmpresaDTO>.Failed(ex.Message);
+                return Response<EnterpriseRegister>.Failed(ex.Message);
             }
         }
 
-        public async Task<Response<EmpresaDTO>> InativarEmpresa(int id)
+        public async Task<Response<EnterpriseRegister>> InativarEmpresa(int id)
         {
             try
             {
 
                 var retBuscaEmpresa = await BuscaEmpresa(id);
                 if (!retBuscaEmpresa.success)
-                    return Response<EmpresaDTO>.Failed(retBuscaEmpresa.message);
+                    return Response<EnterpriseRegister>.Failed(retBuscaEmpresa.message);
                 retBuscaEmpresa.Data.fAtivo = 0;
                 return await UpdateEmpresa(retBuscaEmpresa.Data);
             }
             catch (Exception ex)
             {
-                return Response<EmpresaDTO>.Failed(ex.Message);
+                return Response<EnterpriseRegister>.Failed(ex.Message);
             }
         }
-        public async Task<Response<EmpresaDTO>> BuscaEmpresa(int id)
+        public async Task<Response<EnterpriseRegister>> BuscaEmpresa(int id)
         {
             try
             {
-                EmpresaModel model = new EmpresaModel { id = id };
+                Enterprise model = new Enterprise { id = id };
 
                 model = await _repository.BuscaDireto(model);
                 if (model == null)
-                    return Response<EmpresaDTO>.Failed("Empresa não locazilada");
-                return Response<EmpresaDTO>.Ok(model);
+                    return Response<EnterpriseRegister>.Failed("Empresa não locazilada");
+                return Response<EnterpriseRegister>.Ok(model);
             }
             catch (Exception ex)
             {
-                return Response<EmpresaDTO>.Failed(ex.Message);
+                return Response<EnterpriseRegister>.Failed(ex.Message);
             }
         }
-        public async Task<Response<PaginacaoTabelaResult<EmpresaDTO, EmpresaDTO>>> obterTodasEmpresas(PaginacaoTabelaResult<EmpresaDTO, EmpresaDTO> paginacao)
+        public async Task<Response<PaginationTableResult<>>> obterTodasEmpresas(PaginationTableResult<> paginacao)
         {
             try
             {
-                PaginacaoTabelaResult<EmpresaModel, EmpresaModel> modelPaginacao = new PaginacaoTabelaResult<EmpresaModel, EmpresaModel>
+                PaginationTableResult<> modelPaginacao = new PaginationTableResult<>
                 {
                     Filtro = paginacao.Filtro,
                     PaginaAtual = paginacao.PaginaAtual,
@@ -153,18 +155,18 @@ namespace Sellius.API.Services
                     TotalRegistros = paginacao.TotalRegistros,
                 };
                 modelPaginacao = await _repository.Filtrar(modelPaginacao);
-                paginacao.Dados = EmpresaDTO.FromList(modelPaginacao.Dados);
-                return Response<PaginacaoTabelaResult<EmpresaDTO, EmpresaDTO>>.Ok(paginacao);
+                paginacao.Dados = EnterpriseRegister.FromList(modelPaginacao.Dados);
+                return Response<PaginationTableResult<>>.Ok(paginacao);
 
             }
             catch (Exception ex)
             {
-                return Response<PaginacaoTabelaResult<EmpresaDTO, EmpresaDTO>>.Failed(ex.Message);
+                return Response<PaginationTableResult<>>.Failed(ex.Message);
             }
         }
-        private async Task<bool> VereficaExistenciaEmpresa(EmpresaDTO empresa)
+        private async Task<bool> VereficaExistenciaEmpresa(EnterpriseRegister empresa)
         {
-            EmpresaModel emp = await _repository.BuscaDireto(empresa);
+            Enterprise emp = await _repository.BuscaDireto(empresa);
             if (emp != null)
             {
                 return true;

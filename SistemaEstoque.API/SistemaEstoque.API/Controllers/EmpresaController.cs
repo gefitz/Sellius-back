@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Sellius.API.Application.DTOs.RegisterDTOs;
+using Sellius.API.Domain.Models;
 using Sellius.API.DTOs;
 using Sellius.API.DTOs.CadastrosDTOs;
-using Sellius.API.DTOs.TabelasDTOs;
 using Sellius.API.Services;
 
 namespace Sellius.API.Controllers
@@ -24,7 +25,7 @@ namespace Sellius.API.Controllers
             if (!ModelState.IsValid)
             {
                 var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(Response<EmpresaDTO>.Failed(menssagemErro));
+                return BadRequest(Response<EnterpriseRegister>.Failed(menssagemErro));
             }
             var response = await _service.CadastrarNovaEmpresa(nova);
 
@@ -34,7 +35,7 @@ namespace Sellius.API.Controllers
         }
         [HttpPost("obterTodasEmpresas")]
         [Authorize(Roles = "Interno")]
-        public async Task<IActionResult> obterTodasEmpresas(PaginacaoTabelaResult<EmpresaDTO,EmpresaDTO> paginacao)
+        public async Task<IActionResult> obterTodasEmpresas(PaginationTableResult<> paginacao)
         {
             var ret = await _service.obterTodasEmpresas(paginacao);
             if(!ret.success)
@@ -43,12 +44,12 @@ namespace Sellius.API.Controllers
         }
         [HttpPut]
         [Authorize(Roles = "Interno")]
-        public async Task<IActionResult> UpdateEmpresa(EmpresaDTO dTO)
+        public async Task<IActionResult> UpdateEmpresa(EnterpriseRegister dTO)
         {
             if (!ModelState.IsValid)
             {
                 var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(Response<EmpresaDTO>.Failed(menssagemErro));
+                return BadRequest(Response<EnterpriseRegister>.Failed(menssagemErro));
             }
             var response = await _service.UpdateEmpresa(dTO);
             if (!response.success)
@@ -63,7 +64,7 @@ namespace Sellius.API.Controllers
         {
             if(id <= 0)
             {
-                return BadRequest(Response<EmpresaDTO>.Failed("O id deve ser maior que zero"));
+                return BadRequest(Response<EnterpriseRegister>.Failed("O id deve ser maior que zero"));
             }
             var ret = await _service.InativarEmpresa(id);
             if (ret.success)

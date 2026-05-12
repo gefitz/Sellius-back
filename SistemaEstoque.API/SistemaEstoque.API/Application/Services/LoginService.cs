@@ -10,11 +10,12 @@ using System.IdentityModel.Tokens.Jwt;
 using Sellius.API.Repository.Interfaces;
 using Sellius.API.Enums;
 using Microsoft.OpenApi.Extensions;
+using Sellius.API.Application.DTOs.RegisterDTOs;
+using Sellius.API.Domain.Entity.EntityUsers;
 using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.Utils;
 using Sellius.API.Repository.Login.Interfaces;
 using Sellius.API.Services.Clientes;
-using Sellius.API.Models.Usuario;
 using Sellius.API.Repository.Login;
 
 namespace Sellius.API.Services
@@ -32,9 +33,9 @@ namespace Sellius.API.Services
             _tokenService = tokenService;
             _clienteService = cliente;
         }
-        public async Task<Response<string>> CriarLogin(LoginDTO login, UsuarioDTO usuario)
+        public async Task<Response<string>> CriarLogin(LoginRegister login, UserRegister usuario)
         {
-            LoginModel model = login;
+            Authentication model = login;
             model.usuarioId = usuario.id;
             model.EmpresaId = (int)usuario.EmpresaId;
             //model.TipoUsuario = usuario.TipoUsuario;
@@ -47,11 +48,11 @@ namespace Sellius.API.Services
             }
             return Response<string>.Failed("Erro ao salvar o login");
         }
-        public async Task<Response<string>> LoginAutenticacao(LoginDTO login)
+        public async Task<Response<string>> LoginAutenticacao(LoginRegister login)
         {
             try
             {
-                LoginModel usuarioAutenticar = await _repository.BuscaDireto(login);
+                Authentication usuarioAutenticar = await _repository.BuscaDireto(login);
                 if (usuarioAutenticar == null)
                     return Response<string>.Failed("Falha ao encontrar o email cadastrado");
                 if (!await ValidaSenha(usuarioAutenticar, login.Password))
@@ -70,44 +71,44 @@ namespace Sellius.API.Services
                 return Response<string>.Failed(ex.Message);
             }
         }
-        public async Task<Response<LoginDTO>> AlterarSenha(LoginDTO login)
+        public async Task<Response<LoginRegister>> AlterarSenha(LoginRegister login)
         {
             try
             {
-                LoginModel loginRaiz = await _repository.BuscaDireto(login);
-                if (loginRaiz == null)
-                    return Response<LoginDTO>.Failed("Usuario não encontrado");
-                CriptografiaSenha(login.Password, loginRaiz);
-                if (!await _repository.Update(loginRaiz))
-                    return Response<LoginDTO>.Failed("Falha ao tentar alterar a senha");
+                Authentication authenticationRaiz = await _repository.BuscaDireto(login);
+                if (authenticationRaiz == null)
+                    return Response<LoginRegister>.Failed("Usuario não encontrado");
+                CriptografiaSenha(login.Password, authenticationRaiz);
+                if (!await _repository.Update(authenticationRaiz))
+                    return Response<LoginRegister>.Failed("Falha ao tentar alterar a senha");
             }
             catch (Exception ex)
             {
-                return Response<LoginDTO>.Failed(ex.Message);
+                return Response<LoginRegister>.Failed(ex.Message);
             }
-            return Response<LoginDTO>.Ok();
+            return Response<LoginRegister>.Ok();
         }
-        public async Task<Response<string>> CriarClienteLogin(LoginDTO login)
+        public async Task<Response<string>> CriarClienteLogin(LoginRegister login)
         {
             try
             {
-                LoginModel loginModel = login;
-                loginModel.usuarioId = null;
+                Authentication authentication = authentication;
+                authentication.usuarioId = null;
                 //loginModel.TipoUsuario = TipoUsuario.Cliente;
-                loginModel = CriptografiaSenha(login.Password, loginModel);
-                if (await _repository.VereficaEmailExistente(loginModel))
+                authentication = CriptografiaSenha(authentication.Password, authentication);
+                if (await _repository.VereficaEmailExistente(authentication))
                 {
                     return Response<string>.Failed("Esse email já está sendo utilizado na sua base");
                 }
-                var cliente = await _clienteService.BuscarId(Convert.ToInt32(loginModel.usuarioId));
+                var cliente = await _clienteService.BuscarId(Convert.ToInt32(authentication.usuarioId));
                 if (!cliente.success)
                 {
                     return Response<string>.Failed("Cliente não localizado para está criando o login");
                 }
 
-                if (await _repository.Create(loginModel))
+                if (await _repository.Create(authentication))
                 {
-                    return await _tokenService.GerarCookie(loginModel);
+                    return await _tokenService.GerarCookie(authentication);
                 }
                 return Response<string>.Failed("Falha ao criar o login de acesso do cliente");
             }
@@ -118,7 +119,7 @@ namespace Sellius.API.Services
         }
 
         #region Metodos Privados
-        private async Task<bool> ValidaSenha(LoginModel usuario, string password)
+        private async Task<bool> ValidaSenha(Authentication usuario, string password)
         {
             try
             {
@@ -141,16 +142,16 @@ namespace Sellius.API.Services
                 return false;
             }
         }
-        private LoginModel CriptografiaSenha(string password, LoginModel login)
+        private Authentication CriptografiaSenha(string password, Authentication authentication)
         {
             try
             {
                 using (var hmac = new HMACSHA512())
                 {
-                    login.Hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-                    login.Salt = hmac.Key;
+                    authentication.Hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+                    authentication.Salt = hmac.Key;
                 }
-                return login;
+                return authentication;
             }
             catch (Exception ex)
             {

@@ -1,22 +1,22 @@
-﻿using Sellius.API.DTOs;
+﻿using Sellius.API.Application.DTOs.RegisterDTOs;
+using Sellius.API.Domain.Entity.EntityUsers;
+using Sellius.API.Domain.Models;
+using Sellius.API.DTOs;
 using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.DTOs.Filtros;
-using Sellius.API.DTOs.TabelasDTOs;
-using Sellius.API.Models.Usuario;
-using Sellius.API.Repository.Usuarios;
-using Sellius.API.Repository.Usuarios.Interfaces;
+using Sellius.API.Infra.Repository.Users;
 
 namespace Sellius.API.Services
 {
     public class TpUsuarioService
     {
-        private TpUsuarioRepository _repository;
+        private TpUserRepository _repository;
 
-        public TpUsuarioService(TpUsuarioRepository repository)
+        public TpUsuarioService(TpUserRepository repository)
         {
             _repository = repository;
         }
-        public async Task<Response<TpUsuarioDTO>> cadastrarTpUsuario(TpUsuarioDTO tpUsuario)
+        public async Task<Response<TypeUserRegister>> cadastrarTpUsuario(TypeUserRegister tpUsuario)
         {
             tpUsuario.dtCadastro = DateTime.UtcNow;
             if (await _repository.Create(tpUsuario))
@@ -30,11 +30,11 @@ namespace Sellius.API.Services
                 {
                     await adicionarTpUsuarioConfiguracao(tpUsuario);
                 }
-                return Response<TpUsuarioDTO>.Ok();
+                return Response<TypeUserRegister>.Ok();
             }
-            return Response<TpUsuarioDTO>.Failed("Erro ao tenta inserir o tipo de usuario");
+            return Response<TypeUserRegister>.Failed("Erro ao tenta inserir o tipo de usuario");
         }
-        public async Task<Response<TpUsuarioDTO>> Update(TpUsuarioDTO tpUsuario)
+        public async Task<Response<TypeUserRegister>> Update(TypeUserRegister tpUsuario)
         {
             var ret = await buscarId(tpUsuario.id);
 
@@ -43,7 +43,7 @@ namespace Sellius.API.Services
                 return ret;
             }
 
-            TpUsuarioModel model = ret.Data;
+            TypeUser model = ret.Data;
             tpUsuario.dtCadastro = model.dtCadastro;
             if (await _repository.Update(tpUsuario))
             {
@@ -57,11 +57,11 @@ namespace Sellius.API.Services
                     await adicionarTpUsuarioConfiguracao(tpUsuario);
                 }
 
-                return Response<TpUsuarioDTO>.Ok();
+                return Response<TypeUserRegister>.Ok();
             }
-            return Response<TpUsuarioDTO>.Failed("Erro ao tenta inserir o tipo de usuario");
+            return Response<TypeUserRegister>.Failed("Erro ao tenta inserir o tipo de usuario");
         }
-        public async Task<Response<TpUsuarioDTO>> deletarTpUsuario(int idTpUsuario)
+        public async Task<Response<TypeUserRegister>> deletarTpUsuario(int idTpUsuario)
         {
             var ret = await buscarId(idTpUsuario);
 
@@ -70,15 +70,15 @@ namespace Sellius.API.Services
                 return ret;
             }
 
-            TpUsuarioModel model = ret.Data;
+            TypeUser model = ret.Data;
 
             model.fAtivo = 0;
 
             return await Update(model);
         }
-        public async Task<Response<PaginacaoTabelaResult<TpUsuarioDTO, TpUsuarioFiltro>>> paginacao(PaginacaoTabelaResult<TpUsuarioDTO, TpUsuarioFiltro> paginacao)
+        public async Task<Response<PaginationTableResult<>>> paginacao(PaginationTableResult<> paginacao)
         {
-            PaginacaoTabelaResult<TpUsuarioModel, TpUsuarioModel> modelPaginacao = new PaginacaoTabelaResult<TpUsuarioModel, TpUsuarioModel>
+            PaginationTableResult<> modelPaginacao = new PaginationTableResult<>
             {
                 Filtro = paginacao.Filtro,
                 PaginaAtual = paginacao.PaginaAtual,
@@ -88,60 +88,60 @@ namespace Sellius.API.Services
             };
             modelPaginacao = await _repository.Filtrar(modelPaginacao);
             //paginacao.Dados = MenuDTO.FromList(modelPaginacao.Dados);
-            paginacao = new PaginacaoTabelaResult<TpUsuarioDTO, TpUsuarioFiltro>
+            paginacao = new PaginationTableResult<>
             {
                 PaginaAtual = modelPaginacao.PaginaAtual,
                 TamanhoPagina = modelPaginacao.TamanhoPagina,
                 TotalPaginas = modelPaginacao.TotalPaginas,
                 TotalRegistros = modelPaginacao.TotalRegistros,
-                Dados = TpUsuarioDTO.fromToList(modelPaginacao.Dados)
+                Dados = TypeUserRegister.fromToList(modelPaginacao.Dados)
             };
 
-            return Response<PaginacaoTabelaResult<TpUsuarioDTO, TpUsuarioFiltro>>.Ok(paginacao);
+            return Response<PaginationTableResult<>>.Ok(paginacao);
         }
 
-        public async Task<Response<TpUsuarioDTO>> buscarId(int idTpUsuario)
+        public async Task<Response<TypeUserRegister>> buscarId(int idTpUsuario)
         {
-            TpUsuarioModel model = new TpUsuarioModel { id = idTpUsuario };
-            TpUsuarioDTO dto = await _repository.BuscaDireto(model);
+            TypeUser model = new TypeUser { id = idTpUsuario };
+            TypeUserRegister dto = await _repository.BuscaDireto(model);
             {
-                return Response<TpUsuarioDTO>.Ok(dto);
+                return Response<TypeUserRegister>.Ok(dto);
             }
-            return Response<TpUsuarioDTO>.Failed("Erro ao tenta inserir o tipo de usuario");
+            return Response<TypeUserRegister>.Failed("Erro ao tenta inserir o tipo de usuario");
         }
 
-        public async Task<Response<List<TpUsuarioDTO>>> recuperaTpUsuarios(int idEmpresa)
+        public async Task<Response<List<TypeUserRegister>>> recuperaTpUsuarios(int idEmpresa)
         {
-            List<TpUsuarioDTO> dto = TpUsuarioDTO.fromToList(await _repository.recuperaTpUsuarios(idEmpresa));
+            List<TypeUserRegister> dto = TypeUserRegister.fromToList(await _repository.recuperaTpUsuarios(idEmpresa));
             {
-                return Response<List<TpUsuarioDTO>>.Ok(dto);
+                return Response<List<TypeUserRegister>>.Ok(dto);
             }
-            return Response<List<TpUsuarioDTO>>.Failed("Erro ao tenta inserir o tipo de usuario");
+            return Response<List<TypeUserRegister>>.Failed("Erro ao tenta inserir o tipo de usuario");
         }
-        private async Task adicionarTpUsuarioXMenu(TpUsuarioDTO tpUsuario)
+        private async Task adicionarTpUsuarioXMenu(TypeUserRegister tpUsuario)
         {
             try
             {
                 if (tpUsuario != null && tpUsuario.Menu.Count != 0)
                 {
-                    List<TpUsuarioXMenu> usuarioXMenus = await _repository.obterTodosTpUsuarioXMenu(tpUsuario.id);
+                    List<TypeUserXMenu> usuarioXMenus = await _repository.obterTodosTpUsuarioXMenu(tpUsuario.id);
 
                     if (usuarioXMenus.Count != 0)
                     {
                         await _repository.RemoverTodosTpUsuariosXMenu(usuarioXMenus);
                     }
-                    usuarioXMenus = new List<TpUsuarioXMenu>();
+                    usuarioXMenus = new List<TypeUserXMenu>();
                     for (int i = 0; i < tpUsuario.Menu.Count; i++)
                     {
-                        MenuDTO menuDTO = tpUsuario.Menu[i];
-                        TpUsuarioXMenu tpUsuarioXMenu = new TpUsuarioXMenu();
-                        tpUsuarioXMenu.idTpUsuario = tpUsuario.id;
+                        MenuRegister menuRegister = tpUsuario.Menu[i];
+                        TypeUserXMenu typeUserXMenu = new TypeUserXMenu();
+                        typeUserXMenu.idTpUsuario = tpUsuario.id;
 
                         //Se for um menu Filho coloca o menu pai na lista mesmo se nao for selecionado
-                        if (menuDTO.MenuPai != null)
+                        if (menuRegister.MenuPai != null)
                         {
-                            tpUsuarioXMenu.idMenu = menuDTO.MenuPai.Id;
-                            var clone = tpUsuarioXMenu.Clone();
+                            typeUserXMenu.idMenu = menuRegister.MenuPai.Id;
+                            var clone = typeUserXMenu.Clone();
 
                             if (!usuarioXMenus.Any(x => x.idTpUsuario == clone.idTpUsuario
                                                      && x.idMenu == clone.idMenu))
@@ -151,11 +151,11 @@ namespace Sellius.API.Services
 
                         }
 
-                        tpUsuarioXMenu.idMenu = menuDTO.Id;
-                        if (!usuarioXMenus.Any(x => x.idTpUsuario == tpUsuarioXMenu.idTpUsuario
-                                                 && x.idMenu == tpUsuarioXMenu.idMenu))
+                        typeUserXMenu.idMenu = menuRegister.Id;
+                        if (!usuarioXMenus.Any(x => x.idTpUsuario == typeUserXMenu.idTpUsuario
+                                                 && x.idMenu == typeUserXMenu.idMenu))
                         {
-                            usuarioXMenus.Add(tpUsuarioXMenu);
+                            usuarioXMenus.Add(typeUserXMenu);
                         }
 
                     }
@@ -168,19 +168,19 @@ namespace Sellius.API.Services
                 throw ex;
             }
         }
-        private async Task adicionarTpUsuarioConfiguracao(TpUsuarioDTO tpUsuarioDTO)
+        private async Task adicionarTpUsuarioConfiguracao(TypeUserRegister typeUserRegister)
         {
-            var config = await _repository.obterConfiguracao(tpUsuarioDTO.id);
+            var config = await _repository.obterConfiguracao(typeUserRegister.id);
             if (config != null)
             {
                 await _repository.RemoverConfiguracao(config);
             }
-            await _repository.AdicionarConfiguracao(tpUsuarioDTO.TpUsuarioConfiguracao);
+            await _repository.AdicionarConfiguracao(typeUserRegister.TpUsuarioConfiguracao);
         }
 
-        public async Task<Response<List<TpUsuarioDTO>>> obterTodosTpUsuarios(int idEmpresa)
+        public async Task<Response<List<TypeUserRegister>>> obterTodosTpUsuarios(int idEmpresa)
         {
-            return Response<List<TpUsuarioDTO>>.Ok(TpUsuarioDTO.fromToList(await _repository.obterTodosTpUsuarios(idEmpresa)));
+            return Response<List<TypeUserRegister>>.Ok(TypeUserRegister.fromToList(await _repository.obterTodosTpUsuarios(idEmpresa)));
         }
     }
 }

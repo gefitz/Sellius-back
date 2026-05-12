@@ -1,6 +1,6 @@
-﻿namespace Sellius.API.Context.ConfigurationContext.Abstract;
+﻿namespace Sellius.API.Infra.Context.ConfigurationContext.Abstract;
 
-public class BaseDateName
+public abstract class BaseDateName
 {
-    
+    protected const string DataBaseName = "Sellius";
 }

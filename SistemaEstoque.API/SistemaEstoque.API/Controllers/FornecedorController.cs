@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using Sellius.API.DTOs;
 using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.DTOs.Filtros;
-using Sellius.API.DTOs.TabelasDTOs;
 using Sellius.API.Models;
 using Sellius.API.Services;
 using Sellius.API.Utils;
 using System.Text;
+using Sellius.API.Application.DTOs.RegisterDTOs;
+using Sellius.API.Application.DTOs.TablesDTOs;
+using Sellius.API.Domain.Models;
 
 namespace Sellius.API.Controllers
 {
@@ -23,11 +25,11 @@ namespace Sellius.API.Controllers
             _service = service;
         }
         [HttpPost("ObterTabelaFornecedor")]
-        public async Task<IActionResult> ObterTabelaFornecedor([FromBody] PaginacaoTabelaResult<FornecedorTabelaResult, FiltroFornecedor> tipoProdutoDTO)
+        public async Task<IActionResult> ObterTabelaFornecedor([FromBody] PaginationTableResult<> tipoProdutoDTO)
         {
             if(tipoProdutoDTO.Filtro == null)
             {
-                tipoProdutoDTO.Filtro = new FiltroFornecedor();
+                tipoProdutoDTO.Filtro = new SupplierFilter();
             }
             tipoProdutoDTO.Filtro.EmpresaId = TokenService.RecuperaIdEmpresa(User);
             var ret = await _service.BuscarFornecedor(tipoProdutoDTO);
@@ -40,7 +42,7 @@ namespace Sellius.API.Controllers
         [HttpGet("carregarComboFornecedor")]
         public async Task<IActionResult> CarregarComboFornecedor()
         {
-            FornecedorDTO fornecedor = new FornecedorDTO() { EmpresaId = TokenService.RecuperaIdEmpresa(User) };
+            SupplierRegister fornecedor = new SupplierRegister() { EmpresaId = TokenService.RecuperaIdEmpresa(User) };
             var response = await _service.CarregarComboFornecedor(fornecedor);
             return Ok(response);
         }
@@ -55,12 +57,12 @@ namespace Sellius.API.Controllers
             return BadRequest(ret);
         }
         [HttpPost("NovoFornecedor")]
-        public async Task<IActionResult> CadastrarTpProduto([FromBody] FornecedorDTO tipoProduto)
+        public async Task<IActionResult> CadastrarTpProduto([FromBody] SupplierRegister tipoProduto)
         {
             if (!ModelState.IsValid)
             {
                 var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(Response<FornecedorDTO>.Failed(menssagemErro));
+                return BadRequest(Response<SupplierRegister>.Failed(menssagemErro));
             }
             tipoProduto.EmpresaId = TokenService.RecuperaIdEmpresa(User);
             var ret = await _service.CadastrarFornecedor(tipoProduto);
@@ -70,12 +72,12 @@ namespace Sellius.API.Controllers
 
         }
         [HttpPut]
-        public async Task<IActionResult> UpdateFornecedor(FornecedorDTO dto)
+        public async Task<IActionResult> UpdateFornecedor(SupplierRegister dto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(
-                    Response<FornecedorDTO>.Failed("Falta de campos obrigatorio no parametro")
+                    Response<SupplierRegister>.Failed("Falta de campos obrigatorio no parametro")
                     );
             }
             dto.EmpresaId = TokenService.RecuperaIdEmpresa(User);
@@ -86,7 +88,7 @@ namespace Sellius.API.Controllers
         [HttpDelete]
         public async Task<IActionResult> InativarFornecedor(int id)
         {
-            FornecedorDTO dto = new FornecedorDTO() { id = id, EmpresaId = TokenService.RecuperaIdEmpresa(User) };
+            SupplierRegister dto = new SupplierRegister() { id = id, EmpresaId = TokenService.RecuperaIdEmpresa(User) };
 
             var result = await _service.InativarFornecedor(dto);
             if (result.success)
@@ -98,7 +100,7 @@ namespace Sellius.API.Controllers
 
         }
         [HttpPost("addFornecedorXCliente")]
-        public async Task<IActionResult> AddFornecedorXCliente(FornecedorXClienteDTO dto)
+        public async Task<IActionResult> AddFornecedorXCliente(SupplierXCustomerTableReturn dto)
         {
             var result = await _service.AddFornecedorXCliente(dto);
             if (result.success)
@@ -109,7 +111,7 @@ namespace Sellius.API.Controllers
         }
 
         [HttpPost("obterFornecedorXClientePaginada")]
-        public async Task<IActionResult> obterFornecedorXClientePaginada(PaginacaoTabelaResult<FornecedorXClienteDTO, FornecedorXClienteFiltro> dto)
+        public async Task<IActionResult> obterFornecedorXClientePaginada(PaginationTableResult<> dto)
         {
             var result = await _service.ObterFornecedorXClientePaginada(dto);
             if (result.success)
@@ -120,9 +122,9 @@ namespace Sellius.API.Controllers
         }
 
         [HttpPost("removerVinculoFornecedorXCliente")]
-        public async Task<IActionResult> removerVinculoFornecedorXCliente(FornecedorXClienteDTO fornecedorXCliente)
+        public async Task<IActionResult> removerVinculoFornecedorXCliente(SupplierXCustomerTableReturn supplierXCliente)
         {
-            var ret = await _service.removerVinculoFornecedorXCliente(fornecedorXCliente);
+            var ret = await _service.removerVinculoFornecedorXCliente(supplierXCliente);
             if(ret.success) {
                 return Ok(ret);
             }

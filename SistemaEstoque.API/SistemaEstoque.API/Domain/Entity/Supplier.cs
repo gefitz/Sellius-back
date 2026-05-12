@@ -1,7 +1,6 @@
-﻿using Sellius.API.DTOs.CadastrosDTOs;
-using Sellius.API.DTOs.Filtros;
+﻿using Sellius.API.Domain.Entity.EntityEnterprises;
 
-namespace Sellius.API.Domain.Models
+namespace Sellius.API.Domain.Entity
 {
     public class Supplier
     {
@@ -23,38 +22,5 @@ namespace Sellius.API.Domain.Models
         public City City { get; set; }
         public Enterprise? Enterprise { get; set; }
         public List<SupplierXCustomer> SupplierXCustomer { get; set; }
-
-        public static implicit operator  Supplier(FornecedorDTO model)
-        {
-            return new Supplier
-            {
-                id = model.id,
-                Nome = model.Nome,
-                CNPJ = model.CNPJ,
-                Telefone = model.Telefone,
-                Email = model.Email,
-                fAtivo = model.fAtivo,
-                dthAlteracao = (DateTime)model.dthAlteracao,
-                dthCadastro = (DateTime)model.dthCadastro,
-                EmpresaId = (int)model.EmpresaId,
-                CidadeId = (int)model.CidadeId,
-                CEP = model.CEP,
-                Rua = model.Rua,
-                Complemento = model.Complemento,
-            };
-        }
-        public static implicit operator Supplier (FiltroFornecedor filtro)
-        {
-            return new Supplier
-            {
-                Nome = filtro.Nome,
-                CNPJ = filtro.CNPJ,
-                CidadeId= filtro.CidadeId,
-                Cidade = new City { EstadoId = filtro.EstadoId},
-                EmpresaId = filtro.EmpresaId,
-                fAtivo = filtro.fAtivo,
-               
-            };
-        }
     }
 }

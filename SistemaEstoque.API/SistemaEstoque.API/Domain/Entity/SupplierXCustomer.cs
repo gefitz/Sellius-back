@@ -1,22 +1,14 @@
-﻿using Sellius.API.DTOs.TabelasDTOs;
-using Sellius.API.Models;
+﻿using Sellius.API.Application.DTOs.TablesDTOs;
+using Sellius.API.Domain.Entity.EntityCustomers;
 
-namespace Sellius.API.Domain.Models
+namespace Sellius.API.Domain.Entity
 {
     public class SupplierXCustomer
     {
         public long CustomerId { get; init; }
         public long SupplierId { get; init; }
         
-        public Customer.Customer? Customer { get; set; }
+        public Customer? Customer { get; set; }
         public Supplier? Supplier { get; set; }
-        public static implicit operator SupplierXCustomer(FornecedorXClienteDTO dto)
-        {
-            return new SupplierXCustomer
-            {
-                idCliente = dto.idCliente,
-                SupplierId = dto.idFornecedor,
-            };
-        }
     }
 }

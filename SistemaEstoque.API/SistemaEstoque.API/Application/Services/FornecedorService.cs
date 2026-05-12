@@ -1,7 +1,10 @@
-﻿using Sellius.API.DTOs;
+﻿using Sellius.API.Application.DTOs.RegisterDTOs;
+using Sellius.API.Application.DTOs.TablesDTOs;
+using Sellius.API.Domain.Entity;
+using Sellius.API.Domain.Models;
+using Sellius.API.DTOs;
 using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.DTOs.Filtros;
-using Sellius.API.DTOs.TabelasDTOs;
 using Sellius.API.Models;
 using Sellius.API.Repository.Fornecedor;
 using Sellius.API.Repository.Fornecedor.Interfaces;
@@ -16,21 +19,21 @@ namespace Sellius.API.Services
         {
             _repository = repository;
         }
-        public async Task<Response<FornecedorDTO>> CadastrarFornecedor(FornecedorDTO dto)
+        public async Task<Response<SupplierRegister>> CadastrarFornecedor(SupplierRegister dto)
         {
             dto.fAtivo = 1;
-            FornecedoresModel model = dto;
+            Supplier model = dto;
             if (await _repository.Create(model))
-                return Response<FornecedorDTO>.Ok(model);
-            return Response<FornecedorDTO>.Failed("Falha ao criar um novo tipo produto");
+                return Response<SupplierRegister>.Ok(model);
+            return Response<SupplierRegister>.Failed("Falha ao criar um novo tipo produto");
 
         }
-        public async Task<Response<PaginacaoTabelaResult<FornecedorTabelaResult, FiltroFornecedor>>> BuscarFornecedor(PaginacaoTabelaResult<FornecedorTabelaResult, FiltroFornecedor> dto)
+        public async Task<Response<PaginationTableResult<>>> BuscarFornecedor(PaginationTableResult<> dto)
         {
             try
             {
 
-                PaginacaoTabelaResult<FornecedoresModel, FornecedoresModel> model = new PaginacaoTabelaResult<FornecedoresModel, FornecedoresModel>
+                PaginationTableResult<> model = new PaginationTableResult<>
                 {
                     TotalRegistros = dto.TotalRegistros,
                     TotalPaginas = dto.TotalPaginas,
@@ -40,86 +43,86 @@ namespace Sellius.API.Services
 
                 };
                 var result = await _repository.Filtrar(model);
-                dto.Dados = FornecedorTabelaResult.FromList(result.Dados);
-                return Response<PaginacaoTabelaResult<FornecedorTabelaResult, FiltroFornecedor>>.Ok(dto);
+                dto.Dados = SupplierTableReturn.FromList(result.Dados);
+                return Response<PaginationTableResult<>>.Ok(dto);
             }
             catch (Exception ex)
             {
-                return Response<PaginacaoTabelaResult<FornecedorTabelaResult, FiltroFornecedor>>.Failed(ex.Message);
+                return Response<PaginationTableResult<>>.Failed(ex.Message);
             }
         }
-        public async Task<Response<FornecedorDTO>> BuscarId(int id)
+        public async Task<Response<SupplierRegister>> BuscarId(int id)
         {
             try
             {
-                FornecedoresModel cliente = new FornecedoresModel { id = id };
-                return Response<FornecedorDTO>.Ok(await _repository.BuscaDireto(cliente));
+                Supplier cliente = new Supplier { id = id };
+                return Response<SupplierRegister>.Ok(await _repository.BuscaDireto(cliente));
             }
             catch (Exception ex)
             {
-                return Response<FornecedorDTO>.Failed(ex.Message);
+                return Response<SupplierRegister>.Failed(ex.Message);
             }
         }
-        public async Task<Response<FornecedorDTO>> UpdateFornecedor(FornecedorDTO dto)
+        public async Task<Response<SupplierRegister>> UpdateFornecedor(SupplierRegister dto)
         {
 
             var fornecedorOriginal = await BuscarId(dto.id);
             if (!fornecedorOriginal.success)
-                return Response<FornecedorDTO>.Failed("Fornecedor não foi encontrado");
+                return Response<SupplierRegister>.Failed("Fornecedor não foi encontrado");
 
 
-            FornecedoresModel model = dto;
+            Supplier model = dto;
             model.dthAlteracao = DateTime.UtcNow;
             model.dthCadastro = (DateTime)fornecedorOriginal.Data.dthCadastro;
             if (fornecedorOriginal.Data.cidade != null)
                 model.Cidade = fornecedorOriginal.Data.cidade;
 
             if (await _repository.Update(model))
-                return Response<FornecedorDTO>.Ok(model);
-            return Response<FornecedorDTO>.Failed("Falha ao fazer modificação");
+                return Response<SupplierRegister>.Ok(model);
+            return Response<SupplierRegister>.Failed("Falha ao fazer modificação");
         }
-        public async Task<Response<FornecedorDTO>> InativarFornecedor(FornecedorDTO dto)
+        public async Task<Response<SupplierRegister>> InativarFornecedor(SupplierRegister dto)
         {
             var model = await BuscarId(dto.id);
             if (!model.success)
             {
-                return Response<FornecedorDTO>.Failed("O id desse tipo produto não foi encontrado");
+                return Response<SupplierRegister>.Failed("O id desse tipo produto não foi encontrado");
             }
             return await UpdateFornecedor(dto);
         }
-        public async Task<Response<List<FornecedorDTO>>> CarregarComboFornecedor(FornecedorDTO fornecedor)
+        public async Task<Response<List<SupplierRegister>>> CarregarComboFornecedor(SupplierRegister fornecedor)
         {
             var fornecedoRet = await _repository.CarregarComboFornecedor(fornecedor);
-            return Response<List<FornecedorDTO>>.Ok(FornecedorDTO.FromList(fornecedoRet));
+            return Response<List<SupplierRegister>>.Ok(SupplierRegister.FromList(fornecedoRet));
         }
-        public async Task<Response<FornecedorXClienteDTO>> AddFornecedorXCliente(FornecedorXClienteDTO fornecedorXCliente)
+        public async Task<Response<SupplierXCustomerTableReturn>> AddFornecedorXCliente(SupplierXCustomerTableReturn supplierXCliente)
         {
-            if (_repository.addFornecedorXCliente(fornecedorXCliente))
+            if (_repository.addFornecedorXCliente(supplierXCliente))
             {
-                return Response<FornecedorXClienteDTO>.Ok();
+                return Response<SupplierXCustomerTableReturn>.Ok();
             }
-            return Response<FornecedorXClienteDTO>.Failed("Falha ao tenta criar um vinculo com fonecedor ao cliente");
+            return Response<SupplierXCustomerTableReturn>.Failed("Falha ao tenta criar um vinculo com fonecedor ao cliente");
         }
 
-        public async Task<Response<PaginacaoTabelaResult<FornecedorXClienteDTO, FornecedorXClienteFiltro>>> ObterFornecedorXClientePaginada(PaginacaoTabelaResult<FornecedorXClienteDTO, FornecedorXClienteFiltro> fornecedorXCliente)
+        public async Task<Response<PaginationTableResult<>>> ObterFornecedorXClientePaginada(PaginationTableResult<> fornecedorXCliente)
         {
             try
             {
                 fornecedorXCliente = await _repository.obterFornecedorXClientePaginada(fornecedorXCliente);
-                return Response<PaginacaoTabelaResult<FornecedorXClienteDTO, FornecedorXClienteFiltro>>.Ok(fornecedorXCliente);
+                return Response<PaginationTableResult<>>.Ok(fornecedorXCliente);
             }catch (Exception ex) {
                 
-                return Response<PaginacaoTabelaResult<FornecedorXClienteDTO, FornecedorXClienteFiltro>>.Failed(ex.Message);
+                return Response<PaginationTableResult<>>.Failed(ex.Message);
             }
         }
 
-        public async Task<Response<FornecedorXClienteDTO>> removerVinculoFornecedorXCliente(FornecedorXClienteDTO fornecedorXCliente)
+        public async Task<Response<SupplierXCustomerTableReturn>> removerVinculoFornecedorXCliente(SupplierXCustomerTableReturn supplierXCliente)
         {
-            if(await _repository.removerVinculoFornecedorXCliente(fornecedorXCliente))
+            if(await _repository.removerVinculoFornecedorXCliente(supplierXCliente))
             {
-                return Response<FornecedorXClienteDTO>.Ok();
+                return Response<SupplierXCustomerTableReturn>.Ok();
             }
-            return Response<FornecedorXClienteDTO>.Failed("Falha ao tentar remover o vinculo");
+            return Response<SupplierXCustomerTableReturn>.Failed("Falha ao tentar remover o vinculo");
         } 
     }
 }

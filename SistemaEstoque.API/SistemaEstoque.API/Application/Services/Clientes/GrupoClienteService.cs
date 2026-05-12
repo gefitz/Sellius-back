@@ -1,7 +1,7 @@
-﻿using Sellius.API.DTOs;
-using Sellius.API.DTOs.CadastrosDTOs.ClientesCadastros;
-using Sellius.API.DTOs.TabelasDTOs;
-using Sellius.API.Models.Cliente;
+﻿using Sellius.API.Application.DTOs.RegisterDTOs.CustomerRegisterDTOs;
+using Sellius.API.Domain.Entity.EntityCustomers;
+using Sellius.API.Domain.Models;
+using Sellius.API.DTOs;
 using Sellius.API.Repository.Cliente;
 using Sellius.API.Repository.Cliente.Interfaces;
 
@@ -15,30 +15,30 @@ namespace Sellius.API.Services.Clientes
         {
             _repository = repository;
         }
-        public async Task<Response<GrupoClienteDTO>> CadastrarGrupo(GrupoClienteDTO grupoClienteDTO)
+        public async Task<Response<GroupCustomerRegister>> CadastrarGrupo(GroupCustomerRegister groupCustomerRegister)
         {
             try
             {
 
-                GrupoClienteModel grupo = grupoClienteDTO;
+                GroupCustomer grupo = groupCustomerRegister;
                 if (await _repository.Create(grupo))
-                    return Response<GrupoClienteDTO>.Ok();
-                return Response<GrupoClienteDTO>.Failed("Falha ao criar o grupo");
+                    return Response<GroupCustomerRegister>.Ok();
+                return Response<GroupCustomerRegister>.Failed("Falha ao criar o grupo");
             }
             catch (ApplicationException e)
             {
-                return Response<GrupoClienteDTO>.Failed(e.Message);
+                return Response<GroupCustomerRegister>.Failed(e.Message);
             }
             catch (Exception e)
             {
-                return Response<GrupoClienteDTO>.Failed(e.Message);
+                return Response<GroupCustomerRegister>.Failed(e.Message);
 
             }
 
         }
-        public async Task<Response<PaginacaoTabelaResult<GrupoClienteDTO, GrupoClienteDTO>>> BuscarClientes(PaginacaoTabelaResult<GrupoClienteDTO, GrupoClienteDTO> grupoClienteDTO)
+        public async Task<Response<PaginationTableResult<>>> BuscarClientes(PaginationTableResult<> grupoClienteDTO)
         {
-            PaginacaoTabelaResult<GrupoClienteModel, GrupoClienteModel> model = new PaginacaoTabelaResult<GrupoClienteModel, GrupoClienteModel>
+            PaginationTableResult<> model = new PaginationTableResult<>
             {
                 PaginaAtual = grupoClienteDTO.PaginaAtual,
                 TamanhoPagina = grupoClienteDTO.TamanhoPagina,
@@ -49,48 +49,48 @@ namespace Sellius.API.Services.Clientes
             };
             model = await _repository.Filtrar(model);
 
-            grupoClienteDTO = PaginacaoTabelaResult<GrupoClienteDTO, GrupoClienteDTO>.RetPaginacao(model);
+            grupoClienteDTO = PaginationTableResult<>.RetPaginacao(model);
 
 
-            grupoClienteDTO.Dados = GrupoClienteDTO.FromToList(model.Dados);
-            return Response<PaginacaoTabelaResult<GrupoClienteDTO, GrupoClienteDTO>>.Ok(grupoClienteDTO);
+            grupoClienteDTO.Dados = GroupCustomerRegister.FromToList(model.Dados);
+            return Response<PaginationTableResult<>>.Ok(grupoClienteDTO);
         }
-        public async Task<Response<GrupoClienteDTO>> BuscarId(int id)
+        public async Task<Response<GroupCustomerRegister>> BuscarId(int id)
         {
-            GrupoClienteModel grupo = new GrupoClienteModel { id = id };
+            GroupCustomer grupo = new GroupCustomer { id = id };
             grupo = await _repository.BuscaDireto(grupo);
             if (grupo != null)
-                return Response<GrupoClienteDTO>.Ok(grupo);
-            return Response<GrupoClienteDTO>.Failed("Cliente não localizado");
+                return Response<GroupCustomerRegister>.Ok(grupo);
+            return Response<GroupCustomerRegister>.Failed("Cliente não localizado");
         }
-        public async Task<Response<GrupoClienteDTO>> UpdateGrupo(GrupoClienteDTO GrupoClienteDTO)
+        public async Task<Response<GroupCustomerRegister>> UpdateGrupo(GroupCustomerRegister groupCustomerRegister)
         {
-            GrupoClienteModel grupo = GrupoClienteDTO;
+            GroupCustomer grupo = groupCustomerRegister;
             if (await _repository.Update(grupo))
-                return Response<GrupoClienteDTO>.Ok();
-            return Response<GrupoClienteDTO>.Failed("Falha ao fazer update ao grupo");
+                return Response<GroupCustomerRegister>.Ok();
+            return Response<GroupCustomerRegister>.Failed("Falha ao fazer update ao grupo");
         }
-        public async Task<Response<GrupoClienteDTO>> InativarCliente(int id)
+        public async Task<Response<GroupCustomerRegister>> InativarCliente(int id)
         {
 
             var grupo = await BuscarId(id);
             if (!grupo.success)
                 return grupo;
-            GrupoClienteModel model = grupo.Data;
+            GroupCustomer model = grupo.Data;
             model.fAtivo = 0;
             model.dthAlteracao = DateTime.Now;
             if (await _repository.Delete(model))
             {
-                return Response<GrupoClienteDTO>.Ok();
+                return Response<GroupCustomerRegister>.Ok();
             }
-            return Response<GrupoClienteDTO>.Failed("Falha ao inativar o grupo");
+            return Response<GroupCustomerRegister>.Failed("Falha ao inativar o grupo");
 
         }
-        public async Task<Response<List<GrupoClienteDTO>>> CarregarCombo(int idEmpresa)
+        public async Task<Response<List<GroupCustomerRegister>>> CarregarCombo(int idEmpresa)
         {
-            var grupo = GrupoClienteDTO.FromToList(await _repository.CarregarCombo(idEmpresa));
+            var grupo = GroupCustomerRegister.FromToList(await _repository.CarregarCombo(idEmpresa));
 
-            return Response<List<GrupoClienteDTO>>.Ok(grupo);
+            return Response<List<GroupCustomerRegister>>.Ok(grupo);
         }
     }
 }

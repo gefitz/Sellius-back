@@ -1,21 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Sellius.API.Domain.Entity.EntityUsers;
 using Sellius.API.Infra.Context.ConfigurationContext.Abstract;
-using Sellius.API.Models.Usuario;
 
-namespace Sellius.API.Infra.Context.ConfigurationContext;
+namespace Sellius.API.Infra.Context.ConfigurationContext.ConfigurationUser;
 
-public class UserConfigurationContext : BaseDateName,IEntityTypeConfiguration<UserModel>
+public class UserConfigurationContext : BaseDateName,IEntityTypeConfiguration<User>
 {
-    public void Configure(EntityTypeBuilder<UserModel> builder)
+    public void Configure(EntityTypeBuilder<User> builder)
     {
         builder.ToTable("User",DataBaseName);
 
         builder.HasKey(x => x.Id);
         
-        builder.HasOne(c => c.Cidade).WithMany().HasForeignKey(c => c.CidadeId);
+        builder.HasOne(c => c.City).WithMany().HasForeignKey(c => c.CityId);
         builder.HasOne(e => e.Enterprise).WithMany().HasForeignKey(u => u.EnterpriseId);
-        builder.HasOne(e => e.TipoUsuario).WithMany().HasForeignKey(e => e.IdTpUsuario);
+        builder.HasOne(e => e.TypeUser).WithMany().HasForeignKey(e => e.TpUsuarioId);
 
     }
 }

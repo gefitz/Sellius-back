@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Sellius.API.Domain.Entity.EntityUsers;
 using Sellius.API.Infra.Context.ConfigurationContext.Abstract;
-using Sellius.API.Models.Usuario;
 
-namespace Sellius.API.Infra.Context.ConfigurationContext;
+namespace Sellius.API.Infra.Context.ConfigurationContext.ConfigurationUser;
 
 public class TypeUserConfigurationContext : BaseDateName,IEntityTypeConfiguration<TypeUser>
 {

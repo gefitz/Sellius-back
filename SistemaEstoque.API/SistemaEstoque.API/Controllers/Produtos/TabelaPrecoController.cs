@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Sellius.API.Application.DTOs.RegisterDTOs;
+using Sellius.API.Domain.Models;
 using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.DTOs.Filtros;
-using Sellius.API.DTOs.TabelasDTOs;
 using Sellius.API.Services.Produtos;
 using Sellius.API.Utils;
 
@@ -22,7 +23,7 @@ namespace Sellius.API.Controllers.Produtos
 
         [HttpPost("novaTabelaPreco")]
         [Authorize(Policy = "podeCriar")]
-        public async Task<IActionResult> NovaTabelaPreco(TabelaPrecoDTO dto)
+        public async Task<IActionResult> NovaTabelaPreco(PriceTableRegister dto)
         {
             dto.idEmpresa = TokenService.RecuperaIdEmpresa(User);
             dto.idUsuario = TokenService.RecuperaIdUsuario(User);
@@ -37,7 +38,7 @@ namespace Sellius.API.Controllers.Produtos
 
         }
         [HttpPost("paginacaoTabelaPreco")]
-        public async Task<IActionResult> PaginacaoTabelaPreco(PaginacaoTabelaResult<TabelaPrecoDTO, FiltroTabelaPreco> dto)
+        public async Task<IActionResult> PaginacaoTabelaPreco(PaginationTableResult<> dto)
         {
             dto.Filtro.idEmpresa = TokenService.RecuperaIdEmpresa(User);
 
@@ -54,7 +55,7 @@ namespace Sellius.API.Controllers.Produtos
         public async Task<IActionResult> PaginacaoTabelaPreco(int idTabelaPreco)
         {
 
-            TabelaPrecoDTO dto = new TabelaPrecoDTO()
+            PriceTableRegister dto = new PriceTableRegister()
             {
                 Id = idTabelaPreco,
                 idEmpresa = TokenService.RecuperaIdEmpresa(User)
@@ -71,7 +72,7 @@ namespace Sellius.API.Controllers.Produtos
         }
         [HttpPut]
         [Authorize(Policy = "podeEditar")]
-        public async Task<IActionResult> UpDate(TabelaPrecoDTO dto)
+        public async Task<IActionResult> UpDate(PriceTableRegister dto)
         {
             dto.idEmpresa = TokenService.RecuperaIdEmpresa(User);
             dto.idUsuario = TokenService.RecuperaIdUsuario(User);
@@ -90,7 +91,7 @@ namespace Sellius.API.Controllers.Produtos
         public async Task<IActionResult> Inativar(int idTabelaPreco)
         {
 
-            TabelaPrecoDTO dto = new TabelaPrecoDTO { Id = idTabelaPreco, idEmpresa = TokenService.RecuperaIdEmpresa(User) };
+            PriceTableRegister dto = new PriceTableRegister { Id = idTabelaPreco, idEmpresa = TokenService.RecuperaIdEmpresa(User) };
             var ret = await _service.InativarTabelaPreco(dto);
 
             if (ret.success)

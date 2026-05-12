@@ -8,6 +8,7 @@ using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.Models;
 using Sellius.API.Services;
 using System;
+using Sellius.API.Application.DTOs.RegisterDTOs;
 
 namespace Sellius.API.Controllers
 {
@@ -21,12 +22,12 @@ namespace Sellius.API.Controllers
             _service = service;
         }
         [HttpPost]
-        public async Task<IActionResult> Login(LoginDTO usuario)
+        public async Task<IActionResult> Login(LoginRegister usuario)
         {
             if (!ModelState.IsValid)
             {
                 var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(Response<LoginDTO>.Failed(menssagemErro));
+                return BadRequest(Response<LoginRegister>.Failed(menssagemErro));
             }
             var response = await _service.LoginAutenticacao(usuario);
             if (!response.success)
@@ -48,12 +49,12 @@ namespace Sellius.API.Controllers
             return Ok(response);
         }
         [HttpPost("AlterarSenha")]
-        public async Task<IActionResult> AlterarSenha(LoginDTO login)
+        public async Task<IActionResult> AlterarSenha(LoginRegister login)
         {
             if (!ModelState.IsValid)
             {
                 var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(Response<LoginDTO>.Failed(menssagemErro));
+                return BadRequest(Response<LoginRegister>.Failed(menssagemErro));
             }
             var response = await _service.AlterarSenha(login);
             if (!response.success)
@@ -64,12 +65,12 @@ namespace Sellius.API.Controllers
         }
         [HttpPost("criarclientelogin")]
         [Authorize(Roles = "Adm,Gerente")]
-        public async Task<IActionResult> CriarLoginCliente(LoginDTO login)
+        public async Task<IActionResult> CriarLoginCliente(LoginRegister login)
         {
             if (!ModelState.IsValid)
             {
                 var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(Response<LoginDTO>.Failed(menssagemErro));
+                return BadRequest(Response<LoginRegister>.Failed(menssagemErro));
             }
             var ret = await _service.CriarClienteLogin(login);
             if (ret.success)
@@ -95,7 +96,7 @@ namespace Sellius.API.Controllers
         {
             var user = HttpContext.User;
             //var config = user.Identity.c
-            TpUsuarioConfiguracaoDTO config = new TpUsuarioConfiguracaoDTO
+            UserConfiguration config = new UserConfiguration
             {
                 flPodeAprovar = user.FindFirst("podeAprovar")?.Value == "True",
                 flPodeCriar = user.FindFirst("podeCriar")?.Value == "True",
@@ -105,7 +106,7 @@ namespace Sellius.API.Controllers
                 flPodeGerenciarUsuarios = user.FindFirst("podeGerenciarUsuarios")?.Value == "True",
                 flPodeInativar = user.FindFirst("podeInativar")?.Value == "True"
             };
-            return Ok(Response<TpUsuarioConfiguracaoDTO>.Ok(config));
+            return Ok(Response<UserConfiguration>.Ok(config));
         }
     }
 }

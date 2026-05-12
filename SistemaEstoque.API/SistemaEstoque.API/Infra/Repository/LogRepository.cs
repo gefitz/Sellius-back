@@ -1,49 +1,23 @@
-﻿using Sellius.API.Infra.Context;
-using Sellius.API.Models;
+﻿using Sellius.API.Domain.Entity;
+using Sellius.API.Domain.Models;
+using Sellius.API.Infra.Context;
+using Sellius.API.Repository.Abstract;
 
 namespace Sellius.API.Repository
 {
-    public class LogRepository
+    public class LogRepository(AppDbContext context): BaseRepository<LogModel>(context)
     {
-        private readonly AppDbContext _context;
-
-        public LogRepository(AppDbContext context)
-        {
-            _context = context;
-            
-        }
-
-        public void Error(string message, bool SalvarLog)
+        public async Task Error(Exception exception)
         {
             LogModel logModel = new LogModel();
-            if (!string.IsNullOrEmpty(message)) { logModel.Messagem = message; }
-            if (SalvarLog)
-            {
-                logModel.InnerExecption = "";
-                logModel.dthErro = DateTime.Now;
-                _context.Logs.Add(logModel);
-                _context.SaveChanges();
-            }
-            logModel.Messagem = message;
-            
-
-        }
-        public void Error(Exception exception)
-        {
-            LogModel logModel = new LogModel();
-
-            if (exception != null)
-            {
                 logModel.Messagem = exception.Message;
-                logModel.InnerExecption = "";
+                logModel.InnerExecption = exception.InnerException!.Message;
                 if (exception.InnerException != null)
                     logModel.InnerExecption = exception.InnerException.ToString();
 
                 logModel.dthErro = DateTime.Now;
-                _context.Logs.Add(logModel);
-                _context.SaveChanges();
-                logModel.Messagem = exception.Message;
-            }
+                DbConext.Add(logModel);
+                await SaveChangesAsync();
         }
     }
 }

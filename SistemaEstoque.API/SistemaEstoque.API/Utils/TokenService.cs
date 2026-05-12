@@ -1,12 +1,13 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Sellius.API.DTOs;
 using Sellius.API.DTOs.CadastrosDTOs;
-using Sellius.API.Models.Usuario;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
+using Sellius.API.Domain.Entity.EntityUsers;
 using static System.Net.WebRequestMethods;
+using UserConfiguration = Sellius.API.Application.DTOs.RegisterDTOs.UserConfiguration;
 
 namespace Sellius.API.Utils
 {
@@ -17,24 +18,24 @@ namespace Sellius.API.Utils
         {
             _configuration = configuration;
         }
-        public async Task<Response<string>> GerarCookie(LoginModel login)
+        public async Task<Response<string>> GerarCookie(Authentication authentication)
         {
             #region Claims
             Claim[] claims = [];
             string idUsuarioClient = "";
             string user = "";
 
-            idUsuarioClient = login.usuarioId.ToString();
-            user = login.Usuario.Nome;
-            TpUsuarioConfiguracaoDTO config = login.Usuario.TipoUsuario.TpUsuarioConfigurcao;
+            idUsuarioClient = authentication.usuarioId.ToString();
+            user = authentication.Usuario.Nome;
+            UserConfiguration config = authentication.Usuario.TipoUsuario.TpUsuarioConfigurcao;
             var configUsuarioJson = JsonSerializer.Serialize(config);
 
             claims = new[]
                   {
                         new Claim("id", idUsuarioClient),
                         new Claim("user", user),
-                        new Claim(ClaimTypes.Role, login.Usuario.IdTpUsuario.ToString()),
-                        new Claim("empresa", login.EmpresaId.ToString()),
+                        new Claim(ClaimTypes.Role, authentication.Usuario.IdTpUsuario.ToString()),
+                        new Claim("empresa", authentication.EmpresaId.ToString()),
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                         new Claim("config", configUsuarioJson, JsonClaimValueTypes.Json),
                     };

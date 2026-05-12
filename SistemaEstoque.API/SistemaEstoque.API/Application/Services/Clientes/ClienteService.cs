@@ -1,13 +1,14 @@
 ﻿using AutoMapper;
 using Sellius.API.DTOs;
-using Sellius.API.DTOs.CadastrosDTOs.ClientesCadastros;
 using Sellius.API.DTOs.Filtros;
-using Sellius.API.DTOs.TabelasDTOs;
-using Sellius.API.Models.Cliente;
 using Sellius.API.Repository.Cliente;
 using Sellius.API.Repository.Cliente.Interfaces;
 using Sellius.API.Repository.Interfaces;
 using System.Runtime.InteropServices;
+using Sellius.API.Application.DTOs.RegisterDTOs.CustomerRegisterDTOs;
+using Sellius.API.Application.DTOs.TablesDTOs;
+using Sellius.API.Domain.Entity.EntityCustomers;
+using Sellius.API.Domain.Models;
 
 namespace Sellius.API.Services.Clientes
 {
@@ -19,30 +20,30 @@ namespace Sellius.API.Services.Clientes
         {
             _repository = repository;
         }
-        public async Task<Response<ClienteDTO>> CadastrarCliente(ClienteDTO clienteDTO)
+        public async Task<Response<CustomerRegister>> CadastrarCliente(CustomerRegister customerRegister)
         {
             try
             {
 
-                ClienteModel cliente = clienteDTO;
+                Customer cliente = customerRegister;
                 if (await _repository.Create(cliente))
-                    return Response<ClienteDTO>.Ok();
-                return Response<ClienteDTO>.Failed("Falha ao criar o cliente");
+                    return Response<CustomerRegister>.Ok();
+                return Response<CustomerRegister>.Failed("Falha ao criar o cliente");
             }
             catch (ApplicationException e)
             {
-                return Response<ClienteDTO>.Failed(e.Message);
+                return Response<CustomerRegister>.Failed(e.Message);
             }
             catch (Exception e)
             {
-                return Response<ClienteDTO>.Failed(e.Message);
+                return Response<CustomerRegister>.Failed(e.Message);
 
             }
 
         }
-        public async Task<Response<PaginacaoTabelaResult<ClienteTabelaResult, FiltroCliente>>> BuscarClientes(PaginacaoTabelaResult<ClienteTabelaResult, FiltroCliente> clienteDTO)
+        public async Task<Response<PaginationTableResult<>>> BuscarClientes(PaginationTableResult<> clienteDTO)
         {
-            PaginacaoTabelaResult<ClienteModel, FiltroCliente> model = new PaginacaoTabelaResult<ClienteModel, FiltroCliente>
+            PaginationTableResult<> model = new PaginationTableResult<>
             {
                 PaginaAtual = clienteDTO.PaginaAtual,
                 TamanhoPagina = clienteDTO.TamanhoPagina,
@@ -52,34 +53,34 @@ namespace Sellius.API.Services.Clientes
                 
             };
             model = await _repository.Filtrar(model);
-            clienteDTO.Dados = ClienteTabelaResult.FromToList(model.Dados);
+            clienteDTO.Dados = CustomerTableReturn.FromToList(model.Dados);
             clienteDTO.PaginaAtual = model.PaginaAtual;
             clienteDTO.TotalPaginas = model.TotalPaginas;
             clienteDTO.TotalRegistros = model.TotalRegistros;
             clienteDTO.TamanhoPagina = model.TamanhoPagina;
-            return Response<PaginacaoTabelaResult<ClienteTabelaResult, FiltroCliente>>.Ok(clienteDTO);
+            return Response<PaginationTableResult<>>.Ok(clienteDTO);
         }
-        public async Task<Response<ClienteDTO>> BuscarId(int id)
+        public async Task<Response<CustomerRegister>> BuscarId(int id)
         {
-            ClienteModel cliente = new ClienteModel { id = id };
+            Customer cliente = new Customer { id = id };
             cliente = await _repository.BuscaDireto(cliente);
             if (cliente != null)
-                return Response<ClienteDTO>.Ok(cliente);
-            return Response<ClienteDTO>.Failed("Cliente não localizado");
+                return Response<CustomerRegister>.Ok(cliente);
+            return Response<CustomerRegister>.Failed("Cliente não localizado");
         }
-        public async Task<Response<ClienteDTO>> UpdateCliente(ClienteDTO clienteDTO)
+        public async Task<Response<CustomerRegister>> UpdateCliente(CustomerRegister customerRegister)
         {
-            ClienteModel cliente = clienteDTO;
+            Customer cliente = customerRegister;
             if (await _repository.Update(cliente))
-                return Response<ClienteDTO>.Ok();
-            return Response<ClienteDTO>.Failed("Falha ao fazer update ao cliente");
+                return Response<CustomerRegister>.Ok();
+            return Response<CustomerRegister>.Failed("Falha ao fazer update ao cliente");
         }
-        public async Task<Response<ClienteDTO>> InativarCliente(int id)
+        public async Task<Response<CustomerRegister>> InativarCliente(int id)
         {
             var clienteInativar = await BuscarId(id);
             if (!clienteInativar.success)
                 return clienteInativar;
-            ClienteModel cliente = clienteInativar.Data;
+            Customer cliente = clienteInativar.Data;
             cliente.fAtivo = 0;
             return await UpdateCliente(cliente);
 

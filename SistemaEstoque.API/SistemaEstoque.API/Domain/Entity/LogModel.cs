@@ -1,4 +1,4 @@
-namespace Sellius.API.Domain.Models
+namespace Sellius.API.Domain.Entity
 {
     public class LogModel
     {

@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Sellius.API.Application.DTOs.Filters;
+using Sellius.API.Application.DTOs.RegisterDTOs;
+using Sellius.API.Domain.Models;
 using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.DTOs.Filtros;
-using Sellius.API.DTOs.TabelasDTOs;
 using Sellius.API.Services;
 using Sellius.API.Utils;
 
@@ -32,11 +34,11 @@ namespace Sellius.API.Controllers
             return BadRequest(ret);
         }
         [HttpPost("listarMenus")]
-        public async Task<IActionResult> listarMenus(PaginacaoTabelaResult<MenuDTO,MenuFiltro> paginacaoTabela)
+        public async Task<IActionResult> listarMenus(PaginationTableResult<> paginationTable)
         {
-            paginacaoTabela.Filtro.idEmpresa = TokenService.RecuperaIdEmpresa(User);
+            paginationTable.Filtro.idEmpresa = TokenService.RecuperaIdEmpresa(User);
 
-            var ret = await _service.ObterTodosMenus(paginacaoTabela);
+            var ret = await _service.ObterTodosMenus(paginationTable);
             if (ret.success)
             {
                 return Ok(ret);
@@ -44,7 +46,7 @@ namespace Sellius.API.Controllers
             return BadRequest(ret);
         }
         [HttpPost("salvarMenu")]
-        public async Task<IActionResult> salvarMenu(MenuDTO menu)
+        public async Task<IActionResult> salvarMenu(MenuRegister menu)
         {
         
             var ret = await _service.CriarMenu(menu);
@@ -56,7 +58,7 @@ namespace Sellius.API.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> updateMenu(MenuDTO menu)
+        public async Task<IActionResult> updateMenu(MenuRegister menu)
         {
 
             var ret = await _service.UpdateMenu(menu);
@@ -78,7 +80,7 @@ namespace Sellius.API.Controllers
             return BadRequest(ret);
         }
         [HttpPost("obterTodosMenus")]
-        public async Task<IActionResult> obterTodosMenus(MenuFiltro menu)
+        public async Task<IActionResult> obterTodosMenus(MenuFilter menu)
         {
 
             menu.idEmpresa = TokenService.RecuperaIdEmpresa(User);

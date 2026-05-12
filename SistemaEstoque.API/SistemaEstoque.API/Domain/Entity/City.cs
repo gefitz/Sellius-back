@@ -1,7 +1,6 @@
 ﻿using Sellius.API.DTOs;
-using Sellius.API.Models;
 
-namespace Sellius.API.Domain.Models
+namespace Sellius.API.Domain.Entity
 {
     public class City
     {
@@ -9,16 +8,6 @@ namespace Sellius.API.Domain.Models
         public string Name { get; set; }
         public long StateId { get; set; }
         public State State { get; set; }
-
-        public static implicit operator City(CidadeDTO cidade)
-        {
-            return new City
-            {
-                Cidade = cidade.Cidade,
-                id = cidade.id,
-                Estado = cidade.Estado
-            };
-        }
 
     }
 }

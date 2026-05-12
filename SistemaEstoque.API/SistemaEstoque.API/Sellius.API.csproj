@@ -23,7 +23,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Context\" />
-    <Folder Include="Services\Login\" />
+    <Folder Include="Infra\" />
+    <Folder Include="Infra\Repository\Login\Interfaces\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Application\Services\UsuarioService.cs" />
   </ItemGroup>
 </Project>

@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using Sellius.API.DTOs.CadastrosDTOs;
 using Sellius.API.DTOs;
-using Sellius.API.DTOs.TabelasDTOs;
 using Microsoft.AspNetCore.Authorization;
+using Sellius.API.Application.DTOs.RegisterDTOs;
+using Sellius.API.Domain.Models;
 using Sellius.API.Utils;
 using Sellius.API.Services.Produtos;
 namespace Sellius.API.Controllers.Produtos
@@ -29,7 +30,7 @@ namespace Sellius.API.Controllers.Produtos
             return BadRequest(ret);
         }
         [HttpPost("ObterTabelaTpProduto")]
-        public async Task<IActionResult> ObterTpProduto(PaginacaoTabelaResult<TipoProdutoDTO, TipoProdutoDTO> tipoProdutoDTO)
+        public async Task<IActionResult> ObterTpProduto(PaginationTableResult<> tipoProdutoDTO)
         {
             tipoProdutoDTO.Filtro.EmpresaId = TokenService.RecuperaIdEmpresa(User);
             var ret = await _service.BuscarTpProudo(tipoProdutoDTO);
@@ -40,12 +41,12 @@ namespace Sellius.API.Controllers.Produtos
             return Ok(ret);
         }
         [HttpPost("NovoTpProduto")]
-        public async Task<IActionResult> CadastrarTpProduto([FromBody] TipoProdutoDTO tipoProduto)
+        public async Task<IActionResult> CadastrarTpProduto([FromBody] TypeProductRegister tipoProduto)
         {
             if (!ModelState.IsValid)
             {
                 var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(Response<TipoProdutoDTO>.Failed(menssagemErro));
+                return BadRequest(Response<TypeProductRegister>.Failed(menssagemErro));
             }
             tipoProduto.EmpresaId = TokenService.RecuperaIdEmpresa(User);
             var ret = await _service.CadastrarTpProduto(tipoProduto);
@@ -55,13 +56,13 @@ namespace Sellius.API.Controllers.Produtos
 
         }
         [HttpPut]
-        public async Task<IActionResult> UpdateTpProduto(TipoProdutoDTO dto)
+        public async Task<IActionResult> UpdateTpProduto(TypeProductRegister dto)
         {
             dto.EmpresaId = TokenService.RecuperaIdEmpresa(User);
             if (!ModelState.IsValid)
             {
                 var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(Response<TipoProdutoDTO>.Failed(menssagemErro));
+                return BadRequest(Response<TypeProductRegister>.Failed(menssagemErro));
             }
             var result = await _service.UpdateTpProduto(dto);
             if (result.success) { return Ok(result); }

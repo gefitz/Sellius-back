@@ -8,9 +8,9 @@ using Sellius.API.Repository.Abstract;
 namespace Sellius.API.Infra.Repository.Product
 {
     public class ProductRepository(AppDbContext context) :
-        BaseRepository<Domain.Entity.Product.Product>(context),IProductRepository
+        BaseRepository<Domain.Entity.EntityProduct.Product>(context),IProductRepository
     {
-        public async Task<bool> CreateProductAsync(Domain.Entity.Product.Product model)
+        public async Task<bool> CreateProductAsync(Domain.Entity.EntityProduct.Product model)
         {
             DbConext.Add(model);
 
@@ -19,7 +19,7 @@ namespace Sellius.API.Infra.Repository.Product
             return true;
         }
 
-        public async Task<bool> UpdateProductAsync(Domain.Entity.Product.Product model)
+        public async Task<bool> UpdateProductAsync(Domain.Entity.EntityProduct.Product model)
         {
             DbConext.Update(model);
             
@@ -28,13 +28,13 @@ namespace Sellius.API.Infra.Repository.Product
             return true;
         }
 
-        public async Task<Domain.Entity.Product.Product?> FindByPredicateAsync(
-            Expression<Func<Domain.Entity.Product.Product, bool>> predicate,
-            Func<IQueryable<Domain.Entity.Product.Product>,
-                IIncludableQueryable<Domain.Entity.Product.Product, object>>? include,
+        public async Task<Domain.Entity.EntityProduct.Product?> FindByPredicateAsync(
+            Expression<Func<Domain.Entity.EntityProduct.Product, bool>> predicate,
+            Func<IQueryable<Domain.Entity.EntityProduct.Product>,
+                IIncludableQueryable<Domain.Entity.EntityProduct.Product, object>>? include,
             bool asNoTracking)
         {
-          IQueryable<Domain.Entity.Product.Product> query = DbConext;
+          IQueryable<Domain.Entity.EntityProduct.Product> query = DbConext;
 
           query = query.Where(predicate);
           
@@ -47,9 +47,9 @@ namespace Sellius.API.Infra.Repository.Product
           return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<List<Domain.Entity.Product.Product>> FindAllAsync(Expression<Func<Domain.Entity.Product.Product, bool>> predicate, Func<IQueryable<Domain.Entity.Product.Product>, IIncludableQueryable<Domain.Entity.Product.Product, object>>? include = null, Func<IQueryable<Domain.Entity.Product.Product>, IOrderedQueryable<Domain.Entity.Product.Product>>? orderBy = null)
+        public async Task<List<Domain.Entity.EntityProduct.Product>> FindAllAsync(Expression<Func<Domain.Entity.EntityProduct.Product, bool>> predicate, Func<IQueryable<Domain.Entity.EntityProduct.Product>, IIncludableQueryable<Domain.Entity.EntityProduct.Product, object>>? include = null, Func<IQueryable<Domain.Entity.EntityProduct.Product>, IOrderedQueryable<Domain.Entity.EntityProduct.Product>>? orderBy = null)
         {
-            IQueryable<Domain.Entity.Product.Product> query =  DbConext;
+            IQueryable<Domain.Entity.EntityProduct.Product> query =  DbConext;
             
             query = query.Where(predicate);
             
