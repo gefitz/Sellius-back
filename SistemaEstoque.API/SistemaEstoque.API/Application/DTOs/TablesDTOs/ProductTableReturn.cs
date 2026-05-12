@@ -1,6 +1,4 @@
-﻿using Sellius.API.Enums;
-
-namespace Sellius.API.Application.DTOs.TablesDTOs
+﻿namespace Sellius.API.Application.DTOs.TablesDTOs
 {
     public class ProductTableReturn
     {

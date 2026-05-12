@@ -1,93 +1,64 @@
-﻿using Sellius.API.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Sellius.API.Application.DTOs.EditDTOs;
 using Sellius.API.Application.DTOs.RegisterDTOs;
-using Sellius.API.Domain.Models;
-using Sellius.API.DTOs.CadastrosDTOs;
+using Sellius.API.Application.DTOs.TablesDTOs;
+using Sellius.API.Application.Services.ProductServices.CommandServices.Interfaces;
+using Sellius.API.Application.Services.ProductServices.QueryServices.Interfaces;
+using Sellius.API.Domain.Extensions;
 using Sellius.API.DTOs;
 using Sellius.API.DTOs.Filtros;
-using Sellius.API.Utils;
-using Sellius.API.Services.Produtos;
 
-namespace Sellius.API.Controllers.Produtos
+namespace Sellius.API.Controllers.Produtos;
+
+[ApiController]
+[Route("/api/[controller]")]
+[Authorize]
+public class ProdutoController(
+    IProductCommandServices commandService,
+    IProductQueryService queryService) : Controller
 {
-    [ApiController]
-    [Route("/api/[controller]")]
-    [Authorize]
-    public class ProdutoController : Controller
+    [HttpPost]
+    [Authorize(Policy = "podeCriar")]
+    public async Task<IActionResult> CadastrarProduto(ProductRegister dto)
     {
-        private readonly ProdutoService _service;
+        var result = await commandService.CreateProduct(dto, User.GetEnterpriseId());
+        if (result)
+            return Ok(Response<bool>.Ok());
+        return BadRequest(Response<bool>.Failed("Falha ao cadastrar produto"));
+    }
 
-        public ProdutoController(ProdutoService service)
-        {
-            _service = service;
-        }
-        [HttpPost("ObterProduto")]
-        public async Task<IActionResult> ObterProduto(PaginationTableResult<> produto)
-        {
-            var response = await _service.FiltrarProduto(produto);
-            if (response.success)
-            {
-                return Ok(response);
-            }
-            return BadRequest(response);
-        }
-        [HttpPost("CadastrarProduto")]
-        public async Task<IActionResult> CadastrarProduto(ProductRegister productRegister)
-        {
-            if (!ModelState.IsValid)
-            {
-                var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(Response<ProductRegister>.Failed(menssagemErro));
-            }
-            productRegister.EmpresaId = TokenService.RecuperaIdEmpresa(User);
-           var response = await _service.CadastrarProduto(productRegister);
-            if (!response.success)
-            {
-                return Ok(response);
-            }
-            return BadRequest(response);
-        }
-        [HttpPut]
-        public async Task<IActionResult> UpdateProduto(ProductRegister productRegister)
-        {
-            if (!ModelState.IsValid)
-            {
-                var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(Response<ProductRegister>.Failed(menssagemErro));
-            }
-            productRegister.EmpresaId = TokenService.RecuperaIdEmpresa(User);
-            var response = await _service.Update(productRegister);
-            if (response.success)
-            {
-                return Ok(response);
-            }
-            return BadRequest(response);
-        }
+    [HttpPut]
+    [Authorize(Policy = "podeEditar")]
+    public async Task<IActionResult> AtualizarProduto(ProductRegister dto)
+    {
+        var result = await commandService.UpdateProduct(dto);
+        if (result)
+            return Ok(Response<bool>.Ok());
+        return BadRequest(Response<bool>.Failed("Falha ao atualizar produto"));
+    }
 
-        [HttpDelete]
-        public async Task<IActionResult> InativarProduto(int id)
-        {
-            var ret = await _service.InativarProduto(id);
-            if (ret.success)
-            {
-                return Ok(ret);
-            }
-            return BadRequest(ret);
-        }
-        [HttpGet("recuperarProdutosComTabelaPreco")]
-        public async Task<IActionResult> RecuperarProdutosComTabelaPreco(int idCliente)
-        {
-            int idEmpresa = TokenService.RecuperaIdEmpresa(User);
+    [HttpDelete("{id:long}")]
+    [Authorize(Policy = "podeInativar")]
+    public async Task<IActionResult> InativarProduto(long id)
+    {
+        var result = await commandService.InactiveProduct(id);
+        if (result)
+            return Ok(Response<bool>.Ok());
+        return BadRequest(Response<bool>.Failed("Falha ao inativar produto"));
+    }
 
-            var resp = await _service.recuperarProdutosComTabelaPreco(idEmpresa,idCliente);
+    [HttpGet("{id:long}")]
+    public async Task<IActionResult> ObterProduto(long id)
+    {
+        var result = await queryService.FindByProductId(id);
+        return Ok(Response<ProductEdit>.Ok(result));
+    }
 
-            if (resp.success)
-            {
-                return Ok(resp);
-            }
-            return BadRequest(resp);
-        }
-
+    [HttpPost("list")]
+    public async Task<IActionResult> ObterTodosProdutos(ProductFilter filter)
+    {
+        var result = await queryService.FindAllProducts(filter, User.GetEnterpriseId());
+        return Ok(Response<List<ProductTableReturn>>.Ok(result));
     }
 }

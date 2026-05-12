@@ -1,5 +1,4 @@
 ﻿using Sellius.API.Domain.Enums;
-using Sellius.API.Enums;
 
 namespace Sellius.API.Domain.Entity.EntityEnterprises
 {

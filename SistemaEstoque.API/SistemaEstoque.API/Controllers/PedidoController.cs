@@ -1,74 +1,64 @@
-﻿using Sellius.API.Models;
-using Sellius.API.Repository;
-using Microsoft.AspNetCore.Mvc;
-using Sellius.API.Services;
-using Sellius.API.DTOs;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Sellius.API.Application.DTOs.EditDTOs;
+using Sellius.API.Application.DTOs.Filters;
 using Sellius.API.Application.DTOs.RegisterDTOs;
 using Sellius.API.Application.DTOs.TablesDTOs;
-using Sellius.API.Domain.Models;
-using Sellius.API.DTOs.CadastrosDTOs;
-using Sellius.API.Utils;
-using Sellius.API.DTOs.Filtros;
+using Sellius.API.Application.Services.SaleOrderServices.CommandServices.Interfaces;
+using Sellius.API.Application.Services.SaleOrderServices.QueryServices.Interfaces;
+using Sellius.API.Domain.Extensions;
+using Sellius.API.DTOs;
 
-namespace Sellius.API.Controllers
+namespace Sellius.API.Controllers;
+
+[ApiController]
+[Route("/api/[controller]")]
+[Authorize]
+public class PedidoController(
+    ISaleOrderCommandService commandService,
+    ISaleOrderQueryService queryService) : Controller
 {
-    [ApiController]
-    [Route("/api/[controller]")]
-    [Authorize]
-    public class PedidoController : Controller
+    [HttpPost]
+    [Authorize(Policy = "podeCriar")]
+    public async Task<IActionResult> CadastrarPedido(SaleOrderRegister dto)
     {
-        private readonly PedidoService _service;
-        public PedidoController(PedidoService service)
-        {
-            _service = service;
+        var result = await commandService.CreateSaleOrder(dto, User.GetUserId(), User.GetEnterpriseId());
+        if (result)
+            return Ok(Response<bool>.Ok());
+        return BadRequest(Response<bool>.Failed("Falha ao cadastrar pedido"));
+    }
 
-        }
-        [HttpPost("obterTodosPedidos")]
-        public async Task<IActionResult> obterTodosPedidos(PaginationTableResult<> pedidoDTO)
-        {
-            pedidoDTO.Filtro.EmpresaId = TokenService.RecuperaIdEmpresa(User);
-            var response = await _service.obterTodosPedidos( pedidoDTO);
-            if (response.success)
-            {
-                return Ok(response);
-            }
-            return BadRequest(response);
-        }
-        [HttpPost("novoPedido")]
-        public async Task<IActionResult> Cadastrar(SaleOrderRegister pedido)
-        {
-            if (!ModelState.IsValid)
-            {
-                var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(Response<SaleOrderRegister>.Failed(menssagemErro));
-            }
-            pedido.EmpresaId = TokenService.RecuperaIdEmpresa(User);
-            pedido.UsuarioId = TokenService.RecuperaIdUsuario(User);
-            var response = await _service.CadastrarPedido(pedido);
-            if (response.success)
-            {
-                return Ok(response);
-            }
-            return BadRequest(response);
+    [HttpPut]
+    [Authorize(Policy = "podeEditar")]
+    public async Task<IActionResult> AtualizarPedido(SaleOrderRegister dto)
+    {
+        var result = await commandService.UpdateSaleOrder(dto);
+        if (result)
+            return Ok(Response<bool>.Ok());
+        return BadRequest(Response<bool>.Failed("Falha ao atualizar pedido"));
+    }
 
+    [HttpDelete("{id:long}")]
+    [Authorize(Policy = "podeInativar")]
+    public async Task<IActionResult> CancelarPedido(long id)
+    {
+        var result = await commandService.CancelSaleOrder(id);
+        if (result)
+            return Ok(Response<bool>.Ok());
+        return BadRequest(Response<bool>.Failed("Falha ao cancelar pedido"));
+    }
 
-        }
-        [HttpPut]
-        public async Task<IActionResult> UpdatePedido(SaleOrderRegister dto)
-        {
-            if (!ModelState.IsValid)
-            {
-                var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(Response<SaleOrderRegister>.Failed(menssagemErro));
-            }
-            var ret = await _service.UpdatePedido(dto);
-            if (ret.success)
-            {
-                return Ok(ret);
-            }
-            return BadRequest(ret);
-        }
+    [HttpGet("{id:long}")]
+    public async Task<IActionResult> ObterPedido(long id)
+    {
+        var result = await queryService.FindBySaleOrderId(id);
+        return Ok(Response<SaleOrderEdit>.Ok(result));
+    }
 
+    [HttpPost("list")]
+    public async Task<IActionResult> ObterTodosPedidos(SaleOrderFilter filter)
+    {
+        var result = await queryService.FindAllSaleOrders(filter, User.GetEnterpriseId());
+        return Ok(Response<List<SaleOrderTableReturn>>.Ok(result));
     }
 }

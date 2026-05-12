@@ -4,7 +4,7 @@ namespace Sellius.API.Application.DTOs.RegisterDTOs
 {
     public class EnterpriseRegister
     {
-        public long Id { get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public string Document { get; set; }
         public string Phone { get; set; }

@@ -1,85 +1,64 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Sellius.API.Application.DTOs.EditDTOs;
 using Sellius.API.Application.DTOs.RegisterDTOs;
-using Sellius.API.Domain.Models;
-using Sellius.API.DTOs.CadastrosDTOs;
+using Sellius.API.Application.Services.TypeUserServices.CommandServices.Interfaces;
+using Sellius.API.Application.Services.TypeUserServices.QueryServices.Interfaces;
+using Sellius.API.Domain.Extensions;
+using Sellius.API.DTOs;
 using Sellius.API.DTOs.Filtros;
-using Sellius.API.Repository.Interfaces;
-using Sellius.API.Services;
-using Sellius.API.Utils;
 
-namespace Sellius.API.Controllers
+namespace Sellius.API.Controllers;
+
+[ApiController]
+[Route("/api/[controller]")]
+[Authorize]
+public class TpUsuarioController(
+    ITypeUserCommandService commandService,
+    ITypeUserQueryService queryService) : Controller
 {
-    [ApiController]
-    [Route("/api/[controller]")]
-    [Authorize]
-    public class TpUsuarioController : Controller
+    [HttpPost]
+    [Authorize(Policy = "podeGerenciarUsuarios")]
+    public async Task<IActionResult> CadastrarTpUsuario(TypeUserRegister dto)
     {
-        private TpUsuarioService _service;
+        dto.EnterpriseId = User.GetEnterpriseId();
+        var result = await commandService.CreateTypeUser(dto);
+        if (result)
+            return Ok(Response<bool>.Ok());
+        return BadRequest(Response<bool>.Failed("Falha ao cadastrar tipo de usuário"));
+    }
 
-        public TpUsuarioController(TpUsuarioService service)
-        {
-            _service = service;
-        }
-        [HttpPost("cadastrarTpUsuario")]
-        public async Task<IActionResult> cadastrarTpUsuario(TypeUserRegister tpUsuario)
-        {
+    [HttpPut]
+    [Authorize(Policy = "podeGerenciarUsuarios")]
+    public async Task<IActionResult> AtualizarTpUsuario(TypeUserRegister dto)
+    {
+        var result = await commandService.UpdateTypeUser(dto);
+        if (result)
+            return Ok(Response<bool>.Ok());
+        return BadRequest(Response<bool>.Failed("Falha ao atualizar tipo de usuário"));
+    }
 
-            tpUsuario.idEmpresa = TokenService.RecuperaIdEmpresa(User);
-            var ret = await _service.cadastrarTpUsuario(tpUsuario);
-            if (ret != null && ret.success)
-            {
-                return Ok(ret);
-            }
-            return BadRequest(ret);
-        }
-        [HttpPost("paginacao")]
-        public async Task<IActionResult> paginacao(PaginationTableResult<> tpUsuario)
-        {
+    [HttpDelete("{id:long}")]
+    [Authorize(Policy = "podeGerenciarUsuarios")]
+    public async Task<IActionResult> InativarTpUsuario(long id)
+    {
+        var result = await commandService.InactiveTypeUser(id);
+        if (result)
+            return Ok(Response<bool>.Ok());
+        return BadRequest(Response<bool>.Failed("Falha ao inativar tipo de usuário"));
+    }
 
-            tpUsuario.Filtro.idEmpresa = TokenService.RecuperaIdEmpresa(User);
-            var ret = await _service.paginacao(tpUsuario);
-            if (ret != null && ret.success) { return Ok(ret); }
-            return BadRequest(ret);
-        }
+    [HttpGet("{id:long}")]
+    public async Task<IActionResult> ObterTpUsuario(long id)
+    {
+        var result = await queryService.FindByTypeUserId(id);
+        return Ok(Response<TypeUserEdit>.Ok(result));
+    }
 
-        [HttpGet("recuperarTpUsuarios")]
-        public async Task<IActionResult> recuperarTpUsuarios()
-        {
-
-            int idEmpresa = TokenService.RecuperaIdEmpresa(User);
-            var ret = await _service.recuperaTpUsuarios(idEmpresa);
-            if (ret != null && ret.success) { return Ok(ret); }
-            return BadRequest(ret);
-        }
-
-        [HttpPut]
-        public async Task<IActionResult> update(TypeUserRegister tpUsuario)
-        {
-
-            tpUsuario.idEmpresa = TokenService.RecuperaIdEmpresa(User);
-            var ret = await _service.Update(tpUsuario);
-            if (ret != null && ret.success) { return Ok(ret); }
-            return BadRequest(ret);
-        }
-        [HttpDelete]
-        public async Task<IActionResult> delete(int id)
-        {
-            var ret = await _service.deletarTpUsuario(id);
-            if (ret != null && ret.success) { return Ok(ret); }
-            return BadRequest(ret);
-        }
-        [HttpGet("obterTodosTpUsuarios")]
-        public async Task<IActionResult> obterTodosTpUsuarios()
-        {
-            int idEmpresa = TokenService.RecuperaIdEmpresa(User);
-
-            var ret = await _service.obterTodosTpUsuarios(idEmpresa);
-            if (ret.success)
-            {
-                return Ok(ret);
-            }
-            return BadRequest(ret);
-        }
+    [HttpPost("list")]
+    public async Task<IActionResult> ObterTodosTpUsuarios(TypeUserFilter filter)
+    {
+        var result = await queryService.FindAllTypeUsers(filter, User.GetEnterpriseId());
+        return Ok(Response<List<TypeUserRegister>>.Ok(result));
     }
 }

@@ -19,7 +19,7 @@ namespace Sellius.API.Domain.Entity.EntityCustomers
         public short Active { get; set; }
         public long? SegmentationId { get; set; }
         public Guid EnterpriseId { get; set; }
-        public int? GroupId { get; set; }
+        public long? GroupId { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime AlteredDate { get; set; }
         

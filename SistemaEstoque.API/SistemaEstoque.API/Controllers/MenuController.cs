@@ -1,95 +1,63 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Sellius.API.Application.DTOs.EditDTOs;
 using Sellius.API.Application.DTOs.Filters;
 using Sellius.API.Application.DTOs.RegisterDTOs;
-using Sellius.API.Domain.Models;
-using Sellius.API.DTOs.CadastrosDTOs;
-using Sellius.API.DTOs.Filtros;
-using Sellius.API.Services;
-using Sellius.API.Utils;
+using Sellius.API.Application.Services.MenuServices.CommandServices.Interfaces;
+using Sellius.API.Application.Services.MenuServices.QueryServices.Interfaces;
+using Sellius.API.Domain.Extensions;
+using Sellius.API.DTOs;
 
-namespace Sellius.API.Controllers
+namespace Sellius.API.Controllers;
+
+[ApiController]
+[Route("/api/[controller]")]
+[Authorize]
+public class MenuController(
+    IMenuCommandService commandService,
+    IMenuQueryService queryService) : Controller
 {
-    [ApiController]
-    [Route("/api/[controller]")]
-    [Authorize]
-    public class MenuController : Controller
+    [HttpPost]
+    [Authorize(Policy = "podeGerenciarUsuarios")]
+    public async Task<IActionResult> CadastrarMenu(MenuRegister dto)
     {
-        private MenuService _service;
+        var result = await commandService.CreateMenu(dto, User.GetEnterpriseId());
+        if (result)
+            return Ok(Response<bool>.Ok());
+        return BadRequest(Response<bool>.Failed("Falha ao cadastrar menu"));
+    }
 
-        public MenuController(MenuService service)
-        {
-            _service = service;
-        }
+    [HttpPut]
+    [Authorize(Policy = "podeGerenciarUsuarios")]
+    public async Task<IActionResult> AtualizarMenu(MenuRegister dto)
+    {
+        var result = await commandService.UpdateMenu(dto);
+        if (result)
+            return Ok(Response<bool>.Ok());
+        return BadRequest(Response<bool>.Failed("Falha ao atualizar menu"));
+    }
 
-        [HttpGet("recuperaMenus")]
-        public async Task<IActionResult> recuperaMenus()
-        {
-            int idEmpresa = TokenService.RecuperaIdEmpresa(User);
-            var ret = await _service.recuperaMenus(idEmpresa);
-            if (ret.success)
-            {
-                return Ok(ret);
-            }
-            return BadRequest(ret);
-        }
-        [HttpPost("listarMenus")]
-        public async Task<IActionResult> listarMenus(PaginationTableResult<> paginationTable)
-        {
-            paginationTable.Filtro.idEmpresa = TokenService.RecuperaIdEmpresa(User);
+    [HttpDelete("{id:long}")]
+    [Authorize(Policy = "podeGerenciarUsuarios")]
+    public async Task<IActionResult> InativarMenu(long id)
+    {
+        var result = await commandService.InactiveMenu(id);
+        if (result)
+            return Ok(Response<bool>.Ok());
+        return BadRequest(Response<bool>.Failed("Falha ao inativar menu"));
+    }
 
-            var ret = await _service.ObterTodosMenus(paginationTable);
-            if (ret.success)
-            {
-                return Ok(ret);
-            }
-            return BadRequest(ret);
-        }
-        [HttpPost("salvarMenu")]
-        public async Task<IActionResult> salvarMenu(MenuRegister menu)
-        {
-        
-            var ret = await _service.CriarMenu(menu);
-            if (ret.success)
-            {
-                return Ok(ret);
-            }
-            return BadRequest(ret);
-        }
+    [HttpGet("{id:long}")]
+    public async Task<IActionResult> ObterMenu(long id)
+    {
+        var result = await queryService.FindByMenuId(id);
+        return Ok(Response<MenuEdit>.Ok(result));
+    }
 
-        [HttpPut]
-        public async Task<IActionResult> updateMenu(MenuRegister menu)
-        {
-
-            var ret = await _service.UpdateMenu(menu);
-            if (ret.success)
-            {
-                return Ok(ret);
-            }
-            return BadRequest(ret);
-        }
-        [HttpGet("carregaCombo")]
-        public async Task<IActionResult> carregaComboMenu()
-        {
-            int idEmpresa = TokenService.RecuperaIdEmpresa(User);
-            var ret = await _service.carregaComboMenu(idEmpresa);
-            if (ret.success)
-            {
-                return Ok(ret);
-            }
-            return BadRequest(ret);
-        }
-        [HttpPost("obterTodosMenus")]
-        public async Task<IActionResult> obterTodosMenus(MenuFilter menu)
-        {
-
-            menu.idEmpresa = TokenService.RecuperaIdEmpresa(User);
-            var ret = await _service.obterTodosMenus(menu);
-
-            if(ret.success) {
-                return Ok(ret);
-            }
-            return BadRequest(ret);
-        }
+    [HttpPost("list")]
+    public async Task<IActionResult> ObterTodosMenus(MenuFilter filter)
+    {
+        var result = await queryService.FindAllMenus(filter, User.GetEnterpriseId());
+        return Ok(Response<List<MenuRegister>>.Ok(result));
     }
 }

@@ -1,103 +1,64 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Sellius.API.Application.DTOs.EditDTOs;
 using Sellius.API.Application.DTOs.Filters;
 using Sellius.API.Application.DTOs.RegisterDTOs.CustomerRegisterDTOs;
-using Sellius.API.Domain.Models;
+using Sellius.API.Application.DTOs.TablesDTOs;
+using Sellius.API.Application.Services.CustomerServices.CommandServices.Interfaces;
+using Sellius.API.Application.Services.CustomerServices.QueryServices.Interfaces;
+using Sellius.API.Domain.Extensions;
 using Sellius.API.DTOs;
-using Sellius.API.DTOs.Filtros;
-using Sellius.API.Utils;
-using Sellius.API.Services.Clientes;
 
-namespace Sellius.API.Controllers.Clientes
+namespace Sellius.API.Controllers.Clientes;
+
+[ApiController]
+[Route("/api/[controller]")]
+[Authorize]
+public class ClienteController(
+    ICustomerCommandService commandService,
+    ICustomerQueryService queryService) : Controller
 {
-    [Authorize]
-    [ApiController]
-    [Route("/api/[controller]")]
-    public class ClienteController : Controller
+    [HttpPost]
+    [Authorize(Policy = "podeCriar")]
+    public async Task<IActionResult> CadastrarCliente(CustomerRegister dto)
     {
-        private readonly ClienteService _service;
+        var result = await commandService.CreateCustomer(dto, User.GetEnterpriseId());
+        if (result)
+            return Ok(Response<bool>.Ok());
+        return BadRequest(Response<bool>.Failed("Falha ao cadastrar cliente"));
+    }
 
-        public ClienteController(ClienteService service)
-        {
-            _service = service;
-        }
-        [HttpPost("obterClientes")]
-        public async Task<IActionResult> ObterClientes([FromBody] PaginationTableResult<> clienteDTO)
-        {
-            if(clienteDTO.Filtro == null)
-            {
-                clienteDTO.Filtro = new CustomerFilter();
-                clienteDTO.Filtro.fAtivo = -1;
-            }
-            clienteDTO.Filtro.EmpresaId = TokenService.RecuperaIdEmpresa(User);
-            var ret = await _service.BuscarClientes(clienteDTO);
-            if (!ret.success)
-            {
-                return BadRequest(ret);
-            }
-            return Ok(ret);
-        }
-        [HttpPost("cadastrarCliente")]
-        [Authorize(Policy ="podeCriar")]
-        public async Task<IActionResult> Cadastrar(CustomerRegister cliente)
-        {
-            cliente.EmpresaId = TokenService.RecuperaIdEmpresa(User);
+    [HttpPut]
+    [Authorize(Policy = "podeEditar")]
+    public async Task<IActionResult> AtualizarCliente(CustomerRegister dto)
+    {
+        var result = await commandService.UpdateCustomer(dto);
+        if (result)
+            return Ok(Response<bool>.Ok());
+        return BadRequest(Response<bool>.Failed("Falha ao atualizar cliente"));
+    }
 
-            if (!ModelState.IsValid)
-                {
-                    var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
-                    return BadRequest(Response<CustomerRegister>.Failed(menssagemErro));
-                }
+    [HttpDelete("{id:long}")]
+    [Authorize(Policy = "podeInativar")]
+    public async Task<IActionResult> InativarCliente(long id)
+    {
+        var result = await commandService.InactiveCustomer(id);
+        if (result)
+            return Ok(Response<bool>.Ok());
+        return BadRequest(Response<bool>.Failed("Falha ao inativar cliente"));
+    }
 
+    [HttpGet("{id:long}")]
+    public async Task<IActionResult> ObterCliente(long id)
+    {
+        var result = await queryService.FindByCustomerId(id);
+        return Ok(Response<CustomerEdit>.Ok(result));
+    }
 
-            var response = await _service.CadastrarCliente(cliente);
-            if (response.success)
-                return Ok(response);
-
-            return BadRequest(response);
-
-        }
-        [HttpDelete]
-        [Authorize(Policy = "podeCriar")]
-        public async Task<IActionResult> InativarCliente(int id)
-        {
-            var ret = await _service.InativarCliente(id);
-            if (ret.success)
-            {
-                return Ok(ret);
-            }
-            return BadRequest(ret);
-
-        }
-        [HttpPut]
-        [Authorize(Policy = "podeCriar")]
-        public async Task<IActionResult> UpdateCliente(CustomerRegister cliente)
-        {
-            cliente.EmpresaId = TokenService.RecuperaIdEmpresa(User);
-            if (!ModelState.IsValid)
-            {
-                var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(Response<CustomerRegister>.Failed(menssagemErro));
-            }
-            var ret = await _service.UpdateCliente(cliente);
-            if (ret.success)
-            {
-                return Ok(ret);
-            }
-            return BadRequest(ret);
-
-        }
-        [HttpGet]
-        public async Task<IActionResult> obterCliente(int idCliente)
-        {
-            int idEmpresa = TokenService.RecuperaIdEmpresa(User);
-
-            var ret = await _service.BuscarId(idCliente);
-            if (ret.success)
-            {
-                return Ok(ret);
-            }
-            return BadRequest(ret);
-        }
+    [HttpPost("list")]
+    public async Task<IActionResult> ObterTodosClientes(CustomerFilter filter)
+    {
+        var result = await queryService.FindAllCustomers(filter, User.GetEnterpriseId());
+        return Ok(Response<List<CustomerTableReturn>>.Ok(result));
     }
 }

@@ -1,9 +1,9 @@
 ﻿using Sellius.API.Application.DTOs.RegisterDTOs;
 using Sellius.API.Application.Mappers.Interfaces;
 using Sellius.API.Application.Services.AuthenticationServices.CommandServices.Interfaces;
+using Sellius.API.Application.Services.UserServices.CommandServices.Interfaces;
 using Sellius.API.Domain.Entity.EntityUsers;
 using Sellius.API.Infra.Repository.Users.Interfaces;
-using Sellius.API.Services.UserServices.CommandServices.Interfaces;
 
 namespace Sellius.API.Application.Services.UserServices.CommandServices;
 
@@ -14,8 +14,10 @@ public class UserCommandService(
     IAuthenticationMapper mapperAuthentication) 
     : IUserCommandService
 {
-    public async Task<bool> CreateUser(UserRegister dtoRegister)
+    public async Task<bool> CreateUser(UserRegister dtoRegister,Guid enterpriseId)
     {
+        dtoRegister.EnterpriseId = enterpriseId;
+        
         var user = mapper.DtoRegisterToMain(dtoRegister);
         
         if(!await ValidUser(user))

@@ -1,108 +1,64 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Sellius.API.Application.DTOs.EditDTOs;
+using Sellius.API.Application.DTOs.Filters;
 using Sellius.API.Application.DTOs.RegisterDTOs;
 using Sellius.API.Application.DTOs.TablesDTOs;
-using Sellius.API.Domain.Models;
+using Sellius.API.Application.Services.UserServices.CommandServices.Interfaces;
+using Sellius.API.Application.Services.UserServices.QueryServices.Interfaces;
+using Sellius.API.Domain.Extensions;
 using Sellius.API.DTOs;
-using Sellius.API.DTOs.CadastrosDTOs;
-using Sellius.API.DTOs.Filtros;
-using Sellius.API.Models;
-using Sellius.API.Services;
-using Sellius.API.Utils;
 
-namespace Sellius.API.Controllers
+namespace Sellius.API.Controllers;
+
+[ApiController]
+[Route("/api/[controller]")]
+[Authorize]
+public class UsuarioController(
+    IUserCommandService commandService,
+    IUserQueryService queryService) : Controller
 {
-    [ApiController]
-    [Route("/api/[controller]")]
-    public class UsuarioController:Controller
+    [HttpPost]
+    [Authorize(Policy = "podeCriar")]
+    public async Task<IActionResult> CadastrarUsuario(UserRegister dto)
     {
-        private readonly UsuarioService _service;
+        var result = await commandService.CreateUser(dto,User.GetEnterpriseId());
+        if (result)
+            return Ok(Response<bool>.Ok());
+        return BadRequest(Response<bool>.Failed("Falha ao cadastrar usuário"));
+    }
 
-        public UsuarioController(UsuarioService service)
-        {
-            _service = service;
-        }
+    [HttpPut]
+    [Authorize(Policy = "podeEditar")]
+    public async Task<IActionResult> AtualizarUsuario(UserRegister dto)
+    {
+        var result = await commandService.UpdateUser(dto);
+        if (result)
+            return Ok(Response<bool>.Ok());
+        return BadRequest(Response<bool>.Failed("Falha ao atualizar usuário"));
+    }
 
-        [HttpPost("novoUsuario")]
-        [Authorize(Policy = "podeCriar")]
-        public async Task<IActionResult> CadastroUsuario(UserRegister userRegister)
-        {
-            if (!ModelState.IsValid)
-            {
-                var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(Response<UserRegister>.Failed(menssagemErro));
-            }
-            userRegister.EmpresaId = TokenService.RecuperaIdEmpresa(User);
-            var response = await _service.CriarUsuario(userRegister);
-            if(response.success)
-            {
-                return Ok(response); 
-            }
-            return BadRequest(response);
+    [HttpDelete("{id:guid}")]
+    [Authorize(Policy = "podeInativar")]
+    public async Task<IActionResult> InativarUsuario(Guid id)
+    {
+        var result = await commandService.InactiveUser(id);
+        if (result)
+            return Ok(Response<bool>.Ok());
+        return BadRequest(Response<bool>.Failed("Falha ao inativar usuário"));
+    }
 
-        }
-        [HttpPost("obterTodosUsuarios")]
-        public async Task<IActionResult> ObterTodosUsuarios(PaginationTableResult<> paginacao)
-        {
-            paginacao.Filtro.idEmpresa = TokenService.RecuperaIdEmpresa(User);
-            var ret = await _service.ObterTodosUsuarios(paginacao);
-            if (ret.success)
-            {
-                return Ok(ret);
-            }
-            return BadRequest(ret);
-        }
-        [HttpPut]
-        [Authorize(Policy = "podeEditar")]
-        public async Task<IActionResult> UpdateUsuario(UserRegister dto)
-        {
-            if (!ModelState.IsValid)
-            {
-                var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(Response<UserRegister>.Failed(menssagemErro));
-            }
-            dto.EmpresaId = TokenService.RecuperaIdEmpresa(User);
-            var response = await _service.UpdateUsuario(dto);
-            if (response.success) {
-                return Ok(response);
-             }
-            return BadRequest(response);
-        }
-        [HttpDelete]
-        public async Task<IActionResult> Inativar(int id)
-        {
-            if(id == 0)
-            {
-                return BadRequest(Response<UserRegister>.Failed("O id deve ser maior do que zero"));
-            }
-            UserRegister dto  = new UserRegister
-            {
-                id = id,
-                EmpresaId = TokenService.RecuperaIdEmpresa(User)
-            };
-            var response = await _service.InativarUsuario(dto);
-            if (response.success)
-            {
-                return Ok(response);
-            }
-            return BadRequest(response);
-        }
-        [HttpGet("obterUsuario")]
-        public async Task<IActionResult> obterUsuario(int id)
-        {
-            UserRegister dto = new UserRegister
-            {
-                id = id,
-                EmpresaId = TokenService.RecuperaIdEmpresa(User)
-            };
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> ObterUsuario(Guid id)
+    {
+        var result = await queryService.FindByUserId(id);
+        return Ok(Response<UserEdit>.Ok(result));
+    }
 
-            var resp = await _service.BuscaDiretoUsuario(dto);
-
-            if (resp.success)
-            {
-                return Ok(resp);
-            }
-            return BadRequest(resp);
-        }
+    [HttpPost("list")]
+    public async Task<IActionResult> ObterTodosUsuarios(UserFilter filter)
+    {
+        var result = await queryService.FindAllUser(filter, User.GetEnterpriseId());
+        return Ok(Response<object>.Ok(result));
     }
 }

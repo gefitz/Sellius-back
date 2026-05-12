@@ -1,77 +1,64 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Sellius.API.Application.DTOs.EditDTOs;
 using Sellius.API.Application.DTOs.RegisterDTOs;
-using Sellius.API.Domain.Models;
+using Sellius.API.Application.Services.EnterpriseServices.CommandServices.Interfaces;
+using Sellius.API.Application.Services.EnterpriseServices.QueryServices.Interfaces;
+using Sellius.API.Domain.Extensions;
 using Sellius.API.DTOs;
-using Sellius.API.DTOs.CadastrosDTOs;
-using Sellius.API.Services;
 
-namespace Sellius.API.Controllers
+namespace Sellius.API.Controllers;
+
+[ApiController]
+[Route("/api/[controller]")]
+[Authorize]
+public class EmpresaController(
+    IEnterpriseCommandService commandService,
+    IEnterpriseQueryService queryService) : Controller
 {
-    [ApiController]
-    [Route("/api/[controller]")]
-
-    public class EmpresaController : Controller
+    [HttpPost]
+    [AllowAnonymous]
+    public async Task<IActionResult> CadastrarEmpresa(EnterpriseRegister dto)
     {
-        private EmpresaService _service;
-        public EmpresaController(EmpresaService service)
-        {
-            _service = service;
-        }
+        var result = await commandService.CreateEnterprise(dto);
+        if (result)
+            return Ok(Response<bool>.Ok());
+        return BadRequest(Response<bool>.Failed("Falha ao cadastrar empresa"));
+    }
 
-        [HttpPost("cadastroNovaEmpresa")]
-        public async Task<IActionResult> CadastrarEmpresaAsync(CadastroNovoEmpresaDTO nova)
-        {
-            if (!ModelState.IsValid)
-            {
-                var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(Response<EnterpriseRegister>.Failed(menssagemErro));
-            }
-            var response = await _service.CadastrarNovaEmpresa(nova);
+    [HttpPut]
+    [Authorize(Roles = "Interno")]
+    public async Task<IActionResult> AtualizarEmpresa(EnterpriseRegister dto)
+    {
+        var result = await commandService.UpdateEnterprise(dto);
+        if (result)
+            return Ok(Response<bool>.Ok());
+        return BadRequest(Response<bool>.Failed("Falha ao atualizar empresa"));
+    }
 
-            if (!response.success)
-                return BadRequest(response);
-            return Ok(response);
-        }
-        [HttpPost("obterTodasEmpresas")]
-        [Authorize(Roles = "Interno")]
-        public async Task<IActionResult> obterTodasEmpresas(PaginationTableResult<> paginacao)
-        {
-            var ret = await _service.obterTodasEmpresas(paginacao);
-            if(!ret.success)
-                return BadRequest(ret);
-            return Ok(ret);
-        }
-        [HttpPut]
-        [Authorize(Roles = "Interno")]
-        public async Task<IActionResult> UpdateEmpresa(EnterpriseRegister dTO)
-        {
-            if (!ModelState.IsValid)
-            {
-                var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(Response<EnterpriseRegister>.Failed(menssagemErro));
-            }
-            var response = await _service.UpdateEmpresa(dTO);
-            if (!response.success)
-            {
-                return BadRequest(response);
-            }
-            return Ok(response);
-        }
-        [HttpDelete]
-        [Authorize(Roles = "Interno")]
-        public async Task<IActionResult> InativarEmpresa(int id)
-        {
-            if(id <= 0)
-            {
-                return BadRequest(Response<EnterpriseRegister>.Failed("O id deve ser maior que zero"));
-            }
-            var ret = await _service.InativarEmpresa(id);
-            if (ret.success)
-            {
-                return Ok(ret);
-            }
-            return BadRequest(ret);
-        }
+    [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "Interno")]
+    public async Task<IActionResult> InativarEmpresa(Guid id)
+    {
+        var result = await commandService.InactiveEnterprise(id);
+        if (result)
+            return Ok(Response<bool>.Ok());
+        return BadRequest(Response<bool>.Failed("Falha ao inativar empresa"));
+    }
+
+    [HttpGet]
+    [Authorize(Roles = "Interno")]
+    public async Task<IActionResult> ObterEmpresa()
+    {
+        var result = await queryService.FindByEnterpriseId(User.GetEnterpriseId());
+        return Ok(Response<EnterpriseEdit>.Ok(result));
+    }
+
+    [HttpGet("all")]
+    [Authorize(Roles = "Interno")]
+    public async Task<IActionResult> ObterTodasEmpresas()
+    {
+        var result = await queryService.FindAllEnterprises();
+        return Ok(Response<List<EnterpriseRegister>>.Ok(result));
     }
 }

@@ -7,7 +7,7 @@ namespace Sellius.API.Domain.Entity.EntityUsers
         public long Id { get; init; }
         public string NameType { get; set; }
         public Guid EnterpriseId { get; init; }
-        public DateTime CreateDate { get; init; }
+        public DateTime CreateDate { get; set; }
         public DateTime AlteredDate { get; set; }
         public short Active { get; set; }
 

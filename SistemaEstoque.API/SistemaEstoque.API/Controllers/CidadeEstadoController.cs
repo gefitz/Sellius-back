@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Sellius.API.Services;
 
 namespace Sellius.API.Controllers
 {
