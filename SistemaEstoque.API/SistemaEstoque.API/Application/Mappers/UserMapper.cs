@@ -20,7 +20,7 @@ public sealed class UserMapper : IUserMapper
             Street = dtoRegister.Street,
             CreateDate = dtoRegister.DateCreate == default ? DateTime.UtcNow : dtoRegister.DateCreate,
             AlteredDate = DateTime.UtcNow,
-            TpUsuarioId = dtoRegister.TypeUser,
+            TypeUserId = dtoRegister.TypeUser,
             Active = dtoRegister.Active,
             EnterpriseId = dtoRegister.EnterpriseId,
             CityId = dtoRegister.CityId
@@ -37,7 +37,7 @@ public sealed class UserMapper : IUserMapper
             Street = user.Street,
             CreateDate = user.CreateDate,
             AlteredDate = user.AlteredDate,
-            TpUsuarioId = user.TpUsuarioId,
+            TypeUserId = user.TypeUserId,
             Active = user.Active,
             EnterpriseId = user.EnterpriseId,
             CityId = user.CityId
@@ -52,11 +52,11 @@ public sealed class UserMapper : IUserMapper
             PageSize = paginationTable.PageSize,
             Dados = paginationTable.Dados?.Select(u => new UserTable
             {
-                Nome = u.Name,
+                Name = u.Name,
                 Email = u.Email,
-                TpUsuario = u.TypeUser?.NameType ?? string.Empty,
-                Cidade = u.City?.Name ?? string.Empty,
-                Endereco = u.Street,
+                TypeUser = u.TypeUser?.NameType ?? string.Empty,
+                City = u.City?.Name ?? string.Empty,
+                Address = u.Street,
                 Active = u.Active,
                 CreateDate = u.CreateDate,
                 AlteredDate = u.AlteredDate

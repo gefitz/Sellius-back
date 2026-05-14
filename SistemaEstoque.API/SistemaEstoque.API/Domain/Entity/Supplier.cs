@@ -4,7 +4,7 @@ namespace Sellius.API.Domain.Entity
 {
     public class Supplier
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string Name { get; set; }
         public string Document { get; set; }
         public string ZipCode { get; set; }

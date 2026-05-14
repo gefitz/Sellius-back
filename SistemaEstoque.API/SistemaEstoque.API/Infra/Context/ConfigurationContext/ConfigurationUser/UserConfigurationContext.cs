@@ -15,7 +15,8 @@ public class UserConfigurationContext : BaseDateName,IEntityTypeConfiguration<Us
         
         builder.HasOne(c => c.City).WithMany().HasForeignKey(c => c.CityId);
         builder.HasOne(e => e.Enterprise).WithMany().HasForeignKey(u => u.EnterpriseId);
-        builder.HasOne(e => e.TypeUser).WithMany().HasForeignKey(e => e.TpUsuarioId);
+        builder.HasOne(e => e.TypeUser).WithMany().HasForeignKey(e => e.TypeUserId);
+        
 
     }
 }

@@ -8,10 +8,10 @@ using Sellius.API.Infra.Repository.Fornecedor.Interfaces;
 namespace Sellius.API.Application.Services.SupplierServices.QueryServices;
 
 public sealed class SupplierQueryService(
-    IFornecedorRepository repository,
+    ISupplierRepository repository,
     ISupplierMapper mapper) : ISupplierQueryService
 {
-    public async Task<SupplierEdit> FindBySupplierId(int supplierId)
+    public async Task<SupplierEdit> FindBySupplierId(long supplierId)
     {
         var supplier = await repository.FindByPredicateAsync(
             s => s.Id == supplierId);

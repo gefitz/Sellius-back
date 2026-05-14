@@ -17,5 +17,7 @@ namespace Sellius.API.Application.DTOs.RegisterDTOs
         public TypeLicense TypeLicense { get; set; }
         public short Active { get; set; }
 
+        public UserRegister UserRegister { get; set; }
+
     }
 }

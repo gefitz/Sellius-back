@@ -6,6 +6,6 @@ namespace Sellius.API.Application.Services.SupplierServices.QueryServices.Interf
 
 public interface ISupplierQueryService
 {
-    Task<SupplierEdit> FindBySupplierId(int supplierId);
+    Task<SupplierEdit> FindBySupplierId(long supplierId);
     Task<List<SupplierTableReturn>> FindAllSuppliers(SupplierFilter filter, Guid enterpriseId);
 }

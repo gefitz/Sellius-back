@@ -11,6 +11,8 @@ public class UserConfigContext: BaseDateName,IEntityTypeConfiguration<UserConfig
     {
         builder.ToTable("UserConfigurations", DataBaseName);
         
+        builder.HasKey(c => c.Id);
         
+        builder.HasOne(t => t.TypeUser).WithMany().HasForeignKey(c => c.TypeUserId).OnDelete(DeleteBehavior.Cascade);
     }
 }

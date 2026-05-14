@@ -23,7 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Domain\Notification\" />
     <Folder Include="Infra\" />
     <Folder Include="Infra\Repository\Login\Interfaces\" />
   </ItemGroup>

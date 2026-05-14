@@ -1,112 +1,102 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
-using Sellius.API.DTOs;
-using Sellius.API.DTOs.CadastrosDTOs;
-using Sellius.API.Models;
-using Sellius.API.Services;
-using System;
 using Sellius.API.Application.DTOs.RegisterDTOs;
+using Sellius.API.Application.Services.AuthenticationServices.CommandServices.Interfaces;
+using Sellius.API.Application.Services.AuthenticationServices.QueryServices.Interfaces;
+using Sellius.API.Domain.Entity.EntityUsers;
+using DomainUserConfiguration = Sellius.API.Domain.Entity.EntityUsers.UserConfiguration;
 
-namespace Sellius.API.Controllers
+namespace Sellius.API.Controllers;
+
+[ApiController]
+[Route("/api/[controller]")]
+public class LoginController(
+    IAuthenticationCommandServices commandServices,
+    IAuthenticationQueryService queryService)
+    : ControllerBase
 {
-    [ApiController]
-    [Route("/api/[controller]")]
-    public class LoginController : Controller
+    [HttpPost]
+    public async Task<IActionResult> Login(LoginRegister dto)
     {
-        private readonly LoginService _service;
-        public LoginController(LoginService service)
-        {
-            _service = service;
-        }
-        [HttpPost]
-        public async Task<IActionResult> Login(LoginRegister usuario)
-        {
-            if (!ModelState.IsValid)
-            {
-                var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(Response<LoginRegister>.Failed(menssagemErro));
-            }
-            var response = await _service.LoginAutenticacao(usuario);
-            if (!response.success)
-            {
-                return BadRequest(response);
-            }
+        var token = await queryService.Login(dto);
 
-            Response.Cookies.Append("auth_token", response.Data, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                IsEssential = true,
-                SameSite = SameSiteMode.None,// Lax funciona perfeitamente em localhost
-                Expires = DateTimeOffset.UtcNow.AddHours(8),
-                Path = "/"
-                // Sem Domain, sem nada mais
-            });
+        if (token is null)
+            return BadRequest(new { error = "Invalid credentials." });
 
-            return Ok(response);
-        }
-        [HttpPost("AlterarSenha")]
-        public async Task<IActionResult> AlterarSenha(LoginRegister login)
+        Response.Cookies.Append("auth_token", token, new CookieOptions
         {
-            if (!ModelState.IsValid)
-            {
-                var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(Response<LoginRegister>.Failed(menssagemErro));
-            }
-            var response = await _service.AlterarSenha(login);
-            if (!response.success)
-            {
-                return BadRequest(response);
-            }
-            return Ok(response);
-        }
-        [HttpPost("criarclientelogin")]
-        [Authorize(Roles = "Adm,Gerente")]
-        public async Task<IActionResult> CriarLoginCliente(LoginRegister login)
+            HttpOnly = true,
+            Secure = true,
+            IsEssential = true,
+            SameSite = SameSiteMode.None,
+            Expires = DateTimeOffset.UtcNow.AddHours(8),
+            Path = "/"
+        });
+
+        return Ok();
+    }
+
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword(LoginRegister dto)
+    {
+        if (!ModelState.IsValid)
         {
-            if (!ModelState.IsValid)
-            {
-                var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(Response<LoginRegister>.Failed(menssagemErro));
-            }
-            var ret = await _service.CriarClienteLogin(login);
-            if (ret.success)
-                return Ok(ret);
-            return BadRequest(ret);
+            var errors = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
+            return BadRequest(new { error = errors });
         }
 
-        [HttpDelete("logout")]
-        public IActionResult Logout()
-        {
-            Response.Cookies.Delete("auth_token", new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None
-            });
+        var result = await commandServices.UpdatePassword(dto);
+        if (!result)
+            return BadRequest(new { error = "Failed to change password." });
 
-            return Ok(Response<string>.Ok());
-        }
-        [HttpGet("permissoes")]
-        [Authorize]
-        public IActionResult permissoes()
+        return Ok();
+    }
+
+    [HttpPost("create-client-login")]
+    [Authorize(Roles = "Adm,Gerente")]
+    public async Task<IActionResult> CreateClientLogin(LoginRegister dto)
+    {
+        if (!ModelState.IsValid)
         {
-            var user = HttpContext.User;
-            //var config = user.Identity.c
-            UserConfiguration config = new UserConfiguration
-            {
-                flPodeAprovar = user.FindFirst("podeAprovar")?.Value == "True",
-                flPodeCriar = user.FindFirst("podeCriar")?.Value == "True",
-                flPodeEditar = user.FindFirst("podeEditar")?.Value == "True",
-                flPodeExcluir = user.FindFirst("podeExcluir")?.Value == "True",
-                flPodeExportar = user.FindFirst("podeExportar")?.Value == "True",
-                flPodeGerenciarUsuarios = user.FindFirst("podeGerenciarUsuarios")?.Value == "True",
-                flPodeInativar = user.FindFirst("podeInativar")?.Value == "True"
-            };
-            return Ok(Response<UserConfiguration>.Ok(config));
+            var errors = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
+            return BadRequest(new { error = errors });
         }
+
+        var result = await commandServices.CreateLogin(dto);
+        if (!result)
+            return BadRequest(new { error = "Failed to create login." });
+
+        return Ok();
+    }
+
+    [HttpDelete("logout")]
+    public IActionResult Logout()
+    {
+        Response.Cookies.Delete("auth_token", new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.None
+        });
+
+        return Ok();
+    }
+
+    [HttpGet("permissions")]
+    [Authorize]
+    public IActionResult GetPermissions()
+    {
+        var user = HttpContext.User;
+        var config = new DomainUserConfiguration
+        {
+            PermissionApprove = user.FindFirst("podeAprovar")?.Value == "True",
+            PermissionCreate = user.FindFirst("podeCriar")?.Value == "True",
+            PermissionEdit = user.FindFirst("podeEditar")?.Value == "True",
+            PermissionDelete = user.FindFirst("podeExcluir")?.Value == "True",
+            PermissionExport = user.FindFirst("podeExportar")?.Value == "True",
+            PermissionControlUser = user.FindFirst("podeGerenciarUsuarios")?.Value == "True",
+            PermissionInactivate = user.FindFirst("podeInativar")?.Value == "True"
+        };
+        return Ok(config);
     }
 }

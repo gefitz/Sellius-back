@@ -17,7 +17,7 @@ public sealed class TypeUserQueryService(
         var typeUser = await repository.FindByPredicateAsync(
             t => t.Id == typeUserId,
             q => q.Include(t => t.TypeUserXMenus)
-                  .Include(t => t.TpUsuarioConfigurcao),
+                  .Include(t => t.UserConfiguration)!,
             true);
 
         return typeUser is not null ? mapper.MainToDtoEdit(typeUser) : new TypeUserEdit();

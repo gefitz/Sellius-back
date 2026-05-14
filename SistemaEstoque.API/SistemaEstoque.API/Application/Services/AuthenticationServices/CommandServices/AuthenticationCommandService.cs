@@ -1,6 +1,7 @@
 using Sellius.API.Application.DTOs.RegisterDTOs;
 using Sellius.API.Application.Services.AuthenticationServices.CommandServices.Interfaces;
 using Sellius.API.Domain.Entity.EntityUsers;
+using Sellius.API.Domain.Extensions;
 using Sellius.API.Infra.Repository.Users.Interfaces;
 
 namespace Sellius.API.Application.Services.AuthenticationServices.CommandServices;
@@ -20,7 +21,7 @@ public sealed class AuthenticationCommandService(
         var authentication = new Authentication
         {
             Email = register.Email,
-            Hash = HashPassword(register.Password),
+            Hash = register.Password.Hash(),
             UserId = register.UserId,
             EnterpriseId = user.EnterpriseId
         };
@@ -36,11 +37,8 @@ public sealed class AuthenticationCommandService(
         if (authentication is null)
             return false;
 
-        authentication.Hash = HashPassword(register.Password);
+        authentication.Hash = register.Password.Hash();
 
         return await repository.UpdateLoginAsync(authentication);
     }
-
-    private static string HashPassword(string password) =>
-        BCrypt.Net.BCrypt.HashPassword(password);
 }

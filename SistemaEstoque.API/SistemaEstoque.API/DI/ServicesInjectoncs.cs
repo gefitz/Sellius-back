@@ -1,18 +1,102 @@
 ﻿using System.Reflection;
+using Sellius.API.Application.Services.AuthenticationServices.CommandServices;
+using Sellius.API.Application.Services.AuthenticationServices.CommandServices.Interfaces;
+using Sellius.API.Application.Services.AuthenticationServices.QueryServices;
+using Sellius.API.Application.Services.AuthenticationServices.QueryServices.Interfaces;
+using Sellius.API.Application.Services.CityServices.CommandServices;
+using Sellius.API.Application.Services.CityServices.CommandServices.Interfaces;
+using Sellius.API.Application.Services.CityServices.QueryServices;
+using Sellius.API.Application.Services.CityServices.QueryServices.Interfaces;
+using Sellius.API.Application.Services.CustomerServices.CommandServices;
+using Sellius.API.Application.Services.CustomerServices.CommandServices.Interfaces;
+using Sellius.API.Application.Services.CustomerServices.QueryServices;
+using Sellius.API.Application.Services.CustomerServices.QueryServices.Interfaces;
+using Sellius.API.Application.Services.EnterpriseServices.CommandServices;
+using Sellius.API.Application.Services.EnterpriseServices.CommandServices.Interfaces;
+using Sellius.API.Application.Services.EnterpriseServices.QueryServices;
+using Sellius.API.Application.Services.EnterpriseServices.QueryServices.Interfaces;
+using Sellius.API.Application.Services.GroupCustomerServices.CommandServices;
+using Sellius.API.Application.Services.GroupCustomerServices.CommandServices.Interfaces;
+using Sellius.API.Application.Services.GroupCustomerServices.QueryServices;
+using Sellius.API.Application.Services.GroupCustomerServices.QueryServices.Interfaces;
+using Sellius.API.Application.Services.MenuServices.CommandServices;
+using Sellius.API.Application.Services.MenuServices.CommandServices.Interfaces;
+using Sellius.API.Application.Services.MenuServices.QueryServices;
+using Sellius.API.Application.Services.MenuServices.QueryServices.Interfaces;
+using Sellius.API.Application.Services.PriceTableServices.CommandServices;
+using Sellius.API.Application.Services.PriceTableServices.CommandServices.Interfaces;
+using Sellius.API.Application.Services.PriceTableServices.QueryServices;
+using Sellius.API.Application.Services.PriceTableServices.QueryServices.Interfaces;
+using Sellius.API.Application.Services.ProductServices.CommandServices;
+using Sellius.API.Application.Services.ProductServices.CommandServices.Interfaces;
+using Sellius.API.Application.Services.ProductServices.QueryServices;
+using Sellius.API.Application.Services.ProductServices.QueryServices.Interfaces;
+using Sellius.API.Application.Services.SaleOrderServices.CommandServices;
+using Sellius.API.Application.Services.SaleOrderServices.CommandServices.Interfaces;
+using Sellius.API.Application.Services.SaleOrderServices.QueryServices;
+using Sellius.API.Application.Services.SaleOrderServices.QueryServices.Interfaces;
+using Sellius.API.Application.Services.SegmentationServices.CommandServices;
+using Sellius.API.Application.Services.SegmentationServices.CommandServices.Interfaces;
+using Sellius.API.Application.Services.SegmentationServices.QueryServices;
+using Sellius.API.Application.Services.SegmentationServices.QueryServices.Interfaces;
+using Sellius.API.Application.Services.StateServices.CommandServices;
+using Sellius.API.Application.Services.StateServices.CommandServices.Interfaces;
+using Sellius.API.Application.Services.StateServices.QueryServices;
+using Sellius.API.Application.Services.StateServices.QueryServices.Interfaces;
+using Sellius.API.Application.Services.SupplierServices.CommandServices;
+using Sellius.API.Application.Services.SupplierServices.CommandServices.Interfaces;
+using Sellius.API.Application.Services.SupplierServices.QueryServices;
+using Sellius.API.Application.Services.SupplierServices.QueryServices.Interfaces;
+using Sellius.API.Application.Services.TypeProductServices.CommandServices;
+using Sellius.API.Application.Services.TypeProductServices.CommandServices.Interfaces;
+using Sellius.API.Application.Services.TypeProductServices.QueryServices;
+using Sellius.API.Application.Services.TypeProductServices.QueryServices.Interfaces;
+using Sellius.API.Application.Services.TypeUserServices.CommandServices;
+using Sellius.API.Application.Services.TypeUserServices.CommandServices.Interfaces;
+using Sellius.API.Application.Services.TypeUserServices.QueryServices;
+using Sellius.API.Application.Services.TypeUserServices.QueryServices.Interfaces;
+using Sellius.API.Application.Services.UserServices.CommandServices;
+using Sellius.API.Application.Services.UserServices.CommandServices.Interfaces;
+using Sellius.API.Application.Services.TokenServices;
+using Sellius.API.Application.Services.TokenServices.Interfaces;
+using Sellius.API.Application.Services.UserServices.QueryServices;
+using Sellius.API.Application.Services.UserServices.QueryServices.Interfaces;
 
 namespace Sellius.API.DI
 {
-    public class ServicesInjectoncs
+    public static class ServicesInjectoncs
     {
-        public static void ServicesInjecao(Assembly assembly, IServiceCollection service)
-        {
-            var classes = assembly.GetTypes()
-                .Where(t => t.IsClass && !t.IsAbstract && t.Name.EndsWith("Service")).ToList();
-
-            foreach (var t in classes)
-            {
-               service.AddScoped(t);
-            }
-        }
+        public static IServiceCollection AddServices(this IServiceCollection service) =>
+            service.AddScoped<ITokenService, TokenService>()
+                .AddScoped<IProductCommandServices, ProductCommandService>()
+                .AddScoped<IProductQueryService, ProductQueryService>()
+                .AddScoped<IAuthenticationCommandServices, AuthenticationCommandService>()
+                .AddScoped<IAuthenticationQueryService, AuthenticationQueryService>()
+                .AddScoped<ICityCommandService, CityCommandService>()
+                .AddScoped<ICityQueryService, CityQueryService>()
+                .AddScoped<ICustomerCommandService, CustomerCommandService>()
+                .AddScoped<ICustomerQueryService, CustomerQueryService>()
+                .AddScoped<IEnterpriseCommandService, EnterpriseCommandService>()
+                .AddScoped<IEnterpriseQueryService, EnterpriseQueryService>()
+                .AddScoped<IGroupCustomerCommandService, GroupCustomerCommandService>()
+                .AddScoped<IGroupCustomerQueryService, GroupCustomerQueryService>()
+                .AddScoped<IMenuCommandService, MenuCommandService>()
+                .AddScoped<IMenuQueryService, MenuQueryService>()
+                .AddScoped<IPriceTableCommandService, PriceTableCommandService>()
+                .AddScoped<IPriceTableQueryService, PriceTableQueryService>()
+                .AddScoped<ISaleOrderCommandService, SaleOrderCommandService>()
+                .AddScoped<ISaleOrderQueryService, SaleOrderQueryService>()
+                .AddScoped<ISegmentationCommandService, SegmentationCommandService>()
+                .AddScoped<ISegmentationQueryService, SegmentationQueryService>()
+                .AddScoped<IStateCommandService, StateCommandService>()
+                .AddScoped<IStateQueryService, StateQueryService>()
+                .AddScoped<ISupplierCommandService, SupplierCommandService>()
+                .AddScoped<ISupplierQueryService, SupplierQueryService>()
+                .AddScoped<ITypeProductCommandService, TypeProductCommandService>()
+                .AddScoped<ITypeProductQueryService, TypeProductQueryService>()
+                .AddScoped<ITypeUserCommandService, TypeUserCommandService>()
+                .AddScoped<ITypeUserQueryService, TypeUserQueryService>()
+                .AddScoped<IUserCommandService, UserCommandService>()
+                .AddScoped<IUserQueryService, UserQueryService>();
     }
 }

@@ -1,81 +1,12 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using Sellius.API.DTOs;
-using Sellius.API.DTOs.CadastrosDTOs;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
-using System.Text.Json;
-using Sellius.API.Domain.Entity.EntityUsers;
-using static System.Net.WebRequestMethods;
-using UserConfiguration = Sellius.API.Application.DTOs.RegisterDTOs.UserConfiguration;
 
-namespace Sellius.API.Utils
+namespace Sellius.API.Utils;
+
+public static class TokenService
 {
-    public class TokenService
-    {
-        private readonly IConfiguration _configuration;
-        public TokenService(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-        public async Task<Response<string>> GerarCookie(Authentication authentication)
-        {
-            #region Claims
-            Claim[] claims = [];
-            string idUsuarioClient = "";
-            string user = "";
+    public static int RecuperaIdEmpresa(ClaimsPrincipal identity) =>
+        int.Parse(identity.FindFirst("empresa")!.Value);
 
-            idUsuarioClient = authentication.usuarioId.ToString();
-            user = authentication.Usuario.Nome;
-            UserConfiguration config = authentication.Usuario.TipoUsuario.TpUsuarioConfigurcao;
-            var configUsuarioJson = JsonSerializer.Serialize(config);
-
-            claims = new[]
-                  {
-                        new Claim("id", idUsuarioClient),
-                        new Claim("user", user),
-                        new Claim(ClaimTypes.Role, authentication.Usuario.IdTpUsuario.ToString()),
-                        new Claim("empresa", authentication.EmpresaId.ToString()),
-                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                        new Claim("config", configUsuarioJson, JsonClaimValueTypes.Json),
-                    };
-
-            #endregion
-
-            #region GeraToken
-            try
-            {
-                var privateKy = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["jwt:secretkey"]));
-
-                var crendentials = new SigningCredentials(privateKy, SecurityAlgorithms.HmacSha256);
-
-                var expiration = DateTime.UtcNow.AddDays(1);
-
-                JwtSecurityToken token = new JwtSecurityToken(
-                    issuer: _configuration["jwt:issuer"],
-                    audience: _configuration["jwt:audience"],
-                    claims: claims,
-                    expires: expiration,
-                    signingCredentials: crendentials);
-                return Response<string>.Ok(new JwtSecurityTokenHandler().WriteToken(token));
-
-            }
-            catch (Exception ex)
-            {
-                return Response<string>.Failed(ex.Message);
-            }
-            #endregion
-
-        }
-
-
-        public static int RecuperaIdEmpresa(ClaimsPrincipal identity)
-        {
-            return Int32.Parse(identity.FindFirst("empresa")?.Value);
-        }
-        public static int RecuperaIdUsuario(ClaimsPrincipal identity)
-        {
-            return Int32.Parse(identity.FindFirst("id")?.Value);
-        }
-    }
+    public static int RecuperaIdUsuario(ClaimsPrincipal identity) =>
+        int.Parse(identity.FindFirst("id")!.Value);
 }

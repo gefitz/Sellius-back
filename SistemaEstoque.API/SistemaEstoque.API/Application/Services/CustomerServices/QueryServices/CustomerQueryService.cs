@@ -8,7 +8,7 @@ using Sellius.API.Infra.Repository.Cliente.Interfaces;
 namespace Sellius.API.Application.Services.CustomerServices.QueryServices;
 
 public sealed class CustomerQueryService(
-    IClienteRepository repository,
+    ICustomerRepository repository,
     ICustomerMapper mapper) : ICustomerQueryService
 {
     public async Task<CustomerEdit> FindByCustomerId(long customerId)

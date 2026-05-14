@@ -6,5 +6,5 @@ public interface ISupplierCommandService
 {
     Task<bool> CreateSupplier(SupplierRegister dto, Guid enterpriseId);
     Task<bool> UpdateSupplier(SupplierRegister dto);
-    Task<bool> InactiveSupplier(int supplierId);
+    Task<bool> InactiveSupplier(long supplierId);
 }

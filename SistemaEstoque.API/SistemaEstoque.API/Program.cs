@@ -1,190 +1,32 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using Sellius.API.DI;
-using Sellius.API.DI.Authentication;
 using Sellius.API.Infra.Context;
 using Sellius.API.Infra.Repository;
-using Sellius.API.Utils;
-using System.Reflection;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 var connection = builder.Configuration.GetConnectionString("ConnectionString");
 
-builder.Services.AddDbContext<AppDbContext>(opt => opt.UseNpgsql(connection).UseSnakeCaseNamingConvention());
+builder.Services.AddDbContext<AppDbContext>(opt =>
+    opt.UseNpgsql(connection).UseSnakeCaseNamingConvention());
 
 builder.Services.AddCors(opt =>
-{
-    opt.AddPolicy("CorsPolicy",
-        build =>
-        {
-            build.WithOrigins("http://localhost:4200", "https://localhost:4200")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-        });
-});
-var assembly = Assembly.GetExecutingAssembly();
-#region Repository
-RepositoryInjecton.RepositoryInjecao(assembly, builder.Services);
+    opt.AddPolicy("CorsPolicy", build =>
+        build.WithOrigins("http://localhost:4200", "https://localhost:4200")
+             .AllowAnyHeader()
+             .AllowAnyMethod()
+             .AllowCredentials()));
 
-builder.Services.AddScoped<LogRepository>();
-builder.Services.AddScoped<IAuthorizationHandler, ConfigHandler>();
-#endregion
+builder.Services.AddRepository();
+builder.Services.AddServices();
+builder.Services.AddMapper();
+builder.Services.AddAuthSetup(builder.Configuration);
 
-#region Services
-ServicesInjectoncs.ServicesInjecao(assembly, builder.Services);
-#endregion
-
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
-
-#region JWTBearer
-builder.Services
-    .AddAuthentication("Bearer")
-
-.AddJwtBearer("Bearer", opt =>
-{
-
-    opt.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["jwt:issuer"],
-        ValidAudience = builder.Configuration["jwt:audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["jwt:secretkey"]))
-    };
-    opt.Events = new JwtBearerEvents
-    {
-        OnMessageReceived = context =>
-        {
-            // Pega o token do cookie chamado "auth_token"
-
-            if (context.Request.Cookies.ContainsKey("auth_token"))
-            {
-                context.Token = context.Request.Cookies["auth_token"];
-            }
-
-            // Opcional: também tenta pegar do header Authorization (caso queira suportar os dois)
-            // var bearer = context.Request.Headers.Authorization.FirstOrDefault();
-            // if (!string.IsNullOrEmpty(bearer) && bearer.StartsWith("Bearer "))
-            //     context.Token = bearer["Bearer ".Length..].Trim();
-
-            return Task.CompletedTask;
-        },
-
-    };
-}
-);
-builder.Services.AddSwaggerGen(x =>
-{
-    x.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
-    });
-    x.AddSecurityRequirement(new OpenApiSecurityRequirement()
-    {
-        {
-
-
-        new OpenApiSecurityScheme
-        {
-            Reference = new OpenApiReference
-            {
-                Type = ReferenceType.SecurityScheme,
-                Id = "Bearer"
-            },
-            Scheme = "oauth2",
-            Name = "Bearer",
-            In = ParameterLocation.Header,
-        },
-        new List<string>()
-        }
-
-    });
-});
-
-
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    // Quando a autenticação falhar, em vez de redirecionar para /Account/Login,
-    // retorna 401 ou 403 sem redirecionar
-    options.Events.OnRedirectToLogin = context =>
-    {
-        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-        return Task.CompletedTask;
-    };
-
-    options.Events.OnRedirectToAccessDenied = context =>
-    {
-        context.Response.StatusCode = StatusCodes.Status403Forbidden;
-        return Task.CompletedTask;
-    };
-});
-
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("podeCriar",
-        policy => policy.Requirements.Add(
-            new ConfigRequeriment("flPodeCriar")));
-
-    options.AddPolicy("podeEditar",
-        policy => policy.Requirements.Add(
-            new ConfigRequeriment("flPodeEditar")));
-
-    options.AddPolicy("podeExcluir",
-        policy => policy.Requirements.Add(
-            new ConfigRequeriment("flPodeExcluir")));
-
-    options.AddPolicy("podeGerenciarUsuarios",
-        policy => policy.Requirements.Add(
-            new ConfigRequeriment("flPodeGerenciarUsuarios")));
-
-    options.AddPolicy("podeInativar",
-        policy => policy.Requirements.Add(
-            new ConfigRequeriment("flPodeInativar")));
-
-    options.AddPolicy("podeAprovar",
-        policy => policy.Requirements.Add(
-            new ConfigRequeriment("flPodeAprovar")));
-
-    options.AddPolicy("podeExportar",
-        policy => policy.Requirements.Add(
-            new ConfigRequeriment("flPodeExportar")));
-});
-#endregion
-
 
 var app = builder.Build();
 
-app.UseCors("CorsPolicy");
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapControllers();
+app.UseApiPipeline();
 
 app.Run();

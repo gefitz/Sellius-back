@@ -1,12 +1,13 @@
 using Sellius.API.Application.DTOs.RegisterDTOs;
 using Sellius.API.Application.Mappers.Interfaces;
 using Sellius.API.Application.Services.SupplierServices.CommandServices.Interfaces;
+using Sellius.API.Domain.Extensions;
 using Sellius.API.Infra.Repository.Fornecedor.Interfaces;
 
 namespace Sellius.API.Application.Services.SupplierServices.CommandServices;
 
 public sealed class SupplierCommandService(
-    IFornecedorRepository repository,
+    ISupplierRepository repository,
     ISupplierMapper mapper) : ISupplierCommandService
 {
     public async Task<bool> CreateSupplier(SupplierRegister dto, Guid enterpriseId)
@@ -15,6 +16,7 @@ public sealed class SupplierCommandService(
             return false;
 
         var supplier = mapper.DtoRegisterToMain(dto, enterpriseId);
+        supplier.Document = supplier.Document.Hash();
         supplier.CreateDate = DateTime.UtcNow;
         supplier.AlteredDate = DateTime.UtcNow;
         supplier.Active = 1;
@@ -31,7 +33,7 @@ public sealed class SupplierCommandService(
             return false;
 
         supplier.Name = dto.Name;
-        supplier.Document = dto.Document;
+        supplier.Document = dto.Document.Hash();
         supplier.Phone = dto.Phone;
         supplier.Email = dto.Email;
         supplier.CityId = dto.CityId;
@@ -44,7 +46,7 @@ public sealed class SupplierCommandService(
         return await repository.UpdateSupplierAsync(supplier);
     }
 
-    public async Task<bool> InactiveSupplier(int supplierId)
+    public async Task<bool> InactiveSupplier(long supplierId)
     {
         var supplier = await repository.FindByPredicateAsync(
             s => s.Id == supplierId);

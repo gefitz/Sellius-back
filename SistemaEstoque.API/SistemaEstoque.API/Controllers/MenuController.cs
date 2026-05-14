@@ -6,7 +6,6 @@ using Sellius.API.Application.DTOs.RegisterDTOs;
 using Sellius.API.Application.Services.MenuServices.CommandServices.Interfaces;
 using Sellius.API.Application.Services.MenuServices.QueryServices.Interfaces;
 using Sellius.API.Domain.Extensions;
-using Sellius.API.DTOs;
 
 namespace Sellius.API.Controllers;
 
@@ -19,45 +18,45 @@ public class MenuController(
 {
     [HttpPost]
     [Authorize(Policy = "podeGerenciarUsuarios")]
-    public async Task<IActionResult> CadastrarMenu(MenuRegister dto)
+    public async Task<IActionResult> Create(MenuRegister dto)
     {
         var result = await commandService.CreateMenu(dto, User.GetEnterpriseId());
         if (result)
-            return Ok(Response<bool>.Ok());
-        return BadRequest(Response<bool>.Failed("Falha ao cadastrar menu"));
+            return Ok();
+        return BadRequest(new { error = "Failed to create menu" });
     }
 
     [HttpPut]
     [Authorize(Policy = "podeGerenciarUsuarios")]
-    public async Task<IActionResult> AtualizarMenu(MenuRegister dto)
+    public async Task<IActionResult> Update(MenuRegister dto)
     {
         var result = await commandService.UpdateMenu(dto);
         if (result)
-            return Ok(Response<bool>.Ok());
-        return BadRequest(Response<bool>.Failed("Falha ao atualizar menu"));
+            return Ok();
+        return BadRequest(new { error = "Failed to update menu" });
     }
 
     [HttpDelete("{id:long}")]
     [Authorize(Policy = "podeGerenciarUsuarios")]
-    public async Task<IActionResult> InativarMenu(long id)
+    public async Task<IActionResult> Inactivate(long id)
     {
         var result = await commandService.InactiveMenu(id);
         if (result)
-            return Ok(Response<bool>.Ok());
-        return BadRequest(Response<bool>.Failed("Falha ao inativar menu"));
+            return Ok();
+        return BadRequest(new { error = "Failed to inactivate menu" });
     }
 
     [HttpGet("{id:long}")]
-    public async Task<IActionResult> ObterMenu(long id)
+    public async Task<IActionResult> GetById(long id)
     {
         var result = await queryService.FindByMenuId(id);
-        return Ok(Response<MenuEdit>.Ok(result));
+        return Ok(result);
     }
 
     [HttpPost("list")]
-    public async Task<IActionResult> ObterTodosMenus(MenuFilter filter)
+    public async Task<IActionResult> GetAll(MenuFilter filter)
     {
         var result = await queryService.FindAllMenus(filter, User.GetEnterpriseId());
-        return Ok(Response<List<MenuRegister>>.Ok(result));
+        return Ok(result);
     }
 }

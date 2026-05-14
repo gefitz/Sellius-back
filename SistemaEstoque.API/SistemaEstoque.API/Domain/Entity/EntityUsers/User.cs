@@ -15,7 +15,7 @@ namespace Sellius.API.Domain.Entity.EntityUsers
 
         public DateTime CreateDate { get; set; }
         public DateTime AlteredDate { get; set; }
-        public long TpUsuarioId { get; set; }
+        public long TypeUserId { get; set; }
         public short Active { get; set; }
         public Guid EnterpriseId { get; set; }
         public long CityId { get; set; }

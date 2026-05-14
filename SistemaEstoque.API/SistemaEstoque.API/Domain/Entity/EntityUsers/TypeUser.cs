@@ -15,7 +15,7 @@ namespace Sellius.API.Domain.Entity.EntityUsers
 
         public List<TypeUserXMenu>? TypeUserXMenus { get; init; }
 
-        public UserConfiguration? TpUsuarioConfigurcao { get; init; }
+        public UserConfiguration? UserConfiguration { get; init; }
         
     }
 

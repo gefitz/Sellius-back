@@ -13,7 +13,7 @@ public sealed class MenuMapper : IMenuMapper
             DescMenu = dto.Name,
             UrlMenu = dto.UrlMenu ?? string.Empty,
             Icon = dto.Icon,
-            MenuFatherId = (int?)dto.MenuFatherId,
+            MenuFatherId = dto.MenuFatherId,
             Active = dto.Active,
             CreateDate = dto.DateCreate,
             AlteredDate = dto.DateAltered

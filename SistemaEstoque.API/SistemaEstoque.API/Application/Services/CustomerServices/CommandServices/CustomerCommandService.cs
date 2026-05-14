@@ -1,12 +1,13 @@
 using Sellius.API.Application.DTOs.RegisterDTOs.CustomerRegisterDTOs;
 using Sellius.API.Application.Mappers.Interfaces;
 using Sellius.API.Application.Services.CustomerServices.CommandServices.Interfaces;
+using Sellius.API.Domain.Extensions;
 using Sellius.API.Infra.Repository.Cliente.Interfaces;
 
 namespace Sellius.API.Application.Services.CustomerServices.CommandServices;
 
 public sealed class CustomerCommandService(
-    IClienteRepository repository,
+    ICustomerRepository repository,
     ICustomerMapper mapper) : ICustomerCommandService
 {
     public async Task<bool> CreateCustomer(CustomerRegister dto, Guid enterpriseId)
@@ -15,6 +16,7 @@ public sealed class CustomerCommandService(
             return false;
 
         var customer = mapper.DtoRegisterToMain(dto, enterpriseId);
+        customer.Document = customer.Document.Hash();
         customer.CreateDate = DateTime.UtcNow;
         customer.AlteredDate = DateTime.UtcNow;
         customer.Active = 1;
@@ -31,7 +33,7 @@ public sealed class CustomerCommandService(
             return false;
 
         customer.Name = dto.Name;
-        customer.Document = dto.Document;
+        customer.Document = dto.Document.Hash();
         customer.CityId = dto.CityId;
         customer.Street = dto.Street;
         customer.Neighborhood = dto.Neighborhood;

@@ -3,6 +3,7 @@
     public class UserConfiguration
     {
         public long Id { get; set; }
+        public long TypeUserId { get; set; }
         public bool PermissionCreate { get; set; }
         public bool PermissionDelete { get; set; }
         public bool PermissionEdit { get; set; }

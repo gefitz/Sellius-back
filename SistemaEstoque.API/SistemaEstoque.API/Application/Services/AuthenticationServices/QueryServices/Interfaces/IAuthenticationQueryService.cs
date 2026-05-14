@@ -7,4 +7,5 @@ public interface IAuthenticationQueryService
 {
     Task<Authentication?> FindByEmail(string email);
     Task<bool> ValidateCredentials(LoginRegister login);
+    Task<string?> Login(LoginRegister login);
 }

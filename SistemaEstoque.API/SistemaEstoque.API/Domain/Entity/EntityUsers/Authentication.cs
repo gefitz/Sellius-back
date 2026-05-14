@@ -15,16 +15,5 @@ namespace Sellius.API.Domain.Entity.EntityUsers
         
         public User? User { get; set; }
         public Enterprise? Enterprise { get; set; }
-
-        public static implicit operator Authentication(LoginRegister register)
-        {
-            return new Authentication
-            {
-                Email = register.Email,
-                //ClienteId = dto.ClienteId,
-                //usuarioId = dto.usuarioId,
-                //EmpresaId = dto.EmpresaId
-            };
-        }
     }
 }

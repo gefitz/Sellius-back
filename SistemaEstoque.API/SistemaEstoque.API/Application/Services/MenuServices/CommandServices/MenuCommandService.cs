@@ -34,7 +34,7 @@ public sealed class MenuCommandService(
         menu.DescMenu = dto.Name;
         menu.UrlMenu = dto.UrlMenu ?? menu.UrlMenu;
         menu.Icon = dto.Icon;
-        menu.MenuFatherId = (int?)dto.MenuFatherId;
+        menu.MenuFatherId = dto.MenuFatherId;
         menu.Active = dto.Active;
         menu.AlteredDate = DateTime.UtcNow;
 

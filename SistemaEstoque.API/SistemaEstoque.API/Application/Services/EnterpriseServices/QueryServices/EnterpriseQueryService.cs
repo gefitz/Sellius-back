@@ -7,7 +7,7 @@ using Sellius.API.Infra.Repository.Empresa.Interfaces;
 namespace Sellius.API.Application.Services.EnterpriseServices.QueryServices;
 
 public sealed class EnterpriseQueryService(
-    IEmpresaRepository repository,
+    IEnterpriseRepository repository,
     IEnterpriseMapper mapper) : IEnterpriseQueryService
 {
     public async Task<EnterpriseEdit> FindByEnterpriseId(Guid enterpriseId)

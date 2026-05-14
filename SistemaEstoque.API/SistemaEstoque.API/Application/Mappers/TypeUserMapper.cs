@@ -29,7 +29,7 @@ public sealed class TypeUserMapper : ITypeUserMapper
             AlteredDate = typeUser.AlteredDate,
             Active = typeUser.Active,
             MenuIds = typeUser.TypeUserXMenus?.Select(x => x.MenuId).ToList(),
-            UserConfiguration = MapConfiguration(typeUser.TpUsuarioConfigurcao)
+            UserConfiguration = MapConfiguration(typeUser.UserConfiguration)
         };
 
     public List<TypeUserRegister> MainToList(List<TypeUser> typeUsers) =>
@@ -50,7 +50,8 @@ public sealed class TypeUserMapper : ITypeUserMapper
 
         return new DtoUserConfig
         {
-            Id = config.TpUserId,
+            Id = config.Id,
+            TypeUserId = config.TypeUserId,
             PermissionCreate = config.PermissionCreate,
             PermissionDelete = config.PermissionDelete,
             PermissionEdit = config.PermissionEdit,

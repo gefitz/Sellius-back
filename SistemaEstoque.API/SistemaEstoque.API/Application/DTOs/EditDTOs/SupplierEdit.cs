@@ -2,7 +2,7 @@ namespace Sellius.API.Application.DTOs.EditDTOs;
 
 public sealed record SupplierEdit
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
     public string Name { get; set; }
     public string Document { get; set; }
     public string ZipCode { get; set; }
